@@ -231,7 +231,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="standard-modalLabel">Nuevo Cliente</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                <button (click)="limpiar()" type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
             </div>
 
             <form [formGroup]="clienteForm" (ngSubmit)="guardar(clienteForm.value)">
@@ -253,11 +253,12 @@
 
                             <label for="example-select" class="form-label">Tipo Identificación</label>
                             <select
+                                (change)="cambiarValidacion($event.target)"
                                 [class.is-invalid]="clienteForm.get('IdTipoIdentificacion')!.touched && clienteForm.get('IdTipoIdentificacion')?.invalid"
                                 [class.border-primary]="clienteForm.get('IdTipoIdentificacion')!.touched && clienteForm.get('IdTipoIdentificacion')?.valid"
                                 class="form-select form-select-sm" id="example-select">
-                                <option selected>Ruc/Cedula</option>
-                                <option>Pasaporte</option>
+                                <option value=1 selected>Ruc/Cedula</option>
+                                <option value=2 >Pasaporte</option>
                             </select>
 
 
@@ -268,12 +269,36 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Identificacion</label>
-                            <input
-                                [class.is-invalid]="clienteForm.get('Identificacion')!.touched && clienteForm.get('Identificacion')?.invalid"
+                            <input [class.is-invalid]="clienteForm.get('Identificacion')!.touched && clienteForm.get('Identificacion')?.invalid"
                                 [class.border-primary]="clienteForm.get('Identificacion')!.touched && clienteForm.get('Identificacion')?.valid"
                                 formControlName="Identificacion" type="text" class="form-control form-control-sm">
-                            <div class="invalid-feedback">*Requerido</div>
 
+
+                                <div *ngIf="clienteForm.get('Identificacion')!.invalid && clienteForm.get('Identificacion')!.touched">
+
+                                    <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('required')">
+                                        *Requerido
+                                    </div>
+                                    <div class="error" *ngIf="!clienteForm.get('Identificacion')!.hasError('cedulaRuc') && !clienteForm.get('Identificacion')!.hasError('required')">
+                                        *Identificación Invalida
+                                    </div>
+
+                                 
+
+                                  </div>
+                   
+
+                            
+
+
+                            <div *ngIf="clienteForm.get('Identificacion')!.invalid && clienteForm.get('Identificacion')!.touched">
+                                <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('Identificacion')">
+                                    *Requerido
+                                </div>
+                                <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('cedulaRuc')">
+                                  *Formato Inválido
+                                </div>
+                              </div>
                         </div>
 
                         <div class="col-sm-4 mt-1">
@@ -329,10 +354,29 @@
                                 [class.is-invalid]="clienteForm.get('Email')!.touched && clienteForm.get('Email')?.invalid"
                                 [class.border-primary]="clienteForm.get('Email')!.touched && clienteForm.get('Email')?.valid"
                                 type="text" class="form-control form-control-sm">
-                            <div class="invalid-feedback">*Requerido</div>
+
+                                <div *ngIf="clienteForm.get('Email')!.invalid && clienteForm.get('Email')!.touched">
+                                    <div class="error" *ngIf="clienteForm.get('Email')!.hasError('required')">
+                                        *Requerido
+                                    </div>
+                                    <div class="error" *ngIf="clienteForm.get('Email')!.hasError('email') ">
+                                      *Formato Inválido
+                                    </div>
+                                  </div>
+
+                                  
+                            
+                
+
+
 
                         </div>
 
+
+                    
+
+
+                        
 
 
 
@@ -373,7 +417,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Salir</button>
+                    <button (click)="limpiar()" type="button" class="btn btn-light" data-bs-dismiss="modal">Salir</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
 
