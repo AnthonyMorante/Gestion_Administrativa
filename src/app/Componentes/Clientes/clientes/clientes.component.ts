@@ -74,8 +74,6 @@ export class ClientesComponent  {
     }
     
 
-    console.log(cliente);
-
   }
 
 
@@ -110,14 +108,18 @@ export class ClientesComponent  {
 
   }
 
+ 
 
 
+  limpiar(){this.clienteForm.reset();}
 
-  limpiar(){
+  setearValorRepresentante(evento:any){    
+    
+
+    this.clienteForm.get('Representante')?.setValue(evento.value);
+    
 
 
-    this.clienteForm.reset();
-
-  }
+}
 
 }

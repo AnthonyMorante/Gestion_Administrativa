@@ -304,7 +304,7 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Razón Social</label>
-                            <textarea formControlName="RazonSocial"
+                            <textarea (keyup)="setearValorRepresentante($event.target)" formControlName="RazonSocial"
                                 [class.is-invalid]="clienteForm.get('RazonSocial')!.touched && clienteForm.get('RazonSocial')?.invalid"
                                 [class.border-primary]="clienteForm.get('RazonSocial')!.touched && clienteForm.get('RazonSocial')?.valid"
                                 class="form-control" id="example-textarea"></textarea>

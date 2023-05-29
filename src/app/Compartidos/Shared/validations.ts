@@ -15,9 +15,6 @@ export class Validator {
 
         for (const key of Object.keys(form.controls)) {
 
-          console.log(key);
-     
-
           if (form.get(key)?.invalid) {
             const invalidControl = el.nativeElement.querySelector('[formcontrolname="' + key + '"]');
             invalidControl.focus();
