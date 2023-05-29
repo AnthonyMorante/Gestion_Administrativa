@@ -234,7 +234,7 @@ a {
 }
 
 a:hover {
-    color: #6169d0
+    color: #226fe2
 }
 
 a:not([href]):not([class]),
@@ -3553,17 +3553,17 @@ fieldset:disabled .btn {
 
 .btn-primary:hover {
     color: #fff;
-    background-color: #6169d0;
-    border-color: #5b63c4
+    background-color: #226fe2;
+    border-color: #3F80EA
 }
 
 .btn-check:focus+.btn-primary,
 .btn-primary:focus {
     color: #fff;
-    background-color: #6169d0;
-    border-color: #5b63c4;
-    -webkit-box-shadow: 0 0 0 .2rem rgba(135, 144, 247, .5);
-    box-shadow: 0 0 0 .2rem rgba(135, 144, 247, .5)
+    background-color: #226fe2;
+    border-color: #3F80EA;
+    -webkit-box-shadow: 0 0 0 .2rem #3F80EA;
+    box-shadow: 0 0 0 .2rem #3F80EA
 }
 
 .btn-check:active+.btn-primary,
@@ -3572,8 +3572,8 @@ fieldset:disabled .btn {
 .btn-primary:active,
 .show>.btn-primary.dropdown-toggle {
     color: #fff;
-    background-color: #5b63c4;
-    border-color: #565db8
+    background-color: #3F80EA;
+    border-color: #3F80EA
 }
 
 .btn-check:active+.btn-primary:focus,
@@ -3581,8 +3581,8 @@ fieldset:disabled .btn {
 .btn-primary.active:focus,
 .btn-primary:active:focus,
 .show>.btn-primary.dropdown-toggle:focus {
-    -webkit-box-shadow: 0 0 0 .2rem rgba(135, 144, 247, .5);
-    box-shadow: 0 0 0 .2rem rgba(135, 144, 247, .5)
+    -webkit-box-shadow: 0 0 0 .2rem #3F80EA;
+    box-shadow: 0 0 0 .2rem #3F80EA
 }
 
 .btn-primary.disabled,
@@ -4264,7 +4264,7 @@ fieldset:disabled .btn {
 }
 
 .btn-link:hover {
-    color: #6169d0
+    color: #226fe2
 }
 
 .btn-link.disabled,
@@ -4834,7 +4834,7 @@ fieldset:disabled .btn {
 
 .nav-link:focus,
 .nav-link:hover {
-    color: #6169d0
+    color: #226fe2
 }
 
 .nav-link.disabled {
@@ -5801,7 +5801,7 @@ fieldset:disabled .btn {
 
 .page-link:focus {
     z-index: 3;
-    color: #6169d0;
+    color: #226fe2;
     background-color: #eef2f7;
     outline: 0;
     -webkit-box-shadow: 0 0 0 .2rem rgba(114, 124, 245, .25);
@@ -7681,7 +7681,7 @@ fieldset:disabled .btn {
 
 .link-primary:focus,
 .link-primary:hover {
-    color: #6169d0
+    color: #226fe2
 }
 
 .link-secondary {

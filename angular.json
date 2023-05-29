@@ -42,7 +42,8 @@
                "src/assets/js/vendor/dataTables.bootstrap5.js",
                "src/assets/js/vendor/dataTables.responsive.min.js",
                "src/assets/js/vendor/responsive.bootstrap5.min.js",
-               "src/assets/js/pages/demo.datatable-init.js"
+               "src/assets/js/pages/demo.datatable-init.js",
+               "src/assets/js/datatables-spanish.js"
             ]
 
 
