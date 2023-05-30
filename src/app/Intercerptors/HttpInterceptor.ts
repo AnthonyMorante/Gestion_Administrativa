@@ -11,7 +11,7 @@ export class APIInterceptor implements HttpInterceptor {
     const apiRequest = request.clone({
      
       headers: request.headers.set('Authorization', `Bearer ${localStorage.getItem("token")}`),
-      url: `https://localhost:7028/${request.url}`
+      url: `https://localhost:7161/${request.url}`
     });
 
     return next.handle(apiRequest);
