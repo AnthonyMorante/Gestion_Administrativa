@@ -11,7 +11,44 @@
 
 </div>
 
+<select class="form-control select2" data-toggle="select2">
+    <option>Select</option>
+    <optgroup label="Alaskan/Hawaiian Time Zone">
+        <option value="AK">Alaska</option>
+        <option value="HI">Hawaii</option>
+    </optgroup>
+    <optgroup label="Pacific Time Zone">
+        <option value="CA">California</option>
+        <option value="NV">Nevada</option>
+        <option value="OR">Oregon</option>
+        <option value="WA">Washington</option>
+    </optgroup>
+</select>
 
+<!-- Multiple Select -->
+<select class="select2 form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
+    <optgroup label="Alaskan/Hawaiian Time Zone">
+        <option value="AK">Alaska</option>
+        <option value="HI">Hawaii</option>
+    </optgroup>
+    <optgroup label="Pacific Time Zone">
+        <option value="CA">California</option>
+        <option value="NV">Nevada</option>
+        <option value="OR">Oregon</option>
+        <option value="WA">Washington</option>
+    </optgroup>
+    <optgroup label="Mountain Time Zone">
+        <option value="AZ">Arizona</option>
+        <option value="CO">Colorado</option>
+        <option value="ID">Idaho</option>
+        <option value="MT">Montana</option>
+        <option value="NE">Nebraska</option>
+        <option value="NM">New Mexico</option>
+        <option value="ND">North Dakota</option>
+        <option value="UT">Utah</option>
+        <option value="WY">Wyoming</option>
+    </optgroup>
+</select>
 
 
 <div class="mt-2" style="max-height: 550px; overflow: auto;">
@@ -253,12 +290,23 @@
 
                             <label for="example-select" class="form-label">Tipo Identificación</label>
                             <select
+
+                                formControlName="idTipoidentificacion"
                                 (change)="cambiarValidacion($event.target)"
-                                [class.is-invalid]="clienteForm.get('IdTipoIdentificacion')!.touched && clienteForm.get('IdTipoIdentificacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('IdTipoIdentificacion')!.touched && clienteForm.get('IdTipoIdentificacion')?.valid"
+                                [class.is-invalid]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.invalid"
+                                [class.border-primary]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.valid"
                                 class="form-select form-select-sm" id="example-select">
-                                <option value=1 selected>Ruc/Cedula</option>
-                                <option value=2 >Pasaporte</option>
+                              
+                          
+                               <option   *ngFor="let item of tipoIdentificacionesList" value="{{item.idTipoIdentificacion}}"
+                               [selected]="item.codigo === 1"                          
+                               >
+                               
+                               {{item.nombre}}
+                            
+                               </option>
+
+                                
                             </select>
 
 
@@ -269,17 +317,17 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Identificacion</label>
-                            <input [class.is-invalid]="clienteForm.get('Identificacion')!.touched && clienteForm.get('Identificacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('Identificacion')!.touched && clienteForm.get('Identificacion')?.valid"
-                                formControlName="Identificacion" type="text" class="form-control form-control-sm">
+                            <input [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
+                                [class.border-primary]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.valid"
+                                formControlName="identificacion" type="text" class="form-control form-control-sm">
 
 
-                                <div *ngIf="clienteForm.get('Identificacion')!.invalid && clienteForm.get('Identificacion')!.touched">
+                                <div *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
 
-                                    <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('required')">
+                                    <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('required')">
                                         *Requerido
                                     </div>
-                                    <div class="error" *ngIf="!clienteForm.get('Identificacion')!.hasError('cedulaRuc') && !clienteForm.get('Identificacion')!.hasError('required')">
+                                    <div class="error" *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
                                         *Identificación Invalida
                                     </div>
 
@@ -291,11 +339,11 @@
                             
 
 
-                            <div *ngIf="clienteForm.get('Identificacion')!.invalid && clienteForm.get('Identificacion')!.touched">
-                                <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('Identificacion')">
+                            <div *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+                                <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
                                     *Requerido
                                 </div>
-                                <div class="error" *ngIf="clienteForm.get('Identificacion')!.hasError('cedulaRuc')">
+                                <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('cedulaRuc')">
                                   *Formato Inválido
                                 </div>
                               </div>
@@ -304,9 +352,9 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Razón Social</label>
-                            <textarea (keyup)="setearValorRepresentante($event.target)" formControlName="RazonSocial"
-                                [class.is-invalid]="clienteForm.get('RazonSocial')!.touched && clienteForm.get('RazonSocial')?.invalid"
-                                [class.border-primary]="clienteForm.get('RazonSocial')!.touched && clienteForm.get('RazonSocial')?.valid"
+                            <textarea (keyup)="setearValorRepresentante($event.target)" formControlName="razonSocial"
+                                [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
+                                [class.border-primary]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.valid"
                                 class="form-control" id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -325,9 +373,9 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Representante</label>
-                            <input formControlName="Representante"
-                                [class.is-invalid]="clienteForm.get('Representante')!.touched && clienteForm.get('Representante')?.invalid"
-                                [class.border-primary]="clienteForm.get('Representante')!.touched && clienteForm.get('Representante')?.valid"
+                            <input formControlName="representante"
+                                [class.is-invalid]="clienteForm.get('representante')!.touched && clienteForm.get('representante')?.invalid"
+                                [class.border-primary]="clienteForm.get('representante')!.touched && clienteForm.get('representante')?.valid"
                                 type="text" class="form-control form-control-sm">
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -338,10 +386,10 @@
 
                         <div class="col-sm-4 mt-1">
 
-                            <label for="simpleinput" class="form-label">Dirección</label>
-                            <textarea formControlName="Direccion"
-                                [class.is-invalid]="clienteForm.get('Direccion')!.touched && clienteForm.get('Direccion')?.invalid"
-                                [class.border-primary]="clienteForm.get('Direccion')!.touched && clienteForm.get('Direccion')?.valid"
+                            <label for="simpleinput" class="form-label">dirección</label>
+                            <textarea formControlName="direccion"
+                                [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
+                                [class.border-primary]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.valid"
                                 class="form-control" id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -350,16 +398,16 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Email</label>
-                            <input formControlName="Email"
-                                [class.is-invalid]="clienteForm.get('Email')!.touched && clienteForm.get('Email')?.invalid"
-                                [class.border-primary]="clienteForm.get('Email')!.touched && clienteForm.get('Email')?.valid"
+                            <input formControlName="email"
+                                [class.is-invalid]="clienteForm.get('email')!.touched && clienteForm.get('email')?.invalid"
+                                [class.border-primary]="clienteForm.get('email')!.touched && clienteForm.get('email')?.valid"
                                 type="text" class="form-control form-control-sm">
 
-                                <div *ngIf="clienteForm.get('Email')!.invalid && clienteForm.get('Email')!.touched">
-                                    <div class="error" *ngIf="clienteForm.get('Email')!.hasError('required')">
+                                <div *ngIf="clienteForm.get('email')!.invalid && clienteForm.get('email')!.touched">
+                                    <div class="error" *ngIf="clienteForm.get('email')!.hasError('required')">
                                         *Requerido
                                     </div>
-                                    <div class="error" *ngIf="clienteForm.get('Email')!.hasError('email') ">
+                                    <div class="error" *ngIf="clienteForm.get('email')!.hasError('email') ">
                                       *Formato Inválido
                                     </div>
                                   </div>
@@ -389,9 +437,9 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Telefono</label>
-                            <input formControlName="Telefono"
-                                [class.is-invalid]="clienteForm.get('Telefono')!.touched && clienteForm.get('Telefono')?.invalid"
-                                [class.border-primary]="clienteForm.get('Telefono')!.touched && clienteForm.get('Telefono')?.valid"
+                            <input formControlName="telefono"
+                                [class.is-invalid]="clienteForm.get('telefono')!.touched && clienteForm.get('telefono')?.invalid"
+                                [class.border-primary]="clienteForm.get('telefono')!.touched && clienteForm.get('telefono')?.valid"
                                 type="number" class="form-control form-control-sm">
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -403,9 +451,9 @@
                         <div class="col-sm-5 mt-1">
 
                             <label for="simpleinput" class="form-label">Observación</label>
-                            <textarea formControlName="Observacion" class="form-control"
-                                [class.is-invalid]="clienteForm.get('Observacion')!.touched && clienteForm.get('Observacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('Observacion')!.touched && clienteForm.get('Observacion')?.valid"
+                            <textarea formControlName="observacion" class="form-control"
+                                [class.is-invalid]="clienteForm.get('observacion')!.touched && clienteForm.get('observacion')?.invalid"
+                                [class.border-primary]="clienteForm.get('observacion')!.touched && clienteForm.get('observacion')?.valid"
                                 id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 

@@ -1,7 +1,11 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { error } from 'jquery';
+import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
 import { Validator } from 'src/app/Compartidos/Shared/validations';
 import { Clientes } from 'src/app/Interfaces/Clientes';
+import { TipoIdentificaciones } from 'src/app/Interfaces/TipoIdentificaciones';
+import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
 
 
@@ -19,27 +23,33 @@ export class ClientesComponent  {
 
   clienteForm = new FormGroup({
 
-    IdCliente: new FormControl(),
-    Identificacion: new FormControl('',[Validators.required,cedulaRuc()]),
-    RazonSocial: new FormControl('', Validators.required),
-    Representante: new FormControl('', Validators.required),
-    Direccion: new FormControl('', Validators.required),
-    Email: new FormControl('', [Validators.required, Validators.email]),
-    Telefono: new FormControl('', [Validators.required]),
-    Observacion: new FormControl(),
-    FechaRegistro: new FormControl(),
-    IdCiudad: new FormControl(),
-    IdTipoIdentificacion: new FormControl(),
-    IdCiudadNavigation: new FormControl(),
-    IdTipoIdentificacionNavigation: new FormControl(),
+    idCliente: new FormControl(),
+    identificacion: new FormControl('',[Validators.required,cedulaRuc()]),
+    razonSocial: new FormControl('', Validators.required),
+    representante: new FormControl('', Validators.required),
+    direccion: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    telefono: new FormControl('', [Validators.required]),
+    observacion: new FormControl(),
+    fechaRegistro: new FormControl(),
+    codigo: new FormControl(),
+    idCiudad: new FormControl(),
+    idTipoidentificacion: new FormControl(),
+    idCiudadNavigation: new FormControl(),
+    idTipoIdentificacionNavigation: new FormControl(),
   });
+
+
+  tipoIdentificacionesList: TipoIdentificaciones[] = [];
   
 
 
   constructor(
-
+    private toast: ToastComponent,
     private el: ElementRef,
-    private validator: Validator
+    private validator: Validator,
+    private tipoIdentificacionesServices: TipoIdentificacionesService,
+
     
     ){}
 
@@ -48,6 +58,10 @@ export class ClientesComponent  {
 
 
   ngOnInit() {
+
+
+
+  this.listarTiposNotificaciones();
 
   
     $("#tabla").DataTable({
@@ -62,6 +76,32 @@ export class ClientesComponent  {
   }
 
 
+  listarTiposNotificaciones(){
+
+    this.tipoIdentificacionesServices.listar().subscribe({
+     
+      next:(res)=>{
+
+
+        this.tipoIdentificacionesList=res;
+
+        this.tipoIdentificacionesList.forEach(element => {
+
+          console.log(element.codigo)
+          
+        });
+
+      },error:(err)=>{
+      
+        this.toast.show_error("Error", "Error al listar los Tipos de Identificaciones");
+
+      }
+
+    });
+
+  }
+
+
   guardar(cliente: Clientes){
 
 
@@ -72,6 +112,9 @@ export class ClientesComponent  {
       return;
 
     }
+
+
+    console.log(cliente);
     
 
   }
@@ -79,12 +122,12 @@ export class ClientesComponent  {
 
   cambiarValidacion(evento:any){
 
-    this.clienteForm.controls['Identificacion'].clearValidators();
+    this.clienteForm.controls['identificacion'].clearValidators();
    
   if(parseInt (evento.value)==1){
 
 
-    this.clienteForm.controls['Identificacion'].setValidators([
+    this.clienteForm.controls['identificacion'].setValidators([
       Validators.required,
       cedulaRuc()
     ]);
@@ -95,7 +138,7 @@ export class ClientesComponent  {
 
   if(parseInt (evento.value)==2){
  
-    this.clienteForm.controls['Identificacion'].setValidators([
+    this.clienteForm.controls['identificacion'].setValidators([
 
       Validators.required
 
@@ -104,7 +147,7 @@ export class ClientesComponent  {
   }
 
 
-  this.clienteForm.get('Identificacion')?.setValue('');
+  this.clienteForm.get('identificacion')?.setValue('');
 
   }
 
@@ -116,7 +159,7 @@ export class ClientesComponent  {
   setearValorRepresentante(evento:any){    
     
 
-    this.clienteForm.get('Representante')?.setValue(evento.value);
+    this.clienteForm.get('representante')?.setValue(evento.value);
     
 
 

@@ -11,6 +11,8 @@ import { ClientesComponent } from './Componentes/Clientes/clientes/clientes.comp
 import { ProductosComponent } from './Componentes/Productos/productos/productos.component';
 import { ProveedoresComponent } from './Componentes/Proveedores/proveedores/proveedores.component';
 import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.component';
+import { APIInterceptor } from './Intercerptors/HttpInterceptor';
+import { ToastrModule } from 'ngx-toastr';
 
 
 
@@ -34,8 +36,9 @@ import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.
     RouterModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    ToastrModule.forRoot()
   ],
-  providers: [],
+  providers: [ { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor, multi: true },   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

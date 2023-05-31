@@ -1,9 +1,10 @@
 export interface TipoIdentificaciones {
 
-    IdTipoIdentificacion: string;
-    Nombre: string;
-    Descripcion?: string | null;
-    FechaRegistro?: Date | null;
-    Activo?: boolean | null;
+    idTipoIdentificacion: string;
+    nombre: string;
+    descripcion?: string | null;
+    fechaRegistro?: Date | null;
+    activo?: boolean | null;
+    codigo?: number | null;
 
   }
