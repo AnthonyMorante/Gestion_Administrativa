@@ -1,7 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { error } from 'jquery';
-import { select } from 'src/app/Compartidos/Shared/select';
 import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
 import { Validator } from 'src/app/Compartidos/Shared/validations';
 import { Clientes } from 'src/app/Interfaces/Clientes';
@@ -60,24 +58,73 @@ export class ClientesComponent  {
 
   ngOnInit() {
 
+    
 
 
-  this.listarTiposNotificaciones();
+    $("#tabla").DataTable({
+
+      keys: !0,
+      processing: true,
+      serverSide: true,
+      bDestroy: true,
+      filter: true,
+      scrollCollapse: true,
+      language: { paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" } },
+      drawCallback: function () {
+          $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
+      },
+      ajax: {
+          url: `https://localhost:7161/api/TipoIdentificaciones/listar`,
+          type: "GET",
+          contentType: "application/json",
+          dataType: "json",
+          data: function (data:any) {
+
+              return JSON.stringify(data);
+
+          }
+      },
+
+      pageLength: 10,
+      columns: [
+        { title: "Nombre", data: "nombre" },
+        { title: "Descripcion", data: "descripcion" },
+        { title: "Fecha Registro", data: "fechaRegistro" }
+      ],
+
+      columnDefs: [
+        {
+            targets: 0,
+            className: "text-center",
+        },
+        {
+            targets: 1,
+            className: "text-center",
+        },
+        {
+          targets: 2,
+          className: "text-center",
+      }
+    ],
+
+  });
+
+
+
+
+  // this.listarTiposNotificaciones();
 
   
 
     
 
-    $("#tabla").DataTable({
-      keys: !0,
-      language: { paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" } },
-      drawCallback: function () {
-          $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-      },
-      
-  });
+
+  
 
   }
+
+
+  
 
 
   listarTiposNotificaciones(){
@@ -88,6 +135,12 @@ export class ClientesComponent  {
 
 
         this.tipoIdentificacionesList=res;
+        console.log(this.tipoIdentificacionesList);
+      
+
+        
+
+
 
      
  
