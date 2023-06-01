@@ -71,6 +71,18 @@ div.dataTables_wrapper div.dataTables_processing {
   text-align: center;
   padding: 1em 0;
 }
+@media (min-width: 1029px) {
+  div.dataTables_wrapper div.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    margin-left: 50px;
+    margin-top: -26px;
+    text-align: center;
+    padding: 1em 0;
+  }
+}
 
 table.dataTable > thead > tr > th:active,
 table.dataTable > thead > tr > td:active {
