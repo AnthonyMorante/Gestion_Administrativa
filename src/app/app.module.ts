@@ -13,6 +13,8 @@ import { ProveedoresComponent } from './Componentes/Proveedores/proveedores/prov
 import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.component';
 import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 
 
 
@@ -30,13 +32,15 @@ import { ToastrModule } from 'ngx-toastr';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgSelectModule, 
     FormsModule,
     AppRoutingModule,
     ReactiveFormsModule,
     RouterModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+ 
   ],
   providers: [ { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor, multi: true },   ],
   bootstrap: [AppComponent]

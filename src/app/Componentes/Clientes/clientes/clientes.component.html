@@ -2,8 +2,7 @@
 
 <div class="text-end">
 
-    <a style="margin-top:1.2rem; margin-bottom: 1rem;" class="btn btn-primary " data-bs-toggle="modal"
-        data-bs-target="#standard-modal">Nuevo Registro
+    <a style="margin-top:1.2rem; margin-bottom: 1rem;" class="btn btn-primary " (click)="abrirModal()">Nuevo Registro
 
         <i class="uil uil-plus"></i>
 
@@ -11,44 +10,7 @@
 
 </div>
 
-<select class="form-control select2" data-toggle="select2">
-    <option>Select</option>
-    <optgroup label="Alaskan/Hawaiian Time Zone">
-        <option value="AK">Alaska</option>
-        <option value="HI">Hawaii</option>
-    </optgroup>
-    <optgroup label="Pacific Time Zone">
-        <option value="CA">California</option>
-        <option value="NV">Nevada</option>
-        <option value="OR">Oregon</option>
-        <option value="WA">Washington</option>
-    </optgroup>
-</select>
 
-<!-- Multiple Select -->
-<select class="select2 form-control select2-multiple" data-toggle="select2" multiple="multiple" data-placeholder="Choose ...">
-    <optgroup label="Alaskan/Hawaiian Time Zone">
-        <option value="AK">Alaska</option>
-        <option value="HI">Hawaii</option>
-    </optgroup>
-    <optgroup label="Pacific Time Zone">
-        <option value="CA">California</option>
-        <option value="NV">Nevada</option>
-        <option value="OR">Oregon</option>
-        <option value="WA">Washington</option>
-    </optgroup>
-    <optgroup label="Mountain Time Zone">
-        <option value="AZ">Arizona</option>
-        <option value="CO">Colorado</option>
-        <option value="ID">Idaho</option>
-        <option value="MT">Montana</option>
-        <option value="NE">Nebraska</option>
-        <option value="NM">New Mexico</option>
-        <option value="ND">North Dakota</option>
-        <option value="UT">Utah</option>
-        <option value="WY">Wyoming</option>
-    </optgroup>
-</select>
 
 
 <div class="mt-2" style="max-height: 550px; overflow: auto;">
@@ -268,20 +230,75 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="standard-modalLabel">Nuevo Cliente</h4>
-                <button (click)="limpiar()" type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                <button (click)="limpiar()" type="button" class="btn-close" data-bs-dismiss="modal"
+                    aria-hidden="true"></button>
             </div>
 
             <form [formGroup]="clienteForm" (ngSubmit)="guardar(clienteForm.value)">
                 <div class="modal-body">
 
 
-
-
-
-
+                         
+                   
                     <div class="row">
+                      
+                        
+                        <div class="col-sm-4 mt-1 mb-3">
+                            <label for="example-select" class="form-label">Tipo Identificación</label>
+                            <ng-select   
+                            formControlName="idTipoidentificacion"
+                            [multiple]="false"
+                            [selectableGroup]="true"
+                            [closeOnSelect]="true"
+                            [clearable]="false"
+                            [class.hola]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm
+                            .get('idTipoidentificacion')?.invalid" [class.border-primary]="clienteForm
+                            .get('idTipoidentificacion')!.touched && clienteForm
+                            .get('idTipoidentificacion')?.valid" 
+                            >
+                                <ng-option  *ngFor="let item of tipoIdentificacionesList" [value]="item.codigo">{{item.nombre}}</ng-option>
+                             </ng-select>
+                             <div class="invalid-feedback">
+                                *Requerido
+                            </div>
+
+                        </div>
+
+                             <div class="col-sm-4 mt-1">
 
 
+
+                            <label for="example-select" class="form-label">Tipo Identificación</label>
+                            <select formControlName="idTipoidentificacion" (change)="cambiarValidacion($event.target)"
+                                [class.is-invalid]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.invalid"
+                                
+                                class="form-select form-select-sm" id="example-select">
+
+
+                                <option *ngFor="let item of tipoIdentificacionesList"
+                                    value="{{item.idTipoIdentificacion}}" [selected]="item.codigo === 1">
+
+                                    {{item.nombre}}
+
+                                </option>
+
+
+                            </select>
+
+
+                        </div>
+
+                    </div>             
+
+
+                    <div class="row mt-2">
+
+
+                          
+
+                       
+                       
+ 
 
 
                         <div class="col-sm-4 mt-1">
@@ -289,24 +306,20 @@
 
 
                             <label for="example-select" class="form-label">Tipo Identificación</label>
-                            <select
-
-                                formControlName="idTipoidentificacion"
-                                (change)="cambiarValidacion($event.target)"
+                            <select formControlName="idTipoidentificacion" (change)="cambiarValidacion($event.target)"
                                 [class.is-invalid]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.valid"
-                                class="form-select form-select-sm" id="example-select">
-                              
-                          
-                               <option   *ngFor="let item of tipoIdentificacionesList" value="{{item.idTipoIdentificacion}}"
-                               [selected]="item.codigo === 1"                          
-                               >
-                               
-                               {{item.nombre}}
-                            
-                               </option>
-
                                 
+                                class="form-select form-select-sm" id="example-select">
+
+
+                                <option *ngFor="let item of tipoIdentificacionesList"
+                                    value="{{item.idTipoIdentificacion}}" [selected]="item.codigo === 1">
+
+                                    {{item.nombre}}
+
+                                </option>
+
+
                             </select>
 
 
@@ -317,36 +330,41 @@
                         <div class="col-sm-4 mt-1">
 
                             <label for="simpleinput" class="form-label">Identificacion</label>
-                            <input [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.valid"
+                            <input
+                                [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
+                              
                                 formControlName="identificacion" type="text" class="form-control form-control-sm">
 
 
-                                <div *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+                            <div
+                                *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
 
-                                    <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('required')">
-                                        *Requerido
-                                    </div>
-                                    <div class="error" *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
-                                        *Identificación Invalida
-                                    </div>
-
-                                 
-
-                                  </div>
-                   
-
-                            
+                                <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('required')">
+                                    *Requerido
+                                </div>
+                                <div class="error"
+                                    *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
+                                    *Identificación Invalida
+                                </div>
 
 
-                            <div *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
-                                <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
+
+                            </div>
+
+
+
+
+
+                            <div
+                                *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+                                <div class="error"
+                                    *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
                                     *Requerido
                                 </div>
                                 <div class="error" *ngIf="clienteForm.get('identificacion')!.hasError('cedulaRuc')">
-                                  *Formato Inválido
+                                    *Formato Inválido
                                 </div>
-                              </div>
+                            </div>
                         </div>
 
                         <div class="col-sm-4 mt-1">
@@ -354,7 +372,7 @@
                             <label for="simpleinput" class="form-label">Razón Social</label>
                             <textarea (keyup)="setearValorRepresentante($event.target)" formControlName="razonSocial"
                                 [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
-                                [class.border-primary]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.valid"
+                               
                                 class="form-control" id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -375,7 +393,7 @@
                             <label for="simpleinput" class="form-label">Representante</label>
                             <input formControlName="representante"
                                 [class.is-invalid]="clienteForm.get('representante')!.touched && clienteForm.get('representante')?.invalid"
-                                [class.border-primary]="clienteForm.get('representante')!.touched && clienteForm.get('representante')?.valid"
+                               
                                 type="text" class="form-control form-control-sm">
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -389,7 +407,7 @@
                             <label for="simpleinput" class="form-label">dirección</label>
                             <textarea formControlName="direccion"
                                 [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
-                                [class.border-primary]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.valid"
+                                
                                 class="form-control" id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -400,31 +418,31 @@
                             <label for="simpleinput" class="form-label">Email</label>
                             <input formControlName="email"
                                 [class.is-invalid]="clienteForm.get('email')!.touched && clienteForm.get('email')?.invalid"
-                                [class.border-primary]="clienteForm.get('email')!.touched && clienteForm.get('email')?.valid"
+                                
                                 type="text" class="form-control form-control-sm">
 
-                                <div *ngIf="clienteForm.get('email')!.invalid && clienteForm.get('email')!.touched">
-                                    <div class="error" *ngIf="clienteForm.get('email')!.hasError('required')">
-                                        *Requerido
-                                    </div>
-                                    <div class="error" *ngIf="clienteForm.get('email')!.hasError('email') ">
-                                      *Formato Inválido
-                                    </div>
-                                  </div>
+                            <div *ngIf="clienteForm.get('email')!.invalid && clienteForm.get('email')!.touched">
+                                <div class="error" *ngIf="clienteForm.get('email')!.hasError('required')">
+                                    *Requerido
+                                </div>
+                                <div class="error" *ngIf="clienteForm.get('email')!.hasError('email') ">
+                                    *Formato Inválido
+                                </div>
+                            </div>
 
-                                  
-                            
-                
+
+
+
 
 
 
                         </div>
 
 
-                    
 
 
-                        
+
+
 
 
 
@@ -439,7 +457,7 @@
                             <label for="simpleinput" class="form-label">Telefono</label>
                             <input formControlName="telefono"
                                 [class.is-invalid]="clienteForm.get('telefono')!.touched && clienteForm.get('telefono')?.invalid"
-                                [class.border-primary]="clienteForm.get('telefono')!.touched && clienteForm.get('telefono')?.valid"
+                             
                                 type="number" class="form-control form-control-sm">
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -453,7 +471,7 @@
                             <label for="simpleinput" class="form-label">Observación</label>
                             <textarea formControlName="observacion" class="form-control"
                                 [class.is-invalid]="clienteForm.get('observacion')!.touched && clienteForm.get('observacion')?.invalid"
-                                [class.border-primary]="clienteForm.get('observacion')!.touched && clienteForm.get('observacion')?.valid"
+                               
                                 id="example-textarea"></textarea>
                             <div class="invalid-feedback">*Requerido</div>
 
@@ -465,7 +483,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button (click)="limpiar()" type="button" class="btn btn-light" data-bs-dismiss="modal">Salir</button>
+                    <button (click)="limpiar()" type="button" class="btn btn-light"
+                        data-bs-dismiss="modal">Salir</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
 

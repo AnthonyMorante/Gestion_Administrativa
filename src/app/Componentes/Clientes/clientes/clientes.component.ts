@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { error } from 'jquery';
+import { select } from 'src/app/Compartidos/Shared/select';
 import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
 import { Validator } from 'src/app/Compartidos/Shared/validations';
 import { Clientes } from 'src/app/Interfaces/Clientes';
@@ -34,7 +35,7 @@ export class ClientesComponent  {
     fechaRegistro: new FormControl(),
     codigo: new FormControl(),
     idCiudad: new FormControl(),
-    idTipoidentificacion: new FormControl(),
+    idTipoidentificacion:  new FormControl('', [Validators.required]),
     idCiudadNavigation: new FormControl(),
     idTipoIdentificacionNavigation: new FormControl(),
   });
@@ -64,6 +65,9 @@ export class ClientesComponent  {
   this.listarTiposNotificaciones();
 
   
+
+    
+
     $("#tabla").DataTable({
       keys: !0,
       language: { paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" } },
@@ -85,12 +89,8 @@ export class ClientesComponent  {
 
         this.tipoIdentificacionesList=res;
 
-        this.tipoIdentificacionesList.forEach(element => {
-
-          console.log(element.codigo)
-          
-        });
-
+     
+ 
       },error:(err)=>{
       
         this.toast.show_error("Error", "Error al listar los Tipos de Identificaciones");
@@ -100,6 +100,16 @@ export class ClientesComponent  {
     });
 
   }
+
+
+  abrirModal() {
+
+
+    $('#standard-modal').modal('show');
+    
+
+  }
+
 
 
   guardar(cliente: Clientes){
