@@ -1,11 +1,13 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subject, debounce, debounceTime } from 'rxjs';
 import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
 import { Validator } from 'src/app/Compartidos/Shared/validations';
 import { Clientes } from 'src/app/Interfaces/Clientes';
 import { TipoIdentificaciones } from 'src/app/Interfaces/TipoIdentificaciones';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
+
 
 
 
@@ -38,28 +40,32 @@ export class ClientesComponent  {
     idTipoIdentificacionNavigation: new FormControl(),
   });
 
-
+  
   tipoIdentificacionesList: TipoIdentificaciones[] = [];
   
 
+     
+
 
   constructor(
+
     private toast: ToastComponent,
     private el: ElementRef,
     private validator: Validator,
     private tipoIdentificacionesServices: TipoIdentificacionesService,
 
-    
     ){}
-
-    
-
+   ngOnInit() {
 
 
-  ngOnInit() {
 
-    
+    this.listarTiposNotificaciones();
 
+
+  }
+
+
+  listar(){
 
     $("#tabla").DataTable({
 
@@ -112,38 +118,24 @@ export class ClientesComponent  {
 
 
 
-  // this.listarTiposNotificaciones();
-
-  
+// Event listener for the input field
 
     
-
-
-  
-
   }
 
 
-  
 
+
+  
 
   listarTiposNotificaciones(){
 
     this.tipoIdentificacionesServices.listar().subscribe({
      
       next:(res)=>{
+  
+       this.tipoIdentificacionesList=res;
 
-
-        this.tipoIdentificacionesList=res;
-        console.log(this.tipoIdentificacionesList);
-      
-
-        
-
-
-
-     
- 
       },error:(err)=>{
       
         this.toast.show_error("Error", "Error al listar los Tipos de Identificaciones");

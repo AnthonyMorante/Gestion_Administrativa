@@ -44,9 +44,8 @@
                       
                         
                         <div class="col-sm-4 mt-1 mb-3">
-                            <label for="example-select" class="form-label">Tipo Identificación</label>
+                            <label for="example-select" class="form-label">Provincia</label>
                             <ng-select   
-                            formControlName="idTipoidentificacion"
                             [multiple]="false"
                             [selectableGroup]="true"
                             [closeOnSelect]="true"
@@ -68,9 +67,9 @@
 
 
 
-                            <label for="example-select" class="form-label">Tipo Identificación</label>
+                            <label for="example-select" class="form-label">Ciudad</label>
                             <select formControlName="idTipoidentificacion" (change)="cambiarValidacion($event.target)"
-                                [class.is-invalid]="clienteForm.get('idTipoidentificacion')!.touched && clienteForm.get('idTipoidentificacion')?.invalid"
+                                [class.is-invalid]="clienteForm.get('idCiudad')!.touched && clienteForm.get('idTipoidentificacion')?.invalid"
                                 
                                 class="form-select form-select-sm" id="example-select">
 
@@ -204,7 +203,7 @@
 
                         <div class="col-sm-4 mt-1">
 
-                            <label for="simpleinput" class="form-label">dirección</label>
+                            <label for="simpleinput" class="form-label">Dirección</label>
                             <textarea formControlName="direccion"
                                 [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
                                 
