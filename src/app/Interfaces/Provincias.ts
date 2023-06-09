@@ -1,6 +1,6 @@
 export interface Provincias {
-    idProvincia: string;
-    iombre?: string | null;
+    idProvincia?: string |null ;
+    nombre?: string | null;
     iechaRegistro?: Date | null;
     activo?: boolean | null;
   }

@@ -1,29 +1,28 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { NgSelectConfig } from '@ng-select/ng-select';
 import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
 import { Validator } from 'src/app/Compartidos/Shared/validations';
+import { Ciudades } from 'src/app/Interfaces/Ciudades';
 import { Clientes } from 'src/app/Interfaces/Clientes';
+import { Provincias } from 'src/app/Interfaces/Provincias';
 import { TipoIdentificaciones } from 'src/app/Interfaces/TipoIdentificaciones';
+import { CiudadesService } from 'src/app/Servicios/ciudades.service';
+import { ProvinciasService } from 'src/app/Servicios/provincias.service';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
 
-
-
 declare var $: any;
-declare var DataTable: any;
 
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
-  styleUrls: ['./clientes.component.css']
+  styleUrls: ['./clientes.component.css'],
 })
-export class ClientesComponent  {
-
-
+export class ClientesComponent {
   clienteForm = new FormGroup({
-
     idCliente: new FormControl(),
-    identificacion: new FormControl('',[Validators.required,cedulaRuc()]),
+    identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
     razonSocial: new FormControl('', Validators.required),
     representante: new FormControl('', Validators.required),
     direccion: new FormControl('', Validators.required),
@@ -32,200 +31,135 @@ export class ClientesComponent  {
     observacion: new FormControl(),
     fechaRegistro: new FormControl(),
     codigo: new FormControl(),
-    idCiudad: new FormControl(),
-    idTipoidentificacion:  new FormControl('', [Validators.required]),
+    idCiudad: new FormControl('', [Validators.required]),
+    idProvincia: new FormControl('', [Validators.required]),
+    idTipoidentificacion: new FormControl('', [Validators.required]),
     idCiudadNavigation: new FormControl(),
     idTipoIdentificacionNavigation: new FormControl(),
   });
 
-
   tipoIdentificacionesList: TipoIdentificaciones[] = [];
-  
+  provinciasList: Provincias[] = [];
+  ciudadesList: Ciudades[] = [];
 
+  provinciaDefault:any;
+  ciudadDefault:any;
+  tipoIdentificacionDefault:any;
+  selectedProvincia:any;
+  selectedTipoNotificacion:any;
 
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
     private validator: Validator,
     private tipoIdentificacionesServices: TipoIdentificacionesService,
+    private provinciasServices: ProvinciasService,
+    private ciudadesServices: CiudadesService,
+    private ngSelectConfig: NgSelectConfig,
+  ) {
 
-    
-    ){}
+    this.ngSelectConfig.notFoundText = 'No existen coincidencias';
 
-    
-
-
+  }
 
   ngOnInit() {
-
-    
-
-
-    $("#tabla").DataTable({
-
-      keys: !0,
-      processing: true,
-      serverSide: true,
-      bDestroy: true,
-      filter: true,
-      scrollCollapse: true,
-      language: { paginate: { previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>" } },
-      drawCallback: function () {
-          $(".dataTables_paginate > .pagination").addClass("pagination-rounded");
-      },
-      ajax: {
-          url: `https://localhost:7161/api/TipoIdentificaciones/listar`,
-          type: "GET",
-          contentType: "application/json",
-          dataType: "json",
-          data: function (data:any) {
-
-              return JSON.stringify(data);
-
-          }
-      },
-
-      pageLength: 10,
-      columns: [
-        { title: "Nombre", data: "nombre" },
-        { title: "Descripcion", data: "descripcion" },
-        { title: "Fecha Registro", data: "fechaRegistro" }
-      ],
-
-      columnDefs: [
-        {
-            targets: 0,
-            className: "text-center",
-        },
-        {
-            targets: 1,
-            className: "text-center",
-        },
-        {
-          targets: 2,
-          className: "text-center",
-      }
-    ],
-
-  });
-
-
-
-
-  // this.listarTiposNotificaciones();
-
-  
-
-    
-
-
-  
+    this.listarTiposNotificaciones();
+    this.listarProvicias();
 
   }
 
-
-  
-
-
-  listarTiposNotificaciones(){
-
+  listarTiposNotificaciones() {
     this.tipoIdentificacionesServices.listar().subscribe({
-     
-      next:(res)=>{
-
-
-        this.tipoIdentificacionesList=res;
-        console.log(this.tipoIdentificacionesList);
-      
-
-        
-
-
-
-     
- 
-      },error:(err)=>{
-      
-        this.toast.show_error("Error", "Error al listar los Tipos de Identificaciones");
-
-      }
-
+      next: (res) => {
+        this.tipoIdentificacionesList = res;
+        this.selectedTipoNotificacion = this.tipoIdentificacionesList.find(item => item.nombre === "Cedula/Ruc");
+        this.clienteForm.get('idTipoidentificacion')?.setValue(this.selectedTipoNotificacion.idTipoIdentificacion);
+      },
+      error: (err) => {
+        this.toast.show_error(
+          'Error',
+          'Error al listar los Tipos de Identificaciones'
+        );
+      },
     });
-
   }
 
+  listarProvicias() {
+    this.provinciasServices.listar().subscribe({
+      next: (res) => {
+        this.provinciasList = res;
+         this.selectedProvincia = this.provinciasList.find(item => item.nombre === "Tungurahua");
+         this.clienteForm.get('idProvincia')?.setValue(this.selectedProvincia.idProvincia);
+        this.listarCiudades(this.clienteForm.get('idProvincia')?.value);
+      },
+      error: (err) => {
+        this.toast.show_error(
+          'Error',
+          'Error al listar los Tipos de Identificaciones'
+        );
+      },
+    });
+  }
+
+  listarCiudades(idProvincia:any) {
+
+  
+    this.ciudadesServices.listar(idProvincia).subscribe({
+      next: (res) => {
+        this.ciudadesList = res;
+        this.clienteForm.get('idCiudad')?.setValue("3f144d9e-aeec-49ee-ac96-7d43290b36bb");
+      },
+      error: (err) => {
+        this.toast.show_error(
+          'Error',
+          'Error al listar los Tipos de Identificaciones'
+        );
+      },
+    });
+  }
 
   abrirModal() {
-
-
-    $('#standard-modal').modal('show');
-    
-
+    $('#exampleModal').modal('show');
   }
 
 
+  guardar(cliente: Clientes) {
 
-  guardar(cliente: Clientes){
 
-
-    
+    return
     if (this.clienteForm.invalid) {
-
       this.validator.validarTodo(this.clienteForm, this.el);
       return;
-
     }
 
-
-    console.log(cliente);
-    
-
   }
 
+  cambiarValidacion(evento: any) {
 
-  cambiarValidacion(evento:any){
-
+  
     this.clienteForm.controls['identificacion'].clearValidators();
-   
-  if(parseInt (evento.value)==1){
+    this.clienteForm.controls['identificacion'].setValidators([Validators.required]);
+    if (evento == "893ed699-7e94-44a8-befd-414026a2a918") {
+      this.clienteForm.controls['identificacion'].setValidators([
+        Validators.required,
+        cedulaRuc(),
+      ]);
+    }
 
+    if (parseInt(evento.value) == 2) {
+      this.clienteForm.controls['identificacion'].setValidators([
+        Validators.required,
+      ]);
+    }
 
-    this.clienteForm.controls['identificacion'].setValidators([
-      Validators.required,
-      cedulaRuc()
-    ]);
-
-
+    this.clienteForm.get('identificacion')?.setValue('');
   }
 
-
-  if(parseInt (evento.value)==2){
- 
-    this.clienteForm.controls['identificacion'].setValidators([
-
-      Validators.required
-
-    ]);
-    
+  limpiar() {
+    this.clienteForm.reset();
   }
 
-
-  this.clienteForm.get('identificacion')?.setValue('');
-
-  }
-
- 
-
-
-  limpiar(){this.clienteForm.reset();}
-
-  setearValorRepresentante(evento:any){    
-    
-
+  setearValorRepresentante(evento: any) {
     this.clienteForm.get('representante')?.setValue(evento.value);
-    
-
-
-}
-
+  }
 }

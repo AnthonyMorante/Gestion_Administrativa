@@ -1,11 +1,11 @@
 import { Provincias } from "./Provincias";
 
 export interface Ciudades {
-    idCiudad: string;
+    idCiudad: string |null;
     nombre?: string | null;
     fechaRegistro?: Date | null;
     activo?: boolean | null;
-    idProvincia: string;
+    idProvincia?: string |null;
     idProvinciaNavigation: Provincias;
 
   }

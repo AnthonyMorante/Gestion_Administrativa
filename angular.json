@@ -25,25 +25,20 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/ngx-toastr/toastr.css",
-              "src/assets/css/vendor/dataTables.bootstrap5.css",
-              "src/assets/css/vendor/responsive.bootstrap5.css",
+
               "src/styles.css",
-              "src/assets/css/vendor/jquery-jvectormap-1.2.2.css",
-              "src/assets/css/icons.min.css",
-              "src/assets/css/app.min.css"
-              
+              "node_modules/ngx-toastr/toastr.css",
+              "./src/assets/vendor/fontawesome-free/css/all.min.css",
+              "./src/assets/css/sb-admin-2.css"
+               
+
             ],
             "scripts": [
+            
+              "./src/assets/vendor/jquery/jquery.js",
+              "./src/assets/vendor/bootstrap/js/bootstrap.bundle.min.js",
+              "./src/assets/js/sb-admin-2.js"
 
-               "src/assets/js/vendor.min.js",
-               "src/assets/js/app.min.js",
-               "src/assets/js/vendor/jquery.dataTables.min.js",
-               "src/assets/js/vendor/dataTables.bootstrap5.js",
-               "src/assets/js/vendor/dataTables.responsive.min.js",
-               "src/assets/js/vendor/responsive.bootstrap5.min.js",
-               "src/assets/js/pages/demo.datatable-init.js",
-               "src/assets/js/datatables-spanish.js"
             ]
 
 
