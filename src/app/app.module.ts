@@ -14,6 +14,8 @@ import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.
 import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DataTablesModule } from "angular-datatables";
+
 
 
 
@@ -40,6 +42,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
     HttpClientModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+    DataTablesModule
  
   ],
   providers: [ { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor, multi: true },   ],

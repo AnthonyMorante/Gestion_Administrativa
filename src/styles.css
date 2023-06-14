@@ -1,5 +1,16 @@
 
 
+.fa-edit:hover {
+    color:#2E59D9;
+    transform: scale(1.2);
+  }
+
+.fa-trash-alt:hover {
+    color:red;
+    transform: scale(1.2);
+}
+
+
 .errorForm {
 
     width: 100%;
@@ -7,6 +18,7 @@
     font-size: 0.75rem;
     color: #e74a3b
 }
+
 
 
 .ng-select.ng-select-opened>.ng-select-container {

@@ -34,4 +34,14 @@ export class ToastComponent {
         }
 
 
+
+        show_warning(title:string,message:string) {
+
+          this.toastr.warning(message, title, {
+              timeOut: 3000,
+              closeButton:true,
+            });
+          }
+
+
   }
