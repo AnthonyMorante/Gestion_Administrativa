@@ -347,6 +347,9 @@ export class ClientesComponent {
   guardar(cliente: Clientes) {
 
 
+    this.spinnerEspere = true;
+    this.spinnerGuardar = false;
+
     if (this.clienteForm.invalid) {
       this.validator.validarTodo(this.clienteForm, this.el);
       this.spinnerEspere = false;
@@ -363,6 +366,8 @@ export class ClientesComponent {
           this.listarClientes();
           this.toast.show_success('Clientes', 'Cliente Guardado Con Éxito');
           this.limpiar();
+          this.spinnerEspere = false;
+          this.spinnerGuardar = true;
           return;
         }
 
