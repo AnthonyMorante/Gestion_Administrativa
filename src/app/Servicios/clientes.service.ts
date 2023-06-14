@@ -24,12 +24,12 @@ export class ClientesService {
     return this.http.get<Clientes>(`${this.ruta}/cargar/${idCliente}`);
   }
 
-  actualizar(clientes: Clientes): Observable<Clientes> {
+  actualizar(clientes: Clientes): Observable<string> {
 
 
 
 
-    return this.http.put<Clientes>(
+    return this.http.put<string>(
       `${this.ruta}/actualizar`,
       clientes
     );

@@ -179,11 +179,29 @@ export class ClientesComponent {
     this.spinnerEditar = false;
     this.clientesServices.actualizar(this.clienteForm.value).subscribe({
       next: (res) => {
-        this.toast.show_success('Clientes', 'Editado con Éxito');
-        $('#exampleModal').modal('hide');
-        this.spinnerEspere = false;
-        this.spinnerGuardar = false;
-        this.listarClientes();
+        
+
+        if(res ==="ok"){
+
+          this.toast.show_success('Clientes', 'Editado con Éxito');
+          $('#exampleModal').modal('hide');
+          this.spinnerEspere = false;
+          this.spinnerGuardar = false;
+          this.listarClientes();
+          return;
+
+        }
+
+        if(res ==="repetido"){
+
+          this.toast.show_warning('Cliente', 'Ya se encuentra registrado');
+          this.spinnerEspere = false;
+          this.spinnerGuardar = false;
+          return;
+
+        }
+      
+  
       },
       error: (err) => {
         this.toast.show_error('Error', 'Al actualizar el Cliente');
@@ -327,14 +345,16 @@ export class ClientesComponent {
   }
 
   guardar(cliente: Clientes) {
-    this.spinnerEspere = true;
-    this.spinnerGuardar = false;
+
 
     if (this.clienteForm.invalid) {
       this.validator.validarTodo(this.clienteForm, this.el);
+      this.spinnerEspere = false;
+      this.spinnerGuardar = true;
       return;
     }
 
+    
     cliente.telefono = cliente.telefono?.toString();
 
     this.clientesServices.insertar(cliente).subscribe({
