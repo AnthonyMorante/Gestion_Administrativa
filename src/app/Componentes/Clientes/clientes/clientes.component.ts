@@ -52,7 +52,7 @@ export class ClientesComponent {
   spinnerGuardar: boolean = true;
   spinnerEspere: boolean = false;
   idCliente: string = '';
-  spinnerWarning:boolean= false;
+  spinnerWarning: boolean = false;
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
@@ -150,8 +150,7 @@ export class ClientesComponent {
             $(cell)
               .find('.fa-edit')
               .click(() => {
-          
-                this.cargar(cellData,rowData.idCiudadNavigation.idProvincia);
+                this.cargar(cellData, rowData.idCiudadNavigation.idProvincia);
               });
             $(cell)
               .find('.fa-trash-alt')
@@ -165,13 +164,12 @@ export class ClientesComponent {
 
     this.clientesServices.listar().subscribe({
       next: (res) => {
-
         this.dtOptions.data = res;
         this.dtTrigger.next();
         this.spinner = false;
       },
       error: (err) => {
-        this.toast.show_error('Error', 'Error al listar los Clientes');
+        this.toast.show_error('Error', 'Al listar los Clientes');
       },
     });
   }
@@ -181,21 +179,21 @@ export class ClientesComponent {
     this.spinnerEditar = false;
     this.clientesServices.actualizar(this.clienteForm.value).subscribe({
       next: (res) => {
-        this.toast.show_success('Clientes', 'Cliente Editado con Éxito');
+        this.toast.show_success('Clientes', 'Editado con Éxito');
         $('#exampleModal').modal('hide');
         this.spinnerEspere = false;
         this.spinnerGuardar = false;
         this.listarClientes();
       },
       error: (err) => {
-        this.toast.show_error('Error', 'Error al actualizar el Cliente');
+        this.toast.show_error('Error', 'Al actualizar el Cliente');
         this.spinner = false;
         this.spinnerEspere = false;
       },
     });
   }
 
-  cargar(idCliente: string,idProvincia:string) {
+  cargar(idCliente: string, idProvincia: string) {
     $('#exampleModal').modal('show');
     this.spinnerCargar = true;
     this.spinnerGuardar = false;
@@ -211,11 +209,11 @@ export class ClientesComponent {
             res
           )
         );
-       
+
         this.spinnerCargar = false;
       },
       error: (err) => {
-        this.toast.show_error('Error', 'Error al listar el Cliente');
+        this.toast.show_error('Error', 'Al listar el Cliente');
       },
     });
   }
@@ -226,19 +224,16 @@ export class ClientesComponent {
   }
 
   confirmarEliminacion() {
-    this.spinnerWarning=true;
+    this.spinnerWarning = true;
     this.clientesServices.eliminar(this.idCliente).subscribe({
       next: (res) => {
         this.listarClientes();
-        this.toast.show_success('Clientes', 'Cliente Eliminado con Éxito');
+        this.toast.show_success('Clientes', 'Eliminado con Éxito');
         $('#ModalWarning').modal('hide');
-        this.spinnerWarning=false;
-
+        this.spinnerWarning = false;
       },
       error: (err) => {
-
-        this.toast.show_error('Error', 'Error al eliminar el Cliente');
-
+        this.toast.show_error('Error', 'Al eliminar el Cliente');
       },
     });
   }
@@ -262,7 +257,7 @@ export class ClientesComponent {
       error: (err) => {
         this.toast.show_error(
           'Error',
-          'Error al listar los Tipos de Identificaciones'
+          'Al listar los Tipos de Identificaciones'
         );
       },
     });
@@ -271,24 +266,20 @@ export class ClientesComponent {
   listarProvicias() {
     this.provinciasServices.listar().subscribe({
       next: (res) => {
-
         this.provinciasList = res;
       },
       error: (err) => {
         this.toast.show_error(
           'Error',
-          'Error al listar los Tipos de Identificaciones'
+          'Al listar los Tipos de Identificaciones'
         );
       },
     });
   }
 
   listarCiudades(idProvincia: any) {
-
- 
     this.ciudadesServices.listar(idProvincia).subscribe({
       next: (res) => {
-
         this.ciudadesList = res;
         this.clienteForm
           .get('idCiudad')
@@ -297,19 +288,15 @@ export class ClientesComponent {
       error: (err) => {
         this.toast.show_error(
           'Error',
-          'Error al listar los Tipos de Identificaciones'
+          'Al listar los Tipos de Identificaciones'
         );
       },
     });
   }
 
-
   listarCiudadesSet(idProvincia: any) {
-
- 
     this.ciudadesServices.listar(idProvincia).subscribe({
       next: (res) => {
-
         this.ciudadesList = res;
         this.clienteForm
           .get('idCiudad')
@@ -318,7 +305,7 @@ export class ClientesComponent {
       error: (err) => {
         this.toast.show_error(
           'Error',
-          'Error al listar los Tipos de Identificaciones'
+          'Al listar los Tipos de Identificaciones'
         );
       },
     });
@@ -330,27 +317,13 @@ export class ClientesComponent {
     this.spinnerGuardar = true;
     $('#exampleModal').modal('show');
 
-    this.listarCiudades(this.provinciasList[0].idProvincia??'');
+    this.listarCiudades(this.provinciasList[0].idProvincia ?? '');
 
-   
     this.clienteForm.patchValue({
-      
-      idProvincia: this.provinciasList[0].idProvincia??'',
-      // idCiudad: this.ciudadesList[0].idCiudad??'',
-      idTipoIdentificacion: this.tipoIdentificacionesList[1].idTipoIdentificacion??''
-    
+      idProvincia: this.provinciasList[0].idProvincia ?? '',
+      idTipoIdentificacion:
+        this.tipoIdentificacionesList[1].idTipoIdentificacion ?? '',
     });
-
-    // this.clienteForm.get('idTipoIdentificacion')?.setValue(this.tipoIdentificacionesList[1].idTipoIdentificacion);
-    // this.clienteForm.get('idProvincia')?.setValue(this.provinciasList[0].idProvincia??'');
-    // this.clienteForm.get('idCiudad')?.setValue(this.ciudadesList[0].idCiudad??'');
-
-
-
-
-
-
-
   }
 
   guardar(cliente: Clientes) {
@@ -362,30 +335,23 @@ export class ClientesComponent {
       return;
     }
 
-    cliente.telefono= cliente.telefono?.toString();
+    cliente.telefono = cliente.telefono?.toString();
 
     this.clientesServices.insertar(cliente).subscribe({
       next: (res) => {
-
-        if(res=="ok"){
-
+        if (res == 'ok') {
           this.listarClientes();
           this.toast.show_success('Clientes', 'Cliente Guardado Con Éxito');
           this.limpiar();
           return;
-
         }
 
-        if(res =="repetido"){
-
+        if (res == 'repetido') {
           this.toast.show_warning('Clientes', 'Ya se encuentra registrado');
-          this.spinnerEspere=false;
-          this.spinnerGuardar=true;
+          this.spinnerEspere = false;
+          this.spinnerGuardar = true;
           return;
         }
-
-     
-
       },
       error: (err) => {
         console.log(err);
@@ -418,7 +384,7 @@ export class ClientesComponent {
   limpiar() {
     this.clienteForm.reset();
     $('#exampleModal').modal('hide');
-    this.spinnerEspere =false;
+    this.spinnerEspere = false;
   }
 
   setearValorRepresentante(evento: any) {
