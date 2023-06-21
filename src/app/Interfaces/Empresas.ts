@@ -1,4 +1,5 @@
 import { Clientes } from "./Clientes";
+import { TipoNegocios } from "./TipoNegocios";
 
 export interface Empresas {
     idEmpresa: string;
@@ -11,11 +12,6 @@ export interface Empresas {
     agenteRetencion?: boolean | null;
     idTipoNegocio?: string | null;
     activo?: boolean | null;
-    // clientes: Clientes[];
-    // empleados: Empleados[];
-    // idEmpresaNavigation: Empresas;
-    // idTipoNegocioNavigation?: TipoNegocios | null;
-    // inverseIdEmpresaNavigation?: Empresas | null;
-    // productos: Productos[];
-    // proveedores: Proveedores[];
+    idEmpresaNavigation: Empresas;
+    idTipoNegocioNavigation?: TipoNegocios | null;
   }

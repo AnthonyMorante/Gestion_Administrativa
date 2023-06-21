@@ -1,5 +1,10 @@
 
 
+.fa-plus-circle:hover {
+    color:#2E59D9;
+    transform: scale(1.2);
+  }
+
 .fa-edit:hover {
     color:#2E59D9;
     transform: scale(1.2);

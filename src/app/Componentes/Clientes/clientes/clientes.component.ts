@@ -219,13 +219,7 @@ export class ClientesComponent {
     this.clientesServices.cargar(idCliente).subscribe({
       next: (res) => {
         this.listarCiudades(idProvincia);
-        this.clienteForm.patchValue(
-          Object.assign(
-            {
-              idProvincia: idProvincia,
-            },
-            res
-          )
+        this.clienteForm.patchValue(Object.assign({idProvincia: idProvincia,},res)
         );
 
         this.spinnerCargar = false;
