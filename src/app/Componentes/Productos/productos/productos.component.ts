@@ -143,6 +143,7 @@ export class ProductosComponent {
   }
 
   asignarValor(evento: any) {
+    this.productoForm.get('porcentaje')?.setValue(1);
     let valor = evento.value;
     this.calcularTotalIva(valor);
   }
@@ -246,21 +247,26 @@ export class ProductosComponent {
           data: 'descripcion',
         },
         {
-          title: 'Activo',
-          data: 'activo',
-        },
-        {
           title: 'Precio',
           data: 'precio',
+        },
+        {
+          title: 'IVA',
+          data: 'idIvaNavigation.nombre',
+        },
+        
+        {
+          title: 'Total',
+          data: 'totalIva',
         },
 
         {
           title: 'Estado',
-          data: 'activo',
+          data: 'activoProducto',
           render: (data: any, type: any, full: any, meta: any) => {
             if (data) {
               return `
-              <div style="cursor: pointer;" class="mb-4 ml-4">
+              <div style="cursor: pointer;" class="mb-4 ml-4 mt-3">
               
               <input type="checkbox" checked class="form-check-input" id="exampleCheck1">
               <span class="badge badge-success">Activo</span>
@@ -269,7 +275,7 @@ export class ProductosComponent {
             }
 
             return `
-                      <div style="cursor: pointer;" class="mb-4 ml-4">
+                      <div style="cursor: pointer;" class="mb-4 ml-4 mt-3">
                       
                       <input type="checkbox"  class="form-check-input" id="exampleCheck1">
                       <span class="badge badge-danger">No Activo</span>
@@ -286,7 +292,7 @@ export class ProductosComponent {
             $(cell)
               .find('input')
               .click(async () => {
-                await this.desactivar(rowData.idProducto, rowData.activo);
+                await this.desactivar(rowData.idProducto, rowData.activoProducto);
               });
           },
         },
@@ -367,7 +373,7 @@ export class ProductosComponent {
   }
 
   cargar(idProducto: string, precio: number) {
-    
+    this.productoForm.get('porcentaje')?.setValue(1);
     $('#exampleModal').modal('show');
     this.borrarObjeto();
     this.spinnerCargar = true;
@@ -450,7 +456,7 @@ export class ProductosComponent {
   }
 
   guardar(producto: Productos) {
-
+    
     this.spinnerEspere = true;
     this.spinnerGuardar = false;
 
