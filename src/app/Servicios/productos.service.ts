@@ -21,7 +21,7 @@ export class ProductosService {
   }
 
   cargar(idProducto: string) {
-    return this.http.get<Productos>(`${this.ruta}/cargar/${idProducto}`);
+    return this.http.get<any>(`${this.ruta}/cargar/${idProducto}`);
   }
 
   actualizar(productos: Productos): Observable<string> {

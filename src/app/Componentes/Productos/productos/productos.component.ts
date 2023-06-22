@@ -1,5 +1,11 @@
 import { Component, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { Subject } from 'rxjs';
 import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
@@ -10,6 +16,7 @@ import { IvasService } from 'src/app/Servicios/ivas.service';
 import { ProductosService } from 'src/app/Servicios/productos.service';
 import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
 import { dosDigitos } from 'src/app/Validaciones/dosDigitos';
+import { dosDigitosHasta100 } from 'src/app/Validaciones/dosDigitosHasta100';
 declare var $: any;
 
 @Component({
@@ -18,18 +25,6 @@ declare var $: any;
   styleUrls: ['./productos.component.css'],
 })
 export class ProductosComponent {
-  productoForm = new FormGroup({
-    idProducto: new FormControl(),
-    codigo: new FormControl('', [Validators.required]),
-    nombre: new FormControl('', Validators.required),
-    descripcion: new FormControl('', Validators.required),
-    activo: new FormControl(),
-    precio: new FormControl(0,[Validators.required, dosDigitos()]),
-    idIva: new FormControl(),
-    precioIva: new FormControl(),
-    valorIva: new FormControl()
-  });
-
   dtOptions: DataTables.Settings = {};
   dtTrigger: any = new Subject();
   spinner: boolean = true;
@@ -39,17 +34,39 @@ export class ProductosComponent {
   spinnerEspere: boolean = false;
   idProducto: string = '';
   spinnerWarning: boolean = false;
-  ivasList:Ivas[] =[]
-  detalleAdicionalesList:any[] =[]
+  ivasList: Ivas[] = [];
+  detalleAdicionalesList: any[] = [];
+  productoForm: FormGroup;
+
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
     private validator: Validator,
     private productosServices: ProductosService,
     private ngSelectConfig: NgSelectConfig,
-    private ivasServices: IvasService
+    private ivasServices: IvasService,
+    private fb: FormBuilder
   ) {
     this.ngSelectConfig.notFoundText = 'No existen coincidencias';
+    this.productoForm = this.fb.group({
+      idProducto: new FormControl(),
+      codigo: new FormControl('', [Validators.required]),
+      nombre: new FormControl('', Validators.required),
+      descripcion: new FormControl('', Validators.required),
+      activo: new FormControl(),
+      precio: new FormControl(0, [Validators.required, dosDigitos()]),
+      idIva: new FormControl(),
+      precioIva: new FormControl([Validators.required]),
+      valorIva: new FormControl(),
+
+      totalIva: new FormControl(0, [Validators.required,dosDigitos()]),
+      porcentaje: new FormControl(1, [
+        Validators.required,
+        dosDigitosHasta100(),
+      ]),
+      utilidad: new FormControl(0),
+      detallePrecioProductos: this.fb.array([]),
+    });
   }
 
   ngOnInit() {
@@ -67,95 +84,139 @@ export class ProductosComponent {
     this.dtTrigger.unsubscribe();
   }
 
-  asignarValor(evento:any){
+  agregarDetallePrecio() {
 
+    if (this.productoForm.invalid) {
+      this.validator.validarTodo(this.productoForm, this.el);
+      return;
+    }
+
+
+    if (this.detallePrecioProductos.length > 2) {
+      this.toast.show_error('Error', 'Registros Permitidos (3)');
+      return;
+    }
+
+    if (this.productoForm.get('')) {
+      this.toast.show_error('Error', 'Registros Permitidos (3)');
+      return;
+    }
+
+    (this.productoForm.get('detallePrecioProductos') as FormArray).push(
+      this.fb.group({
+        id: this.numerosAleatorios(),
+        totalIva: this.productoForm.get('totalIva')?.value,
+        porcentaje: this.productoForm.get('porcentaje')?.value,
+        utilidad: this.productoForm.get('utilidad')?.value,
+      })
+    );
+
+    this.productoForm.get('porcentaje')?.setValue(1);
+    this.productoForm.get('utilidad')?.setValue(0);
+    this.calcularUtilidad();
+  }
+
+  cancelarDetallePrecio() {
+    this.productoForm.get('porcentaje')?.setValue(1);
+    this.productoForm.get('utilidad')?.setValue(0);
+  }
+
+  get detallePrecioProductos(): any[] {
+    return (this.productoForm.get('detallePrecioProductos') as FormArray).value;
+  }
+
+  quitarDetallePrecioProducto(id: any) {
+    const detallePrecioProductos = this.productoForm.get(
+      'detallePrecioProductos'
+    ) as FormArray;
+    const index = detallePrecioProductos.value.findIndex(
+      (x: any) => x.id === id
+    );
+
+    if (index !== -1) {
+      detallePrecioProductos.removeAt(index);
+    }
+  }
+
+  numerosAleatorios() {
+    return Math.floor(100000000 + Math.random() * 900000000);
+  }
+
+  asignarValor(evento: any) {
     let valor = evento.value;
     this.calcularTotalIva(valor);
-
   }
 
-  calcularTotalIva(valor:any)
-  {
+  calcularUtilidad() {
+    let totalIva = parseFloat(this.productoForm.get('totalIva')?.value).toFixed(
+      2
+    );
+    let porcentaje = parseFloat(
+      this.productoForm.get('porcentaje')?.value
+    ).toFixed(2);
+    let valorPorcentaje = (parseFloat(totalIva) * parseFloat(porcentaje)) / 100;
+    this.productoForm.get('utilidad')?.setValue(valorPorcentaje.toFixed(2));
+  }
 
+  calcularTotalIva(valor: any) {
     const valorSeleccionado = this.productoForm.get('idIva')?.value;
-    const buscarValor = this.ivasList.find(item => item.idIva === valorSeleccionado);
+    const buscarValor = this.ivasList.find(
+      (item) => item.idIva === valorSeleccionado
+    );
 
-    if(valor==="" || valor == undefined || valor == null ){
-
-      this.productoForm.get("precioIva")?.setValue("");
-      return
-  
+    if (valor === '' || valor == undefined || valor == null) {
+      this.productoForm.get('precioIva')?.setValue('');
+      return;
     }
-  
-    if(buscarValor != undefined){
 
+    if (buscarValor != undefined) {
       this.calcularTotalMasIva(buscarValor.valor);
-
-
     }
-
   }
 
-  calcularTotalMasIva(valorIva:any){
-
+  calcularTotalMasIva(valorIva: any) {
     const precioControl = this.productoForm.get('precio');
 
-    if (precioControl !== null && precioControl !== undefined && precioControl.value !== null) {
-
-      let iva = (parseFloat(valorIva) * precioControl.value);
+    if (
+      precioControl !== null &&
+      precioControl !== undefined &&
+      precioControl.value !== null
+    ) {
+      let iva = parseFloat(valorIva) * precioControl.value;
       let totalIva = precioControl.value + iva;
-      this.productoForm.get("precioIva")?.setValue(totalIva.toFixed(2));
-      this.productoForm.get("valorIva")?.setValue(iva.toFixed(2));
-
+      this.productoForm.get('precioIva')?.setValue(totalIva.toFixed(2));
+      this.productoForm.get('valorIva')?.setValue(iva.toFixed(2));
+      this.productoForm.get('totalIva')?.setValue(totalIva.toFixed(2));
     }
+    this.calcularUtilidad();
   }
 
-
-  listarIvas(){
-
+  listarIvas() {
     this.ivasServices.listar().subscribe({
-     
-      next:(res)=>{
-
-        this.ivasList=res;
-        this.productoForm
-        .get('idIva')
-        ?.setValue(this.ivasList[0].idIva);
-
-      },error:(err)=>{
-
+      next: (res) => {
+        this.ivasList = res;
+        this.productoForm.get('idIva')?.setValue(this.ivasList[0].idIva);
+      },
+      error: (err) => {
         this.toast.show_error('Error', 'Al listar los Ivas');
-
-      }
-
-
-    })
-
+      },
+    });
   }
 
-
-  desactivar(idProducto:string, activo:boolean){
-    
-
-
-    this.productosServices.desactivar(idProducto,activo).subscribe({
-     
-      next:(res)=>{
-      
-        let activoString="";
-        res==true ? activoString="Activado" :activoString="Desactivado";
+  desactivar(idProducto: string, activo: boolean) {
+    this.productosServices.desactivar(idProducto, activo).subscribe({
+      next: (res) => {
+        let activoString = '';
+        res == true
+          ? (activoString = 'Activado')
+          : (activoString = 'Desactivado');
         this.listarProductos();
         this.toast.show_success('Success', `Registro ${activoString}`);
-
-      },error:(err)=>{
-
+      },
+      error: (err) => {
         this.toast.show_error('Error', 'Al desactivar el Registro');
-
-      }
-
+      },
     });
-
-
   }
 
   listarProductos() {
@@ -165,7 +226,7 @@ export class ProductosComponent {
       scrollX: true,
       columnDefs: [
         {
-          targets: [0, 1, 2, 3, 4, 5,6],
+          targets: [0, 1, 2, 3, 4, 5, 6],
           className: 'text-center',
           width: 'auto',
         },
@@ -194,27 +255,24 @@ export class ProductosComponent {
         },
 
         {
-          title: 'Activo',
+          title: 'Estado',
           data: 'activo',
           render: (data: any, type: any, full: any, meta: any) => {
-
-
-
-            if(data){
-
+            if (data) {
               return `
               <div style="cursor: pointer;" class="mb-4 ml-4">
               
               <input type="checkbox" checked class="form-check-input" id="exampleCheck1">
+              <span class="badge badge-success">Activo</span>
               
               </div>`;
-
             }
 
             return `
                       <div style="cursor: pointer;" class="mb-4 ml-4">
                       
                       <input type="checkbox"  class="form-check-input" id="exampleCheck1">
+                      <span class="badge badge-danger">No Activo</span>
                       
                       </div>`;
           },
@@ -225,17 +283,11 @@ export class ProductosComponent {
             rowIndex: any,
             colIndex: any
           ) => {
-
-            
             $(cell)
               .find('input')
               .click(async () => {
-       
-               await this.desactivar(rowData.idProducto,rowData.activo);
- 
-
+                await this.desactivar(rowData.idProducto, rowData.activo);
               });
-         
           },
         },
 
@@ -260,8 +312,7 @@ export class ProductosComponent {
             $(cell)
               .find('.fa-edit')
               .click(() => {
-
-                this.cargar(cellData,rowData.precio);
+                this.cargar(cellData, rowData.precio);
               });
             $(cell)
               .find('.fa-trash-alt')
@@ -288,7 +339,7 @@ export class ProductosComponent {
   editar() {
     this.spinnerEspere = true;
     this.spinnerEditar = false;
-    let valor= this.productoForm.value;
+    let valor = this.productoForm.value;
     this.productosServices.actualizar(valor).subscribe({
       next: (res) => {
         if (res === 'ok') {
@@ -315,22 +366,39 @@ export class ProductosComponent {
     });
   }
 
-  cargar(idProducto: string,precio:number) {
+  cargar(idProducto: string, precio: number) {
+    
     $('#exampleModal').modal('show');
+    this.borrarObjeto();
     this.spinnerCargar = true;
     this.spinnerGuardar = false;
     this.spinnerEditar = true;
     this.productosServices.cargar(idProducto).subscribe({
       next: (res) => {
-
- 
-
-        this.productoForm.patchValue(
-          Object.assign({},res)
-        );
-
+        this.productoForm.patchValue(Object.assign({}, res.productos));
         this.spinnerCargar = false;
         this.calcularTotalIva(precio);
+
+
+
+        res.detalleprecioProductos.forEach((detalle: any) => {
+
+
+              (this.productoForm.get('detallePrecioProductos') as FormArray).push(
+          this.fb.group({
+            idDetallePrecioProducto: detalle.idDetallePrecioProducto,
+            totalIva: detalle.totalIva,
+            porcentaje: detalle.porcentaje,
+            utilidad: detalle.porcentaje,
+          })
+        );
+         
+
+        });
+        
+
+    
+
       },
       error: (err) => {
         this.toast.show_error('Error', 'Al listar el Producto');
@@ -364,13 +432,25 @@ export class ProductosComponent {
   }
 
   abrirModal() {
+    this.productoForm
+    .get('idIva')
+    ?.setValue(this.ivasList[0].idIva);
+    this.borrarObjeto();
     this.spinnerCargar = false;
     this.spinnerEditar = false;
     this.spinnerGuardar = true;
     $('#exampleModal').modal('show');
   }
 
+  borrarObjeto(){
+
+    const detallePrecioProductos = this.productoForm.get('detallePrecioProductos') as FormArray;
+    detallePrecioProductos.clear();
+
+  }
+
   guardar(producto: Productos) {
+
     this.spinnerEspere = true;
     this.spinnerGuardar = false;
 
@@ -387,6 +467,7 @@ export class ProductosComponent {
           this.listarProductos();
           this.toast.show_success('Productos', 'Producto Guardado Con Éxito');
           this.limpiar();
+          this.borrarObjeto();
           this.spinnerEspere = false;
           this.spinnerGuardar = true;
           return;
@@ -400,6 +481,8 @@ export class ProductosComponent {
         }
       },
       error: (err) => {
+        this.spinnerEspere = false;
+        this.spinnerGuardar = true;
         console.log(err);
         this.toast.show_error('Productos', 'Error al guardar el Producto');
       },

@@ -92,7 +92,7 @@
 <!-- Modal -->
 <div class="modal fade" id="exampleModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Producto</h5>
@@ -135,7 +135,7 @@
 
 
                             <div class="col-sm-4 mt-1">
-
+                                
                                 <label for="simpleinput" class="form-label">Codigo</label>
                                 <input formControlName="codigo"
                                     [class.is-invalid]="productoForm.get('codigo')!.touched && productoForm.get('codigo')?.invalid"
@@ -272,59 +272,71 @@
 
                         </div>
 
-
+                 
+                 
+                    <div class="invalid-feedback">*Requerido</div>
                    
                         <div class="row justify-content-center">
                             <div class="input-group input-group-sm  col-sm-6">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">$</span>
                                 </div>
-                                <input type="text" class="form-control mr-2 col-sm " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <input
+                                formControlName="totalIva"
+                                [class.is-invalid]="productoForm.get('totalIva')!.touched && productoForm.get('totalIva')?.invalid"
+                                type="number" class="form-control mr-2 col-sm " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <!-- <div class="invalid-feedback">*Requerido</div> -->
+
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">%</span>
                                 </div>
-                                <input type="text" class="form-control mr-2 " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <input
+                                (keyup)="calcularUtilidad()"
+                                formControlName="porcentaje"
+                                [class.is-invalid]="productoForm.get('porcentaje')!.touched && productoForm.get('porcentaje')?.invalid"
+                                type="number" class="form-control mr-2 " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <!-- <div class="invalid-feedback">*Requerido</div> -->
+
                                 <div class="input-group-prepend">
                                     <span class="input-group-text col-sm" id="inputGroup-sizing-sm">Utilidad</span>
                                 </div>
-                                <input type="text" class="form-control mr-2 col-sm" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <input readonly formControlName="utilidad"type="number" class="form-control mr-2 col-sm" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                             </div>
                            
-                            <i style="font-size: 19px;cursor:pointer" data-toggle="tooltip" data-placement="bottom" title="Agregar" class="fas fa-plus-circle mt-1"></i>
+                            <i (click)="agregarDetallePrecio()" style="font-size: 19px;cursor:pointer" data-toggle="tooltip" data-placement="bottom" title="Agregar" class="fas fa-plus-circle mt-1"></i>
+                            <!-- <i (click)="cancelarDetallePrecio()" style="font-size: 19px;cursor:pointer" data-toggle="tooltip" data-placement="bottom" title="Cancelar" class="fas fa-times-circle mt-1 ml-2"></i> -->
                         </div>
 
-                        <div>
+                    
+                      
 
-
-                            <table class="table table-bordered mt-4">
+                            <table   *ngIf="this.detallePrecioProductos.length > 0 "  class="table table-bordered mt-4">
                                 <thead>
                                   <tr class="text-center">
                                     <th scope="col">#</th>
-                                    <th scope="col">Cantidad</th>
                                     <th scope="col">Precio</th>
+                                    <th scope="col">Porcentaje</th>
                                     <th scope="col">Utilidad</th>
+                                    <th scope="col">Opciones</th>
+    
                                   </tr>
                                 </thead>
-                                <tbody class="text-center">
-                                  <tr>
-                                    <th scope="row">1</th>
-                                    <td>5</td>
-                                    <td>2.50</td>
-                                    <td>4</td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">1</th>
-                                    <td>5</td>
-                                    <td>2.50</td>
-                                    <td>4</td>
-                                  </tr>
+                                <tbody *ngFor="let item of detallePrecioProductos let i = index" class="text-center">
+                               
+                                    <th scope="row">{{ i + 1 }}</th>
+                                    <td>{{ item.totalIva }}</td>
+                                    <td>{{ item.porcentaje }}%</td>
+                                    <td>{{ item.utilidad }}</td>
+                                    <td (click)="quitarDetallePrecioProducto(item.id)" style="cursor: pointer;"> <i data-toggle="tooltip" data-placement="bottom" title="Eliminar"  class="fas fa-trash-alt"></i></td>
+
+                                  
                              
                             
                                 </tbody>
                               </table>
 
 
-                        </div>
+                     
 
                     </div>
 

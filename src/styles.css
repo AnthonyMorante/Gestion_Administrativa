@@ -14,6 +14,12 @@
     color:red;
     transform: scale(1.2);
 }
+.fa-times-circle:hover{
+
+    color:red;
+    transform: scale(1.2);
+
+}
 
 
 .errorForm {
