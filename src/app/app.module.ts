@@ -15,6 +15,7 @@ import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DataTablesModule } from "angular-datatables";
+import { FacturaComponent } from './Componentes/factura/factura.component';
 
 
 
@@ -29,7 +30,8 @@ import { DataTablesModule } from "angular-datatables";
     ClientesComponent,
     ProductosComponent,
     ProveedoresComponent,
-    EmpleadosComponent
+    EmpleadosComponent,
+    FacturaComponent
   ],
   imports: [
     BrowserModule,

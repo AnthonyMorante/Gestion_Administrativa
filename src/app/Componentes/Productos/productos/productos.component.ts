@@ -8,15 +8,16 @@ import {
 } from '@angular/forms';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { Subject } from 'rxjs';
-import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
-import { Validator } from 'src/app/Compartidos/Shared/validations';
+import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
+import { Validator } from 'src/app/Compartidos/Validaciones/validations';
 import { Ivas } from 'src/app/Interfaces/Ivas';
 import { Productos } from 'src/app/Interfaces/Productos';
 import { IvasService } from 'src/app/Servicios/ivas.service';
 import { ProductosService } from 'src/app/Servicios/productos.service';
-import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
-import { dosDigitos } from 'src/app/Validaciones/dosDigitos';
-import { dosDigitosHasta100 } from 'src/app/Validaciones/dosDigitosHasta100';
+import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
+import { dosDigitos } from 'src/app/Compartidos/Validaciones/dosDigitos';
+import { dosDigitosHasta100 } from 'src/app/Compartidos/Validaciones/dosDigitosHasta100';
+
 declare var $: any;
 
 @Component({

@@ -2,8 +2,8 @@ import { Component, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgSelectConfig } from '@ng-select/ng-select';
 import { Subject } from 'rxjs';
-import { ToastComponent } from 'src/app/Compartidos/Shared/toast';
-import { Validator } from 'src/app/Compartidos/Shared/validations';
+import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
+import { Validator } from 'src/app/Compartidos/Validaciones/validations';
 import { Ciudades } from 'src/app/Interfaces/Ciudades';
 import { Empleados } from 'src/app/Interfaces/Empleados';
 import { Provincias } from 'src/app/Interfaces/Provincias';
@@ -12,7 +12,7 @@ import { CiudadesService } from 'src/app/Servicios/ciudades.service';
 import { EmpleadosService } from 'src/app/Servicios/empleados.service';
 import { ProvinciasService } from 'src/app/Servicios/provincias.service';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
-import { cedulaRuc } from 'src/app/Validaciones/cedulaRuc';
+import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
 declare var $: any;
 @Component({
   selector: 'app-empleados',
