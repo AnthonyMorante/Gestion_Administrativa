@@ -1,0 +1,43 @@
+@media (max-width: 770px) {
+    .botonAgregar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+  }
+
+
+  @media (max-width: 730px) {
+    .total {
+        display: flex;
+        justify-content: end;
+    }
+
+    .totalLabel {
+        text-align: center !important;
+    }
+
+    .secuencial {
+        text-align: center !important;
+    }
+
+    
+  }
+
+
+  @media (max-width: 888px) {
+    .total {
+        display: flex;
+        justify-content: center;
+    }
+
+    .totalLabel {
+        text-align: center !important;
+    }
+
+    .secuencial {
+        text-align: center !important;
+    }
+
+    
+  }

@@ -83,6 +83,9 @@ export class ClientesComponent {
     this.dtTrigger.unsubscribe();
   }
 
+
+  
+
   listarClientes() {
     this.dtOptions = {
       lengthMenu: [10, 25, 50, 75, 100],

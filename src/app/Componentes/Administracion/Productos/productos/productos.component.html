@@ -282,6 +282,7 @@
                                     <span class="input-group-text" id="inputGroup-sizing-sm">$</span>
                                 </div>
                                 <input
+                                (keyup)="calcularUtilidad()"
                                 formControlName="totalIva"
                                 [class.is-invalid]="productoForm.get('totalIva')!.touched && productoForm.get('totalIva')?.invalid"
                                 type="number" class="form-control mr-2 col-sm " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">

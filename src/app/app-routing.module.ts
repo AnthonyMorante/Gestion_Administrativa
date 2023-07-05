@@ -1,10 +1,12 @@
-import { ProveedoresComponent } from './Componentes/Proveedores/proveedores/proveedores.component';
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { InicioComponent } from './Componentes/Inicio/inicio/inicio.component';
-import { ClientesComponent } from './Componentes/Clientes/clientes/clientes.component';
-import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.component';
-import { ProductosComponent } from './Componentes/Productos/productos/productos.component';
+import { ClientesComponent } from './Componentes/Administracion/Clientes/clientes/clientes.component';
+import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
+import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
+import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
+import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 
 
 
@@ -30,6 +32,10 @@ const routes: Routes = [
     {
       path: 'proveedores',
       component: ProveedoresComponent
+    },
+    {
+      path: 'facturas',
+      component: FacturaComponent
     },
   ],},
 

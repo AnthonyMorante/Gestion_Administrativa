@@ -150,6 +150,9 @@ export class ProductosComponent {
   }
 
   calcularUtilidad() {
+
+
+
     let totalIva = parseFloat(this.productoForm.get('totalIva')?.value).toFixed(
       2
     );

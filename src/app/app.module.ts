@@ -7,14 +7,17 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InicioComponent } from './Componentes/Inicio/inicio/inicio.component';
-import { ClientesComponent } from './Componentes/Clientes/clientes/clientes.component';
-import { ProductosComponent } from './Componentes/Productos/productos/productos.component';
-import { ProveedoresComponent } from './Componentes/Proveedores/proveedores/proveedores.component';
-import { EmpleadosComponent } from './Componentes/Empleados/empleados/empleados.component';
+
 import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DataTablesModule } from "angular-datatables";
+import { ClientesComponent } from './Componentes/Administracion/Clientes/clientes/clientes.component';
+import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
+import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
+import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
+import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
+
 
 
 
@@ -24,12 +27,15 @@ import { DataTablesModule } from "angular-datatables";
 
 @NgModule({
   declarations: [
+
     AppComponent,
     InicioComponent,
     ClientesComponent,
     ProductosComponent,
     ProveedoresComponent,
-    EmpleadosComponent
+    EmpleadosComponent,
+    FacturaComponent
+    
   ],
   imports: [
     BrowserModule,
