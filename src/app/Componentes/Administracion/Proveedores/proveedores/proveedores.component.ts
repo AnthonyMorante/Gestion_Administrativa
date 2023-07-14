@@ -75,9 +75,15 @@ export class ProveedoresComponent {
   }
 
   ngAfterViewInit(): void {
-    this.dtTrigger.next();
+    // if instance exist destroy
+    if ($.fn.DataTable.isDataTable('table')) {
+      $('table').DataTable().destroy();
+    }
 
-    $('table').DataTable(this.dtOptions);
+    this.dtTrigger.next();
+    setTimeout(() => {
+      $('table').DataTable(this.dtOptions);
+    }, 0);
   }
 
   ngOnDestroy(): void {

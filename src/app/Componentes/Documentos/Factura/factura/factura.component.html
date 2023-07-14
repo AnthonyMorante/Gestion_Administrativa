@@ -25,49 +25,6 @@
 
 
 
-    <div class="col-md-6">
-
-        <div class="row">
-
-
-            <div class="col-md-12">
-
-                <label style="font-weight: bolder; font-size: large;">Emisor</label>
-                <hr>
-
-            </div>
-
-
-
-            <div class="col-md-4">
-
-                <label for="example-select" class="form-label">Fecha Emisión</label>
-                <input class="form-control form-control-sm" type="date">
-
-            </div>
-
-            <div class="col-md-4">
-
-                <label for="example-select" class="form-label">Establecimiento</label>
-                <input class="form-control form-control-sm" type="text">
-
-            </div>
-
-            <div class="col-md-4">
-
-                <label for="example-select" class="form-label">Punto Emisión</label>
-                <input class="form-control form-control-sm" type="text">
-
-            </div>
-
-
-
-
-
-
-        </div>
-
-    </div>
 
 
 
@@ -121,6 +78,67 @@
             </div>
 
 
+
+        </div>
+
+    </div>
+
+
+    
+    <div class="col-md-6">
+
+        <div class="row">
+
+
+            <div class="col-md-12">
+
+                <label style="font-weight: bolder; font-size: large;">Emisor</label>
+                <hr>
+
+            </div>
+
+
+
+            <div class="col-md-4">
+
+                <label for="example-select" class="form-label">Fecha Emisión</label>
+                <input class="form-control form-control-sm" type="date">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label for="example-select" class="form-label">Establecimiento</label>
+                <input class="form-control form-control-sm" type="text">
+
+            </div>
+
+            <div class="col-md-4">
+
+                <label for="example-select" class="form-label">Punto Emisión</label>
+                <input class="form-control form-control-sm" type="text">
+
+            </div>
+
+            
+
+
+
+        </div>
+
+        <div class="row mt-1">
+
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Example select</label>
+                    <select class="form-control form-control-sm " id="exampleFormControlSelect1">
+                      <option selected>FACTURA</option>
+                      <option>NOTA ENTREGA</option>
+                      <option>PROFORMA</option>
+                    </select>
+                  </div>
+            </div>
 
         </div>
 
@@ -254,11 +272,185 @@
 
 
             <div class="col-md-12 mt-2 totalLabel">
+                <!-- 
+                <label style="font-weight: bolder; font-size: large;">Adicionales</label>
+                <hr> -->
 
-                <label style="font-weight: bolder; font-size: large;">Forma Pago</label>
-                <hr>
+
+
+                <ul class="nav nav-tabs col-md-8" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link formaPago " data-toggle="tab" href="#formaPago" role="tab">FORMA PAGO</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#adicional" role="tab">INFORMACIÓN ADICIONAL</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content col-md-8">
+                    <div class="tab-pane" id="formaPago" role="tabpanel">
+
+
+
+                        <div class="col-md-12 mt-2">
+
+                            <!-- <label for="example-select" class="form-label">Tipo Pago</label> -->
+                            <input class="form-control form-control-sm " type="text">
+                        </div>
+
+
+
+                        <div class="col-md-12 mt-2">
+
+
+
+                            <div class="row">
+
+                                <div class="col-md-3">
+
+                                    <label for="example-select" class="form-label">Tiempo</label>
+                                    <input class="form-control form-control-sm " type="text">
+                                </div>
+
+                                <div class="col-md-3">
+
+                                    <label for="example-select" class="form-label">Plazo</label>
+                                    <input class="form-control form-control-sm " type="text">
+                                </div>
+
+
+                                <div class="col-md-3">
+
+                                    <label for="example-select" class="form-label">Valor</label>
+                                    <input class="form-control form-control-sm " type="text">
+                                </div>
+
+                                <div class="col-md-3">
+
+                                    <!-- <label style="visibility: hidden;" for="example-select" class="form-label">Tipo
+                                        Pago</label> -->
+                                    <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
+
+                                        <i class="fas fa-plus mt-1"></i>
+                                        Agregar
+
+
+                                    </button>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+
+
+                                <table class="table mt-4 col-md-12">
+                                    <thead>
+                                        <tr style="text-align: center; ">
+                                            <th scope="col">#</th>
+                                            <th scope="col">Forma Pago</th>
+                                            <th scope="col">Plazo</th>
+                                            <th scope="col">Valor</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="text-align: center;">
+                                            <th scope="row">1</th>
+                                            <td>Tarjeta Credito </td>
+                                            <td>2 Años</td>
+                                            <td>$1350</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+                    <div class="tab-pane" id="adicional" role="tabpanel">
+
+
+                        <div class="col-md-12 mt-2">
+
+
+
+                            <div class="row">
+
+                                <div class="col-md-6">
+
+                                    <label for="example-select" class="form-label">Nombre</label>
+                                    <input class="form-control form-control-sm " type="text">
+                                </div>
+
+                                <div class="col-md-3">
+
+                                    <label for="example-select" class="form-label">Valor</label>
+                                    <input class="form-control form-control-sm " type="text">
+                                </div>
+
+
+                           
+
+                                <div class="col-md-3">
+
+                                 
+                                     <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
+
+                                        <i class="fas fa-plus"></i>
+                                        Agregar
+
+
+                                    </button>
+                                </div>
+
+
+                            </div>
+
+                            <div class="row">
+
+
+                                <table class="table mt-4 col-md-12">
+                                    <thead>
+                                        <tr style="text-align: center; ">
+                                            <th scope="col">#</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Valor</th>
+                                 
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="text-align: center;">
+                                            <th scope="row">1</th>
+                                            <td>Tarjeta Credito </td>
+                                            <td>$1350</td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                    </div>
+                </div>
 
             </div>
+
+
+
+
+
 
 
 
@@ -271,19 +463,6 @@
     <div class="col-md-4 mb-3">
 
 
-        <div class="row">
-
-
-            <div class="col-md-12 mt-2 totalLabel" style="text-align: center;">
-
-                <label style="font-weight: bolder; font-size: large;">Total</label>
-                <hr>
-
-            </div>
-
-
-
-        </div>
 
 
 
@@ -298,7 +477,7 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA(12%)</label>
+                <label style="font-size: 1.0rem;font-weight:bolder">Subtotal</label>
 
 
 
@@ -308,13 +487,13 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-    
+
                 <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
- 
- 
- 
- 
-             </div>
+
+
+
+
+            </div>
 
 
 
@@ -332,7 +511,7 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA(12%)</label>
+                <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
 
 
 
@@ -342,19 +521,19 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-    
+
                 <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
- 
- 
- 
- 
-             </div>
+
+
+
+
+            </div>
 
 
 
         </div>
 
-        
+
         <div class="row">
 
 
@@ -362,7 +541,7 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA(12%)</label>
+                <label style="font-size: 1.0rem;font-weight:bolder">Tot. Descuento</label>
 
 
 
@@ -372,19 +551,19 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-    
+
                 <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
- 
- 
- 
- 
-             </div>
+
+
+
+
+            </div>
 
 
 
         </div>
 
-        
+
         <div class="row">
 
 
@@ -392,7 +571,7 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA(12%)</label>
+                <label style="font-size: 1.0rem;font-weight:bolder">IVA 0%</label>
 
 
 
@@ -402,19 +581,19 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-    
+
                 <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
- 
- 
- 
- 
-             </div>
+
+
+
+
+            </div>
 
 
 
         </div>
 
-        
+
         <div class="row">
 
 
@@ -422,7 +601,7 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA(12%)</label>
+                <label style="font-size: 1.0rem;font-weight:bolder">IVA 12%</label>
 
 
 
@@ -432,26 +611,55 @@
             <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-    
+
                 <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
- 
- 
- 
- 
-             </div>
+
+
+
+
+            </div>
+
+
+
+        </div>
+
+        <div class="row">
+
+
+
+            <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                <label style="font-size: 1.0rem;font-weight:bolder">Total</label>
+
+
+
+
+            </div>
+
+            <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+            </div>
 
 
 
         </div>
 
 
- 
+
 
 
 
     </div>
 
-    
+
 
 
 </div>
