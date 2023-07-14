@@ -7,6 +7,7 @@ import { EmpleadosComponent } from './Componentes/Administracion/Empleados/emple
 import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
 import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
+import { LoginComponent } from './Componentes/login/login.component';
 
 
 
@@ -15,7 +16,10 @@ import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factu
 
 const routes: Routes = [
 
-
+  {
+    path: 'login',
+    component: LoginComponent
+  },
   {path:'Inicio', component:InicioComponent, children: [
     {
       path: 'clientes',
@@ -42,8 +46,8 @@ const routes: Routes = [
 
 
   {path:'Inicio', component:InicioComponent},
-  {path:'',pathMatch:'full',redirectTo:'Inicio'},
-  {path:'**',pathMatch:'full',redirectTo:'Inicio'}
+  {path:'',pathMatch:'full',redirectTo:'login'},
+  {path:'**',pathMatch:'full',redirectTo:'login'}
 
 ];
 

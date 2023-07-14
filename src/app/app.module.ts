@@ -17,6 +17,7 @@ import { ProductosComponent } from './Componentes/Administracion/Productos/produ
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
 import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
 import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
+import { LoginComponent } from './Componentes/login/login.component';
 
 
 
@@ -34,7 +35,8 @@ import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factu
     ProductosComponent,
     ProveedoresComponent,
     EmpleadosComponent,
-    FacturaComponent
+    FacturaComponent,
+    LoginComponent
     
   ],
   imports: [
