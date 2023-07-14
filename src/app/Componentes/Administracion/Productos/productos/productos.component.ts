@@ -188,11 +188,8 @@ export class ProductosComponent {
     return
   }
    this.productoForm.get('porcentaje')?.setValue(parseFloat(porcentajeGanacia));
+   this.calcularUtilidad();
    
-
-
-
-
   }
 
   calcularTotalIva(valor: any) {
