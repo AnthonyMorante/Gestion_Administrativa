@@ -240,10 +240,13 @@ export class ProductosComponent {
       columnDefs: [
         {
           targets: [0, 1, 2, 3, 4, 5, 6],
-          className: 'text-center',
+          className: 'text-center dt-nowrap',
           width: 'auto',
         },
         { targets: [5], orderable: false },
+        { targets: '_all', className: 'dt-nowrap' }
+
+        
       ],
       columns: [
         {

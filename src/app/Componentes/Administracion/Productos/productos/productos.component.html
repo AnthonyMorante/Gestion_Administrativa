@@ -186,6 +186,17 @@
 
                                     <div class="col-sm-6">
 
+                                        <label for="simpleinput" class="form-label">Precio</label>
+                                        <input (keyup)="asignarValor($event.target)"   formControlName="precio"
+                                            [class.is-invalid]="productoForm.get('precio')!.touched && productoForm.get('precio')?.invalid"
+                                            type="number" class="form-control form-control-sm ">
+                                        <div class="invalid-feedback">*Requerido</div>
+
+                                    </div>
+
+
+                                    <div class="col-sm-6">
+
                                         <div class="form-group">
                                             <label  for="exampleFormControlSelect1">IVA</label>
                                             <select formControlName="idIva"  class="form-control form-control-sm " id="ivaSelect">
@@ -197,15 +208,7 @@
 
                                     </div>
 
-                                    <div class="col-sm-6">
-
-                                        <label for="simpleinput" class="form-label">Precio</label>
-                                        <input (keyup)="asignarValor($event.target)"   formControlName="precio"
-                                            [class.is-invalid]="productoForm.get('precio')!.touched && productoForm.get('precio')?.invalid"
-                                            type="number" class="form-control form-control-sm ">
-                                        <div class="invalid-feedback">*Requerido</div>
-
-                                    </div>
+                               
                                         
                               
 

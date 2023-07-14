@@ -100,6 +100,7 @@ export class EmpleadosComponent {
           width: 'auto',
         },
         { targets: [7], orderable: false },
+        { targets: '_all', className: 'dt-nowrap' }
       ],
       columns: [
         {

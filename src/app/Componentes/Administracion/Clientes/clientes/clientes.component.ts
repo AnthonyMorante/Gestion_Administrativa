@@ -107,6 +107,7 @@ export class ClientesComponent {
           width: 'auto',
         },
         { targets: [7], orderable: false },
+        { targets: '_all', className: 'dt-nowrap' }
       ],
       columns: [
         {
