@@ -284,8 +284,10 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">$</span>
                                 </div>
+
+                                <!-- (keyup)="calcularUtilidad()" -->
                                 <input
-                                (keyup)="calcularUtilidad()"
+                                (keyup)="calcularPocentajeUtilidad()"
                                 formControlName="totalIva"
                                 [class.is-invalid]="productoForm.get('totalIva')!.touched && productoForm.get('totalIva')?.invalid"
                                 type="number" class="form-control mr-2 col-sm " aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
@@ -302,7 +304,7 @@
                                 <!-- <div class="invalid-feedback">*Requerido</div> -->
 
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text col-sm" id="inputGroup-sizing-sm">Utilidad</span>
+                                    <span class="input-group-text col-sm" id="inputGroup-sizing-sm">Ganancia</span>
                                 </div>
                                 <input readonly formControlName="utilidad"type="number" class="form-control mr-2 col-sm" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                             </div>

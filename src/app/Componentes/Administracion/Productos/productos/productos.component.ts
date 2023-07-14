@@ -161,14 +161,38 @@ export class ProductosComponent {
 
 
 
-    let totalIva = parseFloat(this.productoForm.get('totalIva')?.value).toFixed(
-      2
-    );
+    let precioIva = parseFloat(this.productoForm.get('precioIva')?.value).toFixed(2);
     let porcentaje = parseFloat(
       this.productoForm.get('porcentaje')?.value
     ).toFixed(2);
-    let valorPorcentaje = (parseFloat(totalIva) * parseFloat(porcentaje)) / 100;
-    this.productoForm.get('utilidad')?.setValue(valorPorcentaje.toFixed(2));
+    let valorPorcentaje = ((parseFloat(precioIva) * parseFloat(porcentaje)) / 100).toFixed(2);
+    let utilidadValorTotal= (parseFloat (valorPorcentaje )+ parseFloat (precioIva)).toFixed(2)
+    this.productoForm.get('utilidad')?.setValue(valorPorcentaje);
+    if(isNaN(parseFloat (utilidadValorTotal))){
+      return
+    }
+
+    this.productoForm.get('totalIva')?.setValue(parseFloat (utilidadValorTotal));
+
+
+    
+  }
+
+  calcularPocentajeUtilidad(){
+
+   let totalIva =  parseFloat(this.productoForm.get('totalIva')?.value).toFixed(2);
+   let precioIva =  parseFloat(this.productoForm.get('precioIva')?.value).toFixed(2);
+   let ganancia = (parseFloat (totalIva) - parseFloat (precioIva)).toFixed(2);
+   let porcentajeGanacia = ((parseFloat(ganancia) /  parseFloat (precioIva)) *100).toFixed(2);
+   if(isNaN(parseFloat (porcentajeGanacia))){
+    return
+  }
+   this.productoForm.get('porcentaje')?.setValue(parseFloat(porcentajeGanacia));
+   
+
+
+
+
   }
 
   calcularTotalIva(valor: any) {
@@ -195,6 +219,8 @@ export class ProductosComponent {
       precioControl !== undefined &&
       precioControl.value !== null
     ) {
+
+
       let iva = parseFloat(valorIva) * precioControl.value;
       let totalIva = precioControl.value + iva;
       this.productoForm.get('precioIva')?.setValue(totalIva.toFixed(2));
