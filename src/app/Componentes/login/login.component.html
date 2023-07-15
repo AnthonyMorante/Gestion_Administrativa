@@ -11,7 +11,7 @@
   
 
   
-  <div class="content" style="  height: 100vh;">
+  <div class="content">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
@@ -24,7 +24,7 @@
               <h3>Iniciar Sesión</h3>
               <!-- <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p> -->
             </div>
-            <form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
+            <form (ngSubmit)="login(loginForm.value)">
               <div class="form-group first">
                 <label for="username">Usuario</label>
                 <input formControlName="usuario" type="text" class="form-control" id="usuario">

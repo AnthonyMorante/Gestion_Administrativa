@@ -24,6 +24,15 @@ body {
   
   h2 {
     font-size: 20px; }
+
+    @media (min-width: 768px) {
+
+        .content{
+
+            height: 100vh;
+        }
+    }
+
   
   @media (max-width: 991.98px) {
     .content .bg {
