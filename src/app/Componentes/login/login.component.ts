@@ -3,7 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
 import { LoginService } from 'src/app/Servicios/login.service';
-import jwt_decode from "jwt-decode";
+
 
 @Component({
   selector: 'app-login',
@@ -52,17 +52,19 @@ export class LoginComponent {
     }
   
     login(loginData:any){ 
+
+
+      this.btnLogin=true;
       
       this.loginService.login(loginData).subscribe({
         next: (res) =>{ 
           
           if(res){
             
-            console.log(res);
+
             localStorage.setItem("token",res.access_token);
-            this.token = jwt_decode(res.access_token);
-            localStorage.setItem("user",this.token.name);
-            this.router.navigate(['/Inicio'])
+            this.router.navigate(['/Inicio']);
+            this.btnLogin=false;
 
           }
 
@@ -76,8 +78,8 @@ export class LoginComponent {
            this.toast.show_error("Login","Incorrect Credentials");
            return;
 
-          }
-
+          } 
+          this.btnLogin=false;
           this.toast.show_error("Error","Error Try Later");
           
         },
