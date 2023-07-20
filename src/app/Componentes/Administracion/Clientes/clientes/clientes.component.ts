@@ -13,7 +13,7 @@ import { ClientesService } from 'src/app/Servicios/clientes.service';
 import { ProvinciasService } from 'src/app/Servicios/provincias.service';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
-
+import jwt_decode from "jwt-decode";
 declare var $: any;
 
 @Component({
@@ -53,6 +53,8 @@ export class ClientesComponent {
   spinnerEspere: boolean = false;
   idCliente: string = '';
   spinnerWarning: boolean = false;
+  token:string | null="";
+  idEmpresa:string | null="";
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
@@ -68,9 +70,16 @@ export class ClientesComponent {
   }
 
   ngOnInit() {
-    this.listarClientes();
-    this.listarTiposNotificaciones();
-    this.listarProvicias();
+
+    this.token = localStorage.getItem("token");
+    if(this.token != null){
+      const res = jwt_decode(this.token) as { idEmpresa: string };
+      this.idEmpresa = res.idEmpresa;
+      this.listarClientes(this.idEmpresa);
+      this.listarTiposNotificaciones();
+      this.listarProvicias();
+    }
+
   }
 
   ngAfterViewInit(): void {
@@ -94,7 +103,7 @@ export class ClientesComponent {
 
   
 
-  listarClientes() {
+  listarClientes(idEmpresa:string | null) {
     
     this.dtOptions = {
       lengthMenu: [10, 25, 50, 75, 100],
@@ -175,7 +184,7 @@ export class ClientesComponent {
       ],
     };
 
-    this.clientesServices.listar().subscribe({
+    this.clientesServices.listar(idEmpresa).subscribe({
       next: (res) => {
         this.dtOptions.data = res;
         this.dtTrigger.next();
@@ -200,7 +209,7 @@ export class ClientesComponent {
           $('#exampleModal').modal('hide');
           this.spinnerEspere = false;
           this.spinnerGuardar = false;
-          this.listarClientes();
+          this.listarClientes(this.idEmpresa);
           return;
 
         }
@@ -252,7 +261,7 @@ export class ClientesComponent {
     this.spinnerWarning = true;
     this.clientesServices.eliminar(this.idCliente).subscribe({
       next: (res) => {
-        this.listarClientes();
+        this.listarClientes(this.idEmpresa);
         this.toast.show_success('Clientes', 'Eliminado con Éxito');
         $('#ModalWarning').modal('hide');
         this.spinnerWarning = false;
@@ -370,7 +379,7 @@ export class ClientesComponent {
     this.clientesServices.insertar(cliente).subscribe({
       next: (res) => {
         if (res == 'ok') {
-          this.listarClientes();
+          this.listarClientes(this.idEmpresa);
           this.toast.show_success('Clientes', 'Cliente Guardado Con Éxito');
           this.limpiar();
           this.spinnerEspere = false;

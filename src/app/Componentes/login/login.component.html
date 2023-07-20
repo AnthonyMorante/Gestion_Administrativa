@@ -24,7 +24,7 @@
               <h3>Iniciar Sesión</h3>
               <!-- <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur adipisicing.</p> -->
             </div>
-            <form (ngSubmit)="login(loginForm.value)">
+            <form  [formGroup]="loginForm"  (ngSubmit)="login(loginForm.value)">
               <div class="form-group first">
                 <label for="username">Usuario</label>
                 <input formControlName="usuario" type="text" class="form-control" id="usuario">
@@ -37,7 +37,8 @@
               </div>
          
 
-              <input type="submit" value="{{ingresarTexto}}" class="btn btn-block btn-primary">
+              <input *ngIf="!btnLogin" type="submit" value="{{ingresarTexto}}" class="btn btn-block btn-primary">
+              <input  *ngIf="btnLogin" disabled   value="Cargando..." class="btn btn-block btn-primary">
 
                    
               <div class="d-flex mb-5 align-items-center mt-2">

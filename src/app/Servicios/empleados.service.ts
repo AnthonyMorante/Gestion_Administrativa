@@ -12,8 +12,8 @@ export class EmpleadosService {
 
   constructor(public http: HttpClient) {}
 
-  listar(): Observable<Empleados[]> {
-    return this.http.get<Empleados[]>(`${this.ruta}/listar`);
+  listar(idEmpresa:String | null): Observable<Empleados[]> {
+    return this.http.get<Empleados[]>(`${this.ruta}/listar/${idEmpresa}`);
   }
 
   insertar(clientes: Empleados) {

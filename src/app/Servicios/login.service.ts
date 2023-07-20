@@ -10,7 +10,8 @@ export class LoginService {
   constructor(public http: HttpClient) { }
 
   login(credenciales: any): Observable<any> {
-    
+
+
     const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
     const body = new URLSearchParams();
     body.set('client_id', 'Jwt');
@@ -19,6 +20,7 @@ export class LoginService {
     body.set('scope', 'app.all');
     body.set('username',credenciales["usuario"]);
     body.set('password', credenciales["clave"]);
+
 
     return this.http.post<any>("connect/token", body.toString(), { headers });
   }

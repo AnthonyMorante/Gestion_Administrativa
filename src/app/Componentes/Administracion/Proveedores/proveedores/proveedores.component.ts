@@ -13,6 +13,7 @@ import { ProveedoresService } from 'src/app/Servicios/proveedores.service';
 import { ProvinciasService } from 'src/app/Servicios/provincias.service';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
+import jwt_decode from "jwt-decode";
 declare var $: any;
 
 @Component({
@@ -54,6 +55,8 @@ export class ProveedoresComponent {
   spinnerEspere: boolean = false;
   idProveedor: string = '';
   spinnerWarning: boolean = false;
+  token:string | null="";
+  idEmpresa:string | null="";
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
@@ -69,9 +72,20 @@ export class ProveedoresComponent {
   }
 
   ngOnInit() {
-    this.listarProveedores();
-    this.listarTiposNotificaciones();
-    this.listarProvicias();
+
+
+    this.token = localStorage.getItem("token");
+    if(this.token != null){
+      const res = jwt_decode(this.token) as { idEmpresa: string };
+      this.idEmpresa = res.idEmpresa;
+      this.listarProveedores(this.idEmpresa);
+      this.listarTiposNotificaciones();
+      this.listarProvicias();
+
+    }
+
+
+
   }
 
   ngAfterViewInit(): void {
@@ -90,7 +104,7 @@ export class ProveedoresComponent {
     this.dtTrigger.unsubscribe();
   }
 
-  listarProveedores() {
+  listarProveedores(idEmpresa:string | null) {
     this.dtOptions = {
       lengthMenu: [10, 25, 50, 75, 100],
       destroy: true,
@@ -170,7 +184,7 @@ export class ProveedoresComponent {
       ],
     };
 
-    this.ProveedoresServices.listar().subscribe({
+    this.ProveedoresServices.listar(idEmpresa).subscribe({
       next: (res) => {
         this.dtOptions.data = res;
         this.dtTrigger.next();
@@ -195,7 +209,7 @@ export class ProveedoresComponent {
           $('#exampleModal').modal('hide');
           this.spinnerEspere = false;
           this.spinnerGuardar = false;
-          this.listarProveedores();
+          this.listarProveedores(this.idEmpresa);
           return;
 
         }
@@ -253,7 +267,7 @@ export class ProveedoresComponent {
     this.spinnerWarning = true;
     this.ProveedoresServices.eliminar(this.idProveedor).subscribe({
       next: (res) => {
-        this.listarProveedores();
+        this.listarProveedores(this.idEmpresa);
         this.toast.show_success('Proveedores', 'Eliminado con Éxito');
         $('#ModalWarning').modal('hide');
         this.spinnerWarning = false;
@@ -371,7 +385,7 @@ export class ProveedoresComponent {
     this.ProveedoresServices.insertar(Proveedore).subscribe({
       next: (res) => {
         if (res == 'ok') {
-          this.listarProveedores();
+          this.listarProveedores(this.idEmpresa);
           this.toast.show_success('Proveedores', 'Proveedore Guardado Con Éxito');
           this.limpiar();
           this.spinnerEspere = true;

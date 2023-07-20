@@ -12,8 +12,8 @@ export class ClientesService {
 
   constructor(public http: HttpClient) {}
 
-  listar(): Observable<Clientes[]> {
-    return this.http.get<Clientes[]>(`${this.ruta}/listar`);
+  listar(idEmpresa:string |null): Observable<Clientes[]> {
+    return this.http.get<Clientes[]>(`${this.ruta}/listar/${idEmpresa}`);
   }
 
   insertar(clientes: Clientes) {

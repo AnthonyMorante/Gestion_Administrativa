@@ -14,10 +14,9 @@ import { Ivas } from 'src/app/Interfaces/Ivas';
 import { Productos } from 'src/app/Interfaces/Productos';
 import { IvasService } from 'src/app/Servicios/ivas.service';
 import { ProductosService } from 'src/app/Servicios/productos.service';
-import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
 import { dosDigitos } from 'src/app/Compartidos/Validaciones/dosDigitos';
 import { dosDigitosHasta100 } from 'src/app/Compartidos/Validaciones/dosDigitosHasta100';
-
+import jwt_decode from "jwt-decode";
 declare var $: any;
 
 @Component({
@@ -38,6 +37,8 @@ export class ProductosComponent {
   ivasList: Ivas[] = [];
   detalleAdicionalesList: any[] = [];
   productoForm: FormGroup;
+  token:string | null="";
+  idEmpresa:string | null="";
 
   constructor(
     private toast: ToastComponent,
@@ -71,8 +72,19 @@ export class ProductosComponent {
   }
 
   ngOnInit() {
-    this.listarProductos();
-    this.listarIvas();
+
+
+    this.token = localStorage.getItem("token");
+    if(this.token != null){
+      const res = jwt_decode(this.token) as { idEmpresa: string };
+      this.idEmpresa = res.idEmpresa;
+      this.listarProductos(this.idEmpresa);
+      this.listarIvas();
+    }
+
+
+
+
   }
 
   ngAfterViewInit(): void {
@@ -246,7 +258,7 @@ export class ProductosComponent {
         res == true
           ? (activoString = 'Activado')
           : (activoString = 'Desactivado');
-        this.listarProductos();
+        this.listarProductos(this.idEmpresa);
         this.toast.show_success('Success', `Registro ${activoString}`);
       },
       error: (err) => {
@@ -255,7 +267,7 @@ export class ProductosComponent {
     });
   }
 
-  listarProductos() {
+  listarProductos(idEmpresa:string | null) {
     this.dtOptions = {
       lengthMenu: [10, 25, 50, 75, 100],
       destroy: true,
@@ -368,7 +380,7 @@ export class ProductosComponent {
       ],
     };
 
-    this.productosServices.listar().subscribe({
+    this.productosServices.listar(idEmpresa).subscribe({
       next: (res) => {
         this.dtOptions.data = res;
         this.dtTrigger.next();
@@ -391,7 +403,7 @@ export class ProductosComponent {
           $('#exampleModal').modal('hide');
           this.spinnerEspere = false;
           this.spinnerGuardar = false;
-          this.listarProductos();
+          this.listarProductos(this.idEmpresa);
           return;
         }
 
@@ -459,7 +471,7 @@ export class ProductosComponent {
     this.spinnerWarning = true;
     this.productosServices.eliminar(this.idProducto).subscribe({
       next: (res) => {
-        this.listarProductos();
+        this.listarProductos(this.idEmpresa);
         this.toast.show_success('Productos', 'Eliminado con Éxito');
         $('#ModalWarning').modal('hide');
         this.spinnerWarning = false;
@@ -508,7 +520,7 @@ export class ProductosComponent {
     this.productosServices.insertar(producto).subscribe({
       next: (res) => {
         if (res == 'ok') {
-          this.listarProductos();
+          this.listarProductos(this.idEmpresa);
           this.toast.show_success('Productos', 'Producto Guardado Con Éxito');
           this.limpiar();
           this.borrarObjeto();

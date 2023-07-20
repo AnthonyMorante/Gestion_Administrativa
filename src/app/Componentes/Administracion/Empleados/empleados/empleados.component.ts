@@ -13,6 +13,7 @@ import { EmpleadosService } from 'src/app/Servicios/empleados.service';
 import { ProvinciasService } from 'src/app/Servicios/provincias.service';
 import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
 import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
+import jwt_decode from "jwt-decode";
 declare var $: any;
 @Component({
   selector: 'app-empleados',
@@ -52,6 +53,8 @@ export class EmpleadosComponent {
   spinnerEspere: boolean = false;
   idEmpleado: string = '';
   spinnerWarning: boolean = false;
+  token:string | null="";
+  idEmpresa:string | null="";
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
@@ -67,9 +70,19 @@ export class EmpleadosComponent {
   }
 
   ngOnInit() {
-    this.listarEmpleados();
-    this.listarTiposNotificaciones();
-    this.listarProvicias();
+
+
+    this.token = localStorage.getItem("token");
+    if(this.token != null){
+      const res = jwt_decode(this.token) as { idEmpresa: string };
+      this.idEmpresa = res.idEmpresa;
+      this.listarEmpleados(this.idEmpresa);
+      this.listarTiposNotificaciones();
+      this.listarProvicias();
+
+    }
+
+
   }
 
   ngAfterViewInit(): void {
@@ -88,7 +101,7 @@ export class EmpleadosComponent {
     this.dtTrigger.unsubscribe();
   }
 
-  listarEmpleados() {
+  listarEmpleados(idEmpresa:string | null) {
     this.dtOptions = {
       lengthMenu: [10, 25, 50, 75, 100],
       destroy: true,
@@ -168,7 +181,7 @@ export class EmpleadosComponent {
       ],
     };
 
-    this.empleadosServices.listar().subscribe({
+    this.empleadosServices.listar(idEmpresa).subscribe({
       next: (res) => {
         this.dtOptions.data = res;
         this.dtTrigger.next();
@@ -193,7 +206,7 @@ export class EmpleadosComponent {
           $('#exampleModal').modal('hide');
           this.spinnerEspere = false;
           this.spinnerGuardar = false;
-          this.listarEmpleados();
+          this.listarEmpleados(this.idEmpresa);
           return;
 
         }
@@ -251,7 +264,7 @@ export class EmpleadosComponent {
     this.spinnerWarning = true;
     this.empleadosServices.eliminar(this.idEmpleado).subscribe({
       next: (res) => {
-        this.listarEmpleados();
+        this.listarEmpleados(this.idEmpresa);
         this.toast.show_success('Empleados', 'Eliminado con Éxito');
         $('#ModalWarning').modal('hide');
         this.spinnerWarning = false;
@@ -369,7 +382,7 @@ export class EmpleadosComponent {
     this.empleadosServices.insertar(empleado).subscribe({
       next: (res) => {
         if (res == 'ok') {
-          this.listarEmpleados();
+          this.listarEmpleados(this.idEmpresa);
           this.toast.show_success('Empleados', 'Empleado Guardado Con Éxito');
           this.limpiar();
           this.spinnerEspere = false;

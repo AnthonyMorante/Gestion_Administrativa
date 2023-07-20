@@ -12,8 +12,8 @@ export class ProveedoresService {
 
   constructor(public http: HttpClient) {}
 
-  listar(): Observable<Proveedores[]> {
-    return this.http.get<Proveedores[]>(`${this.ruta}/listar`);
+  listar(idEmpresa:string | null): Observable<Proveedores[]> {
+    return this.http.get<Proveedores[]>(`${this.ruta}/listar/${idEmpresa}`);
   }
 
   insertar(Proveedores: Proveedores) {
