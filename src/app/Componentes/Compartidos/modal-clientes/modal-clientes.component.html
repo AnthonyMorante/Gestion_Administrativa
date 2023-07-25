@@ -1,1 +1,280 @@
-<p>modal-clientes works!</p>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalCliente" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Cliente</h5>
+                <button (click)="limpiar()" type="button" class="close" dataar-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+
+
+                <div *ngIf="spinnerCargar" class="text-center mt-2">
+
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
+                </div>
+
+
+                <form *ngIf="!spinnerCargar" [formGroup]="clienteForm" (ngSubmit)="guardar(clienteForm.value)">
+                    <div class="modal-body">
+
+
+
+
+                        <div class="row">
+
+
+                            <div class="col-sm-4 mt-1 mb-3">
+                                <label for="example-select" class="form-label">Provincia</label>
+                                <ng-select
+                                    (change)="listarCiudadesSet($event)" formControlName="idProvincia"
+                                    [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true"
+                                    [clearable]="false" [class.err]="clienteForm.get('idProvincia')!.touched && clienteForm
+                            .get('idProvincia')?.invalid" [class.border-primary]="clienteForm
+                            .get('idProvincia')!.touched && clienteForm
+                            .get('idProvincia')?.valid">
+                                    <ng-option *ngFor="let item of provinciasList"
+                                        [value]="item.idProvincia">{{item.nombre}}</ng-option>
+                                </ng-select>
+                                <div class="invalid-feedback">
+                                    *Requerido
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-4 mt-1">
+
+
+                                <label for="example-select" class="form-label">Ciudad</label>
+                                <ng-select formControlName="idCiudad" [multiple]="false" [selectableGroup]="true"
+                                    [closeOnSelect]="true" [clearable]="false" [class.err]="clienteForm.get('idCiudad')!.touched && clienteForm
+                            .get('idCiudad')?.invalid" [class.border-primary]="clienteForm
+                            .get('idCiudad')!.touched && clienteForm
+                            .get('idCiudad')?.valid">
+                                    <ng-option *ngFor="let item of ciudadesList"
+                                        [value]="item.idCiudad">{{item.nombre}}</ng-option>
+                                </ng-select>
+                                <div class="invalid-feedback">
+                                    *Requerido
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="col-sm-4 mt-1 mb-3">
+                                <label for="example-select" class="form-label">Tipo Identificación</label>
+                                <ng-select (change)="cambiarValidacion($event)" formControlName="idTipoIdentificacion"
+                                    [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true"
+                                    [clearable]="false" [class.err]="clienteForm.get('idTipoIdentificacion')!.touched && clienteForm
+                            .get('idTipoIdentificacion')?.invalid" [class.border-primary]="clienteForm
+                            .get('idTipoIdentificacion')!.touched && clienteForm
+                            .get('idTipoIdentificacion')?.valid">
+                                    <ng-option *ngFor="let item of tipoIdentificacionesList"
+                                        [value]="item.idTipoIdentificacion">{{item.nombre}}</ng-option>
+                                </ng-select>
+                                <div class="invalid-feedback">
+                                    *Requerido
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <div class="row mt-2">
+
+
+
+
+
+
+
+
+
+
+
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Identificacion</label>
+                                <input
+                                    [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
+                                    formControlName="identificacion" type="text" class="form-control form-control-sm">
+
+
+                                <div
+                                    *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+
+                                    <div *ngIf="clienteForm.get('identificacion')!.hasError('required')">
+                                        <label class="errorForm">*Requerido</label>
+                                    </div>
+                                    <div class="errorForm"
+                                        *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
+                                        *Identificación Invalida
+                                    </div>
+
+
+
+                                </div>
+
+
+
+
+
+                                <div
+                                    *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+                                    <div class="errorForm"
+                                        *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
+                                        *Requerido
+                                    </div>
+                                    <div class="errorForm"
+                                        *ngIf="clienteForm.get('identificacion')!.hasError('cedulaRuc')">
+                                        *Formato Inválido
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Razón Social</label>
+                                <textarea (keyup)="setearValorRepresentante($event.target)"
+                                    formControlName="razonSocial"
+                                    [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
+                                    class="form-control" id="example-textarea"></textarea>
+                                <div class="invalid-feedback">*Requerido</div>
+
+
+                            </div>
+
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Dirección</label>
+                                <textarea formControlName="direccion"
+                                    [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
+                                    class="form-control" id="example-textarea"></textarea>
+                                <div class="invalid-feedback">*Requerido</div>
+
+                            </div>
+
+
+
+
+                        </div>
+
+
+
+                        <div class="row mt-2 ">
+
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Representante</label>
+                                <input formControlName="representante"
+                                    [class.is-invalid]="clienteForm.get('representante')!.touched && clienteForm.get('representante')?.invalid"
+                                    type="text" class="form-control form-control-sm">
+                                <div class="invalid-feedback">*Requerido</div>
+
+                            </div>
+
+
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Telefono</label>
+                                <input formControlName="telefono"
+                                    [class.is-invalid]="clienteForm.get('telefono')!.touched && clienteForm.get('telefono')?.invalid"
+                                    type="number" class="form-control form-control-sm">
+                                <div class="invalid-feedback">*Requerido</div>
+
+                            </div>
+
+
+
+
+
+
+                            <div class="col-sm-4 mt-1">
+
+                                <label for="simpleinput" class="form-label">Email</label>
+                                <input formControlName="email"
+                                    [class.is-invalid]="clienteForm.get('email')!.touched && clienteForm.get('email')?.invalid"
+                                    type="text" class="form-control form-control-sm">
+
+                                <div *ngIf="clienteForm.get('email')!.invalid && clienteForm.get('email')!.touched">
+                                    <div class="errorForm" *ngIf="clienteForm.get('email')!.hasError('required')">
+                                        *Requerido
+                                    </div>
+                                    <div class="errorForm" *ngIf="clienteForm.get('email')!.hasError('email') ">
+                                        *Formato Inválido
+                                    </div>
+                                </div>
+
+
+
+
+
+
+
+                            </div>
+
+
+
+
+
+
+
+
+
+                        </div>
+
+
+                        <div class="row mt-2 ">
+
+
+
+
+
+
+                            <div class="col-sm-5 mt-1">
+
+                                <label for="simpleinput" class="form-label">Observación</label>
+                                <textarea formControlName="observacion" class="form-control"
+                                    [class.is-invalid]="clienteForm.get('observacion')!.touched && clienteForm.get('observacion')?.invalid"
+                                    id="example-textarea"></textarea>
+                                <div class="invalid-feedback">*Requerido</div>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button (click)="limpiar()" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">Salir</button>
+                        <button *ngIf="spinnerGuardar " type="submit" class="btn btn-primary">Guardar</button>
+                        <button *ngIf="spinnerEspere" class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Espere...
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

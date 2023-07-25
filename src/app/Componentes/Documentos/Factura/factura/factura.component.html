@@ -14,7 +14,7 @@
                     <p style="font-size: 18px;" class="mt-3"> ¿ Desea Registrar un nuevo Cliente?</p>
                     <button (click)="cerrarModalWarning()" type="button" class="btn btn-secondary my-2 mr-2"
                         data-bs-dismiss="modal">Cancelar</button>
-                    <button   type="button"
+                    <button (click)="abrirModalCliente()" type="button"
                         class="btn btn-primary my-2" data-bs-dismiss="modal">Registrar</button>
                
                 </div>
@@ -28,9 +28,7 @@
     </div>
 </div>
 
-
-
-
+<app-modal-clientes #modalContainer id="modalContainer"></app-modal-clientes>
 
 <div class="row ">
 
@@ -41,8 +39,6 @@
             Factura: </strong><label style="color: red;font-weight:bolder;font-size: 1.4rem">001-001-000000001</label>
 
     </div>
-
-
 
 </div>
 

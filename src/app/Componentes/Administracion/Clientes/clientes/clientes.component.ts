@@ -77,7 +77,7 @@ export class ClientesComponent {
       this.idEmpresa = res.idEmpresa;
       this.listarClientes(this.idEmpresa);
       this.listarTiposNotificaciones();
-      this.listarProvicias();
+      this.listarProvincias();
     }
 
   }
@@ -297,7 +297,7 @@ export class ClientesComponent {
     });
   }
 
-  listarProvicias() {
+  listarProvincias() {
     this.provinciasServices.listar().subscribe({
       next: (res) => {
         this.provinciasList = res;

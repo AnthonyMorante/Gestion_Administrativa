@@ -1,10 +1,18 @@
 import { DatePipe } from '@angular/common';
-import { Component, ElementRef, Renderer2 } from '@angular/core';
+import {
+  Component,
+  ComponentRef,
+  ElementRef,
+  Renderer2,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
 import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
 import { ClientesService } from 'src/app/Servicios/clientes.service';
 import { SriService } from 'src/app/Servicios/sri.service';
+import { ModalClientesComponent } from 'src/app/Componentes/Compartidos/modal-clientes/modal-clientes.component';
 declare var $: any;
 
 @Component({
@@ -13,25 +21,28 @@ declare var $: any;
   styleUrls: ['./factura.component.css'],
 })
 export class FacturaComponent {
+  @ViewChild('modalContainer', { read: ViewContainerRef })
+  modalContainer!: ViewContainerRef;
+  dynamicComponentRef!: ComponentRef<ModalClientesComponent>;
+
   fechaActual: Date = new Date();
   fechaFormateada: any;
   spinnerIdentificacion: boolean = false;
+  component: any;
 
-
-
-    clienteForm = new FormGroup({
-      idCliente: new FormControl(),
-      identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
-      razonSocial: new FormControl('', Validators.required),
-      representante: new FormControl('', Validators.required),
-      direccion: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      telefono: new FormControl('', [Validators.required]),
-      observacion: new FormControl(),
-      idCiudad: new FormControl('', [Validators.required]),
-      idProvincia: new FormControl('', [Validators.required]),
-      idTipoIdentificacion: new FormControl('', [Validators.required]),
-    });
+  clienteForm = new FormGroup({
+    idCliente: new FormControl(),
+    identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
+    razonSocial: new FormControl('', Validators.required),
+    representante: new FormControl('', Validators.required),
+    direccion: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    telefono: new FormControl('', [Validators.required]),
+    observacion: new FormControl(),
+    idCiudad: new FormControl('', [Validators.required]),
+    idProvincia: new FormControl('', [Validators.required]),
+    idTipoIdentificacion: new FormControl('', [Validators.required]),
+  });
 
   constructor(
     private renderer: Renderer2,
@@ -39,7 +50,7 @@ export class FacturaComponent {
     private datePipe: DatePipe,
     private clientesServices: ClientesService,
     private toast: ToastComponent,
-    private sriServices: SriService
+    public viewContainerRef: ViewContainerRef
   ) {}
 
   ngOnInit() {
@@ -49,6 +60,8 @@ export class FacturaComponent {
       'yyyy-MM-dd'
     );
   }
+
+
 
   cargarContribuyente(evento: any) {
     this.spinnerIdentificacion = true;
@@ -76,8 +89,23 @@ export class FacturaComponent {
     });
   }
 
-
   cerrarModalWarning() {
     $('#ModalNuevoCliente').modal('hide');
+  }
+
+  abrirModalCliente() {
+   this.viewContainerRef.createComponent(ModalClientesComponent);
+    $('#ModalCliente').modal('show');
+    $('#ModalNuevoCliente').modal('hide');
+  }
+
+  destruirComponente() {
+
+    const component = this.viewContainerRef.createComponent(ModalClientesComponent);
+    if(component){
+
+      component.destroy();
+      alert("destruido");
+    }
   }
 }
