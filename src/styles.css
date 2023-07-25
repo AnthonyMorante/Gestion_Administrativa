@@ -6,6 +6,18 @@ hr {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
   }
 
+ 
+
+  .faa:hover {
+    color:#2E59D9;
+    transform: scale(1.2);
+  }
+
+  .fa-user-plus:hover {
+    color:#2E59D9;
+    transform: scale(1.2);
+  }
+
 .fa-plus-circle:hover {
     color:#2E59D9;
     transform: scale(1.2);

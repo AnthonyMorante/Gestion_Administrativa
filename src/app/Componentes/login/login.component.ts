@@ -73,7 +73,7 @@ export class LoginComponent {
         error:(err)=> {
 
           console.log(err);
-          if(err.error.error_description ==="Incorrect password"){
+          if(err.error.error_description ==="Contraseña Incorrecta"){
  
            this.toast.show_error("Login","Incorrect Credentials");
            return;

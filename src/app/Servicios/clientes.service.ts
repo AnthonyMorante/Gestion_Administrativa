@@ -24,6 +24,11 @@ export class ClientesService {
     return this.http.get<Clientes>(`${this.ruta}/cargar/${idCliente}`);
   }
 
+  cargarPorIdentificacion(cedula: string) {
+    return this.http.get<Clientes>(`${this.ruta}/cargarPorIdentificacion/${cedula}`);
+  }
+
+
   actualizar(clientes: Clientes): Observable<string> {
 
 

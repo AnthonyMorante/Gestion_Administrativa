@@ -7,9 +7,12 @@ import { Provincias } from '../Interfaces/Provincias';
   providedIn: 'root',
 })
 export class ProvinciasService {
+
+  ruta: string = 'api/Provincias';
+
   constructor(public http: HttpClient) {}
 
   listar(): Observable<Provincias[]> {
-    return this.http.get<Provincias[]>('api/Provincias/listar');
+    return this.http.get<Provincias[]>(`${this.ruta}/listar`);
   }
 }
