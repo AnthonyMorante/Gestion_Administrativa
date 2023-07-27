@@ -13,6 +13,7 @@ import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
 import { ClientesService } from 'src/app/Servicios/clientes.service';
 import { SriService } from 'src/app/Servicios/sri.service';
 import { ModalClientesComponent } from 'src/app/Componentes/Compartidos/modal-clientes/modal-clientes.component';
+import { CedulaService } from 'src/app/Componentes/Servicios/Cedula/cedula.service';
 declare var $: any;
 
 @Component({
@@ -30,7 +31,7 @@ export class FacturaComponent {
   spinnerIdentificacion: boolean = false;
   component: any;
 
-  clienteForm = new FormGroup({
+  facturaForm = new FormGroup({
     idCliente: new FormControl(),
     identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
     razonSocial: new FormControl('', Validators.required),
@@ -50,7 +51,10 @@ export class FacturaComponent {
     private datePipe: DatePipe,
     private clientesServices: ClientesService,
     private toast: ToastComponent,
-    public viewContainerRef: ViewContainerRef
+    public viewContainerRef: ViewContainerRef,
+    private cedulaService: CedulaService,
+    
+    
   ) {}
 
   ngOnInit() {
@@ -59,6 +63,20 @@ export class FacturaComponent {
       this.fechaActual,
       'yyyy-MM-dd'
     );
+
+
+  }
+
+
+  emitirCedulaComponente(identificacion:string | null){
+
+    this.cedulaService.disparadorCedula.emit({
+
+ 
+        cedula:identificacion
+
+
+    });
   }
 
 
@@ -71,7 +89,7 @@ export class FacturaComponent {
         this.spinnerIdentificacion = false;
 
         if (res == null) {
-          this.toast.show_warning('Cliente', 'No Registrado');
+          // this.toast.show_warning('Cliente', 'No Registrado');
           $('#ModalNuevoCliente').modal('show');
           // this.sriServices.consultarContribuyente(evento.value).subscribe({
           //   next: (res) => {
@@ -81,6 +99,7 @@ export class FacturaComponent {
           //   error: (err) => {},
           // });
         }
+        // console.log(res);
       },
       error: (err) => {
         this.spinnerIdentificacion = false;
@@ -94,9 +113,11 @@ export class FacturaComponent {
   }
 
   abrirModalCliente() {
-   this.viewContainerRef.createComponent(ModalClientesComponent);
+    this.viewContainerRef.createComponent(ModalClientesComponent);
     $('#ModalCliente').modal('show');
     $('#ModalNuevoCliente').modal('hide');
+    let identificacion= this.facturaForm?.get("identificacion")?.value;
+    this.emitirCedulaComponente(`${identificacion}`);
   }
 
   destruirComponente() {
