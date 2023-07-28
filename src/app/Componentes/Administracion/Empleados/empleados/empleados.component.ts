@@ -26,7 +26,6 @@ export class EmpleadosComponent {
     idEmpleado: new FormControl(),
     identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
     razonSocial: new FormControl('', Validators.required),
-    representante: new FormControl('', Validators.required),
     direccion: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
     telefono: new FormControl('', [Validators.required]),
@@ -378,6 +377,7 @@ export class EmpleadosComponent {
 
     
     empleado.telefono = empleado.telefono?.toString();
+    empleado.idEmpresa = this.idEmpresa;
 
     this.empleadosServices.insertar(empleado).subscribe({
       next: (res) => {
@@ -429,10 +429,6 @@ export class EmpleadosComponent {
     this.empleadoForm.reset();
     $('#exampleModal').modal('hide');
     this.spinnerEspere = false;
-  }
-
-  setearValorRepresentante(evento: any) {
-    this.empleadoForm.get('representante')?.setValue(evento.value);
   }
 
 }

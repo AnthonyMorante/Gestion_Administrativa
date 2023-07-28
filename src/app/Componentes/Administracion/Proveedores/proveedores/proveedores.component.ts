@@ -381,6 +381,8 @@ export class ProveedoresComponent {
 
     
     Proveedore.telefono = Proveedore.telefono?.toString();
+    Proveedore.idEmpresa = this.idEmpresa;
+
 
     this.ProveedoresServices.insertar(Proveedore).subscribe({
       next: (res) => {

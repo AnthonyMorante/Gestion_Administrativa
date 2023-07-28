@@ -517,6 +517,9 @@ export class ProductosComponent {
       return;
     }
 
+
+    producto.idEmpresa = this.idEmpresa;
+
     this.productosServices.insertar(producto).subscribe({
       next: (res) => {
         if (res == 'ok') {
