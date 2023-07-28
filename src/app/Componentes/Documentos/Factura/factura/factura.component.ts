@@ -35,10 +35,11 @@ export class FacturaComponent {
     idCliente: new FormControl(),
     identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
     razonSocial: new FormControl('', Validators.required),
-    representante: new FormControl('', Validators.required),
-    direccion: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
     telefono: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    direccion: new FormControl('', Validators.required),
+
+
     observacion: new FormControl(),
     idCiudad: new FormControl('', [Validators.required]),
     idProvincia: new FormControl('', [Validators.required]),
