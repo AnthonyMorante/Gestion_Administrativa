@@ -26,14 +26,13 @@ export class ClientesComponent {
     idCliente: new FormControl(),
     identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
     razonSocial: new FormControl('', Validators.required),
-    representante: new FormControl('', Validators.required),
     direccion: new FormControl('', Validators.required),
     email: new FormControl('', [Validators.required, Validators.email]),
     telefono: new FormControl('', [Validators.required]),
     observacion: new FormControl(),
     idCiudad: new FormControl('', [Validators.required]),
     idProvincia: new FormControl('', [Validators.required]),
-    idTipoIdentificacion: new FormControl('', [Validators.required]),
+    idTipoIdentificacion: new FormControl('', [Validators.required])
   });
 
   tipoIdentificacionesList: TipoIdentificaciones[] = [];
@@ -375,6 +374,7 @@ export class ClientesComponent {
 
     
     cliente.telefono = cliente.telefono?.toString();
+    cliente.idEmpresa = this.idEmpresa;
 
     this.clientesServices.insertar(cliente).subscribe({
       next: (res) => {
@@ -428,7 +428,5 @@ export class ClientesComponent {
     this.spinnerEspere = false;
   }
 
-  setearValorRepresentante(evento: any) {
-    this.clienteForm.get('representante')?.setValue(evento.value);
-  }
+
 }

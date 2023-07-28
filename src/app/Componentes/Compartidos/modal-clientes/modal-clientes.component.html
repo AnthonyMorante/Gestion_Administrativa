@@ -1,4 +1,3 @@
-
 <!-- Modal -->
 <div class="modal fade" id="ModalCliente" data-backdrop="static" data-keyboard="false" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -6,7 +5,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Cliente</h5>
-                <button (click)="limpiar()" type="button" class="close" dataar-dismiss="modal" aria-label="Close">
+                <button tabindex="0" (click)="limpiar()" type="button" class="close" dataar-dismiss="modal"
+                    aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -23,7 +23,8 @@
                 </div>
 
 
-                <form *ngIf="!spinnerCargar" [formGroup]="clienteForm" (ngSubmit)="guardar(clienteForm.value)">
+                <form *ngIf="!spinnerCargar" [formGroup]="clienteForm" (ngSubmit)="guardar(clienteForm.value)"
+                    (keydown)="eventPredefault($event)">
                     <div class="modal-body">
 
 
@@ -34,8 +35,7 @@
 
                             <div class="col-sm-4 mt-1 mb-3">
                                 <label for="example-select" class="form-label">Provincia</label>
-                                <ng-select
-                                    (change)="listarCiudadesSet($event)" formControlName="idProvincia"
+                                <ng-select (change)="listarCiudadesSet($event)" formControlName="idProvincia"
                                     [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true"
                                     [clearable]="false" [class.err]="clienteForm.get('idProvincia')!.touched && clienteForm
                             .get('idProvincia')?.invalid" [class.border-primary]="clienteForm
@@ -102,70 +102,90 @@
 
 
 
+                                <div class="col-sm-4 mt-1">
+
+                                    <label for="simpleinput" class="form-label">Identificacion</label>
 
 
-                            <div class="col-sm-4 mt-1">
 
-                                <label for="simpleinput" class="form-label">Identificacion</label>
-                                <input
-                                    [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
-                                    formControlName="identificacion" type="text" class="form-control form-control-sm">
+                              <div class="input-group">
 
+                                    <input
+                                        [class.is-invalid]="clienteForm.get('identificacion')!.touched && clienteForm.get('identificacion')?.invalid"
+                                        formControlName="identificacion" type="text"
+                                        class="form-control form-control-sm" id="identificacion" #identificacion
+                                        (keyup.enter)="consultarSriIdentificacion($event.target)">
 
-                                <div
-                                    *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
-
-                                    <div *ngIf="clienteForm.get('identificacion')!.hasError('required')">
-                                        <label class="errorForm">*Requerido</label>
+                                    <div class="input-group-append" *ngIf="spinnerIdentificacion">
+                                        <span class="input-group-text">
+                                            <span class="spinner-border spinner-border-sm" role="status"
+                                                aria-hidden="true"></span>
+                                        </span>
                                     </div>
-                                    <div class="errorForm"
-                                        *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
-                                        *Identificación Invalida
+
+                                </div>
+ 
+
+
+                                    <div
+                                        *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+
+                                        <div *ngIf="clienteForm.get('identificacion')!.hasError('required')">
+                                            <label class="errorForm">*Requerido</label>
+                                        </div>
+                                        <div class="errorForm"
+                                            *ngIf="!clienteForm.get('identificacion')!.hasError('cedulaRuc') && !clienteForm.get('identificacion')!.hasError('required')">
+                                            *Identificación Invalida
+                                        </div>
+
+
+
                                     </div>
 
+
+
+
+
+                                    <div
+                                        *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
+                                        <div class="errorForm"
+                                            *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
+                                            *Requerido
+                                        </div>
+                                        <div class="errorForm"
+                                            *ngIf="clienteForm.get('identificacion')!.hasError('cedulaRuc')">
+                                            *Formato Inválido
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="col-sm-4 mt-1">
+
+                                    <label for="simpleinput" class="form-label">Razón Social</label>
+                                    <textarea (keyup)="setearValorRepresentante($event.target)"
+                                        formControlName="razonSocial"
+                                        [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
+                                        class="form-control" id="example-textarea"></textarea>
+                                    <div class="invalid-feedback">*Requerido</div>
 
 
                                 </div>
 
 
+                                <div class="col-sm-4 mt-1">
 
+                                    <label for="simpleinput" class="form-label">Dirección</label>
+                                    <textarea formControlName="direccion"
+                                        [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
+                                        class="form-control" id="example-textarea"></textarea>
+                                    <div class="invalid-feedback">*Requerido</div>
 
-
-                                <div
-                                    *ngIf="clienteForm.get('identificacion')!.invalid && clienteForm.get('identificacion')!.touched">
-                                    <div class="errorForm"
-                                        *ngIf="clienteForm.get('identificacion')!.hasError('identificacion')">
-                                        *Requerido
-                                    </div>
-                                    <div class="errorForm"
-                                        *ngIf="clienteForm.get('identificacion')!.hasError('cedulaRuc')">
-                                        *Formato Inválido
-                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-sm-4 mt-1">
-
-                                <label for="simpleinput" class="form-label">Razón Social</label>
-                                <textarea (keyup)="setearValorRepresentante($event.target)"
-                                    formControlName="razonSocial"
-                                    [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
-                                    class="form-control" id="example-textarea"></textarea>
-                                <div class="invalid-feedback">*Requerido</div>
 
 
-                            </div>
-
-
-                            <div class="col-sm-4 mt-1">
-
-                                <label for="simpleinput" class="form-label">Dirección</label>
-                                <textarea formControlName="direccion"
-                                    [class.is-invalid]="clienteForm.get('direccion')!.touched && clienteForm.get('direccion')?.invalid"
-                                    class="form-control" id="example-textarea"></textarea>
-                                <div class="invalid-feedback">*Requerido</div>
-
-                            </div>
+                
 
 
 

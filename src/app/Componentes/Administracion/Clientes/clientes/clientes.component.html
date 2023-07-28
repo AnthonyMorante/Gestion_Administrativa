@@ -234,7 +234,7 @@
                             <div class="col-sm-4 mt-1">
 
                                 <label for="simpleinput" class="form-label">Razón Social</label>
-                                <textarea (keyup)="setearValorRepresentante($event.target)"
+                                <textarea 
                                     formControlName="razonSocial"
                                     [class.is-invalid]="clienteForm.get('razonSocial')!.touched && clienteForm.get('razonSocial')?.invalid"
                                     class="form-control" id="example-textarea"></textarea>
@@ -264,7 +264,7 @@
                         <div class="row mt-2 ">
 
 
-                            <div class="col-sm-4 mt-1">
+                            <!-- <div class="col-sm-4 mt-1">
 
                                 <label for="simpleinput" class="form-label">Representante</label>
                                 <input formControlName="representante"
@@ -272,7 +272,7 @@
                                     type="text" class="form-control form-control-sm">
                                 <div class="invalid-feedback">*Requerido</div>
 
-                            </div>
+                            </div> -->
 
 
 
@@ -316,24 +316,15 @@
                             </div>
 
 
+                            
+  
 
 
 
 
 
 
-
-                        </div>
-
-
-                        <div class="row mt-2 ">
-
-
-
-
-
-
-                            <div class="col-sm-5 mt-1">
+                            <div class="col-sm-4 mt-1">
 
                                 <label for="simpleinput" class="form-label">Observación</label>
                                 <textarea formControlName="observacion" class="form-control"
@@ -344,7 +335,19 @@
                             </div>
 
 
+     
+
+
+
+
+
+
+
+
+
                         </div>
+
+
 
 
                     </div>

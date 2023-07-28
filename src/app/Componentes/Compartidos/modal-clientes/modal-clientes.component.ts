@@ -2,6 +2,7 @@ import {
   Component,
   ComponentRef,
   ElementRef,
+  Renderer2,
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
@@ -21,6 +22,8 @@ import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaci
 
 declare var $: any;
 import jwt_decode from 'jwt-decode';
+import { CedulaService } from '../../Servicios/Cedula/cedula.service';
+import { SriService } from 'src/app/Servicios/sri.service';
 
 @Component({
   selector: 'app-modal-clientes',
@@ -28,9 +31,10 @@ import jwt_decode from 'jwt-decode';
   styleUrls: ['./modal-clientes.component.css'],
 })
 export class ModalClientesComponent {
-  @ViewChild('modalContainer', { read: ViewContainerRef })
-  modalContainer!: ViewContainerRef;
+  @ViewChild('modalContainer', { read: ViewContainerRef }) modalContainer!: ViewContainerRef;
   dynamicComponentRef!: ComponentRef<ModalClientesComponent>;
+
+  @ViewChild('identificacion') identificacionInputRef!: ElementRef;
 
   clienteForm = new FormGroup({
     idCliente: new FormControl(),
@@ -59,18 +63,22 @@ export class ModalClientesComponent {
   idEmpresa: string | null = '';
   selectedTipoNotificacion: any;
   idProvincia = '';
+  spinnerIdentificacion: boolean = false;
+
 
   constructor(
     private toast: ToastComponent,
     private el: ElementRef,
+    private Renderer2: Renderer2,
     private validator: Validator,
     private tipoIdentificacionesServices: TipoIdentificacionesService,
     private provinciasServices: ProvinciasService,
     private ciudadesServices: CiudadesService,
     private clientesServices: ClientesService,
     private ngSelectConfig: NgSelectConfig,
-    private elementRef: ElementRef,
-    public viewContainerRef: ViewContainerRef
+    private sriService: SriService,
+    public viewContainerRef: ViewContainerRef,
+    private cedulaService: CedulaService
   ) {
     this.ngSelectConfig.notFoundText = 'No existen coincidencias';
     this.idProvincia = 'd2d84fb9-8d21-4fe8-b200-50f041659673';
@@ -81,10 +89,61 @@ export class ModalClientesComponent {
     if (this.token != null) {
       const res = jwt_decode(this.token) as { idEmpresa: string };
       this.idEmpresa = res.idEmpresa;
-
       this.listarTiposNotificaciones();
       this.listarProvincias();
+      this.subscribirseCedula();
+     
     }
+  }
+
+  consultarSriIdentificacion(evento:any){
+
+
+    this.spinnerIdentificacion=true;
+
+    this.sriService.consultarContribuyente(evento.value).subscribe({
+
+
+      next:(res:any)=>{
+
+
+        this.clienteForm.get("razonSocial")?.setValue(res.nombreComercial)
+        this.clienteForm.get("representante")?.setValue(res.nombreComercial)
+        this.spinnerIdentificacion=false;
+
+
+      },error:(err)=>{
+
+
+        this.toast.show_error('Error', 'Error Identificación SRI');
+        this.spinnerIdentificacion=false;
+
+      }
+
+    });
+    return;
+
+
+
+  }
+  subscribirseCedula() {
+    this.cedulaService.disparadorCedula.subscribe({
+      next: (res: any) => {
+
+ 
+        this.clienteForm.get("identificacion")?.setValue(res.cedula);
+        setTimeout(() => {
+  
+          var element = this.Renderer2.selectRootElement('#identificacion');
+          element.focus();
+    
+      },500);
+ 
+      },
+      error: (err: any) => {
+        this.toast.show_error('Error', 'Al Recibir la Identificacion');
+      },
+    });
   }
 
   listarCiudadesSet(idProvincia: any) {
@@ -106,7 +165,7 @@ export class ModalClientesComponent {
 
   limpiar() {
     this.clienteForm.reset();
-    $('#exampleModal').modal('hide');
+    $('#ModalCliente').modal('hide');
     this.spinnerEspere = false;
     this.listarCiudades(this.provinciasList[0].idProvincia ?? '');
     this.clienteForm.patchValue({
@@ -123,6 +182,15 @@ export class ModalClientesComponent {
     if (component) {
       component.destroy();
       alert('destruido');
+    }
+  }
+
+
+  eventPredefault(event: KeyboardEvent) {
+
+    if (event.key === "Enter") {
+
+      event.preventDefault();
     }
   }
 
@@ -146,6 +214,7 @@ export class ModalClientesComponent {
           this.limpiar();
           this.spinnerEspere = false;
           this.spinnerGuardar = true;
+          $('#ModalCliente').modal('hide');
           return;
         }
 

@@ -13,9 +13,11 @@ export interface Clientes {
     observacion?: string | null;
     fechaRegistro?: Date | null;
     idCiudad?: string | null ;
+    idEmpresa?: string | null ;
     idTipoIdentificacion?: string | null ;
     idCiudadNavigation?: Ciudades | null ;
     dTipoIdentificacionNavigation?: TipoIdentificaciones | null;
+    
 
   }
 
