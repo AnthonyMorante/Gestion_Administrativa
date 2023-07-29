@@ -204,7 +204,7 @@ export class ModalClientesComponent {
       this.spinnerGuardar = true;
       return;
     }
-
+    cliente.idEmpresa = this.idEmpresa;
     cliente.telefono = cliente.telefono?.toString();
 
     this.clientesServices.insertar(cliente).subscribe({

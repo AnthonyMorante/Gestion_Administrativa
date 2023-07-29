@@ -1,8 +1,5 @@
-<div 
-(keyup.enter)="registrar.click()"
-(keydown.esc)="cancelar.click()"
-class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="false" tabindex="-1"
-    aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div (keyup.enter)="registrar.click()" (keydown.esc)="cancelar.click()" class="modal fade" id="ModalNuevoCliente"
+    data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-body">
@@ -11,7 +8,7 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
                 <div class="text-center">
                     <i style="font-size: 39px;" class="fas fa-exclamation-triangle text-warning"></i>
                     <h4 style="font-weight: bolder;font-size:20px" class="mt-2">¡Advertencia!</h4>
-                    <p style="font-size: 18px;" class="mt-3">  No Registrado ¿Desea Registrar un nuevo Cliente?</p>
+                    <p style="font-size: 18px;" class="mt-3"> No Registrado ¿Desea Registrar un nuevo Cliente?</p>
                     <button #cancelar (click)="cerrarModalWarning()" type="button" class="btn btn-secondary my-2 mr-2"
                         data-bs-dismiss="modal">Cancelar</button>
                     <button #registrar (click)="abrirModalCliente()" type="button" class="btn btn-primary my-2"
@@ -87,16 +84,13 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
                     <div class="input-group">
                         <input
                             [class.is-invalid]="facturaForm.get('identificacion')!.touched && facturaForm.get('identificacion')?.invalid"
-                            formControlName="identificacion"
-                            (keyup.enter)="cargarContribuyente($event.target)" class="form-control form-control-sm"
-                            type="text"
-          
-          
-                            >
+                            formControlName="identificacion" (keyup.enter)="cargarContribuyente($event.target)"
+                            class="form-control form-control-sm" (keyup)="limpiarDatosContribuyentes($event.target)"
+                            type="text">
 
-                            
 
-                            
+
+
                         <div class="input-group-append" *ngIf="spinnerIdentificacion">
                             <span class="input-group-text">
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -113,9 +107,8 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
                     <label for="example-select" class="form-label">Razón Social</label>
                     <input
-                    [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
-                    formControlName="razonSocial"
-                    class="form-control form-control-sm" type="text">
+                        [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                        formControlName="razonSocial" class="form-control form-control-sm" type="text">
 
                 </div>
 
@@ -123,20 +116,16 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
                     <label for="example-select" class="form-label">Telefono</label>
                     <input
-                    
-                    [class.is-invalid]="facturaForm.get('telefono')!.touched && facturaForm.get('telefono')?.invalid"
-                    formControlName="telefono"
-                    class="form-control form-control-sm" type="text">
+                        [class.is-invalid]="facturaForm.get('telefono')!.touched && facturaForm.get('telefono')?.invalid"
+                        formControlName="telefono" class="form-control form-control-sm" type="text">
 
                 </div>
 
                 <div class="col-md-4 mt-1">
 
                     <label for="example-select" class="form-label">Correo</label>
-                    <input
-                    [class.is-invalid]="facturaForm.get('email')!.touched && facturaForm.get('email')?.invalid"
-                    formControlName="email"
-                    class="form-control form-control-sm" type="text">
+                    <input [class.is-invalid]="facturaForm.get('email')!.touched && facturaForm.get('email')?.invalid"
+                        formControlName="email" class="form-control form-control-sm" type="text">
 
                 </div>
 
@@ -144,11 +133,8 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
                     <label for="example-select" class="form-label">Dirección</label>
                     <textarea
-                    
-                          
-                    [class.is-invalid]="facturaForm.get('direccion')!.touched && facturaForm.get('direccion')?.invalid"
-                    formControlName="direccion"
-                    class="form-control form-control-sm" rows="2"></textarea>
+                        [class.is-invalid]="facturaForm.get('direccion')!.touched && facturaForm.get('direccion')?.invalid"
+                        formControlName="direccion" class="form-control form-control-sm" rows="2"></textarea>
 
                 </div>
 
@@ -184,9 +170,11 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Establecimiento</label>
-                    <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                        <option selected>001</option>
-                        <option>002</option>
+                    <select formControlName="idEstablecimiento" class="form-control form-control-sm "
+                        id="exampleFormControlSelect1">
+                        <option *ngFor="let item of EstablecimientosList" value={{item.idEstablecimiento}}>
+                            {{padLeft.convert(item.nombre,3)}}</option>
+
 
                     </select>
 
@@ -195,10 +183,11 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Punto Emisión</label>
-                    <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                        <option selected>001</option>
-                        <option>002</option>
-                        <option>PROFORMA</option>
+                    <select formControlName="idPuntoEmision" class="form-control form-control-sm "
+                        id="exampleFormControlSelect1">
+                        <option *ngFor="let item of PuntoEmisionList" value={{item.idPuntoEmision}}>
+                            {{padLeft.convert(item.nombre,3)}}</option>
+
                     </select>
 
                 </div>
@@ -215,10 +204,11 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
                     <div class="form-group">
                         <label for="exampleFormControlSelect1">Documento a Emitir</label>
-                        <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                            <option selected>FACTURA</option>
-                            <option>NOTA ENTREGA</option>
-                            <option>PROFORMA</option>
+                        <select formControlName="idDocumentoEmitir" class="form-control form-control-sm "
+                            id="exampleFormControlSelect1">
+                            <option *ngFor="let item of DocumentosEmitirList" value={{item.idDocumentoEmitir}}>
+                                {{item.nombre}}</option>
+
                         </select>
                     </div>
                 </div>
@@ -233,65 +223,70 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
     </div>
 
-</form>
 
 
 
-<div class="row mt-2">
+
+    <div class="row mt-2">
 
 
-    <div class="col-md-12">
-        <hr>
-        <label style="font-weight: bolder; font-size: large;">Venta</label>
+        <div class="col-md-12">
+            <hr>
+            <label style="font-weight: bolder; font-size: large;">Venta</label>
 
-    </div>
+        </div>
 
-    <div class="col-md-4">
+        <div class="col-md-7">
 
-        <label for="example-select" class="form-label">Productos/Servicio</label>
-        <input class="form-control form-control-sm " type="text">
-    </div>
-
-
-    <div class="col-md-1">
-
-        <label for="example-select" class="form-label">Precios</label>
-        <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-            <option selected>2.50</option>
-            <option>3.50</option>
-            <option>4.50</option>
-        </select>
-
-    </div>
+            <label for="example-select" class="form-label">Productos/Servicio</label>
+            <ng-select  (change)="cargarProducto($event)" formControlName="idProducto" [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true">
+                <ng-option value="">--Seleccione un Producto--</ng-option>
+                <ng-option *ngFor="let item of ProductosList" value={{item.idProducto}}>{{item.nombre}}
+                    ({{item.cantidad}}) - ${{item.precio}} </ng-option>
+            </ng-select>
+        </div>
 
 
-    <div class="col-md-1">
+        <div class="col-md-1">
 
-        <label for="example-select" class="form-label">Cantidad</label>
-        <input class="form-control form-control-sm " type="text">
-    </div>
-
-    <div class="col-md-1">
-
-        <label for="example-select" class="form-label">Total</label>
-        <input class="form-control form-control-sm " type="text">
-
-    </div>
+            <label for="example-select" class="form-label">Precios</label>
+            <select class="form-control form-control-sm " id="exampleFormControlSelect1">
+                <option selected>2.50</option>
+                <option>3.50</option>
+                <option>4.50</option>
+            </select>
 
 
-
-    <div class="col-md-2 botonAgregar " style="margin-top: 1.8rem; ">
-
-        <button style="height: 2.2rem;" class="btn btn-primary">
-
-            <i class="fas fa-plus"></i>
-            Agregar
+        </div>
 
 
-        </button>
-    </div>
+        <div class="col-md-1">
 
-    <!-- <div class="col-md-1 d-flex flex-column align-items-center justify-content-center" style="margin-top: 2.2%;">
+            <label for="example-select" class="form-label">Cantidad</label>
+            <input class="form-control form-control-sm " type="text">
+        </div>
+
+        <div class="col-md-1">
+
+            <label for="example-select" class="form-label">Total</label>
+            <input class="form-control form-control-sm " type="text">
+
+        </div>
+
+
+
+        <div class="col-md-2 botonAgregar " style="margin-top: 1.8rem; ">
+
+            <button style="height: 2.2rem;" class="btn btn-primary">
+
+                <i class="fas fa-plus"></i>
+                Agregar
+
+
+            </button>
+        </div>
+
+        <!-- <div class="col-md-1 d-flex flex-column align-items-center justify-content-center" style="margin-top: 2.2%;">
 
 
 
@@ -300,263 +295,469 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
        
       </div> -->
-</div>
+    </div>
 
 
-<div class="w-100 table-responsive">
+    <div class="w-100 table-responsive">
 
 
-    <table class="table mt-4 ">
-        <thead>
-            <tr style="text-align: center; ">
-                <th scope="col">#</th>
-                <th scope="col">Codigo</th>
-                <th scope="col">Cantidad</th>
-                <th scope="col">Precio</th>
-                <th scope="col">Iva</th>
-                <th scope="col">Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="text-align: center;">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
+        <table class="table mt-4 ">
+            <thead>
+                <tr style="text-align: center; ">
+                    <th scope="col">#</th>
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Iva</th>
+                    <th scope="col">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="text-align: center;">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
 
-            <tr style="text-align: center;">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
+                <tr style="text-align: center;">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
 
-            <tr style="text-align: center;">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
+                <tr style="text-align: center;">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
 
-            <tr style="text-align: center;">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
+                <tr style="text-align: center;">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
 
-            <tr style="text-align: center;">
-                <th scope="row">1</th>
-                <td>Mark</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-                <td>Otto</td>
-                <td>@mdo</td>
-            </tr>
-        </tbody>
-    </table>
+                <tr style="text-align: center;">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                </tr>
+            </tbody>
+        </table>
 
-</div>
+    </div>
 
-<hr>
-
-
-<div class="row">
-
-    <div class="col-md-8">
+    <hr>
 
 
-        <div class="row">
+    <div class="row">
+
+        <div class="col-md-8">
 
 
-            <div class="col-md-12 mt-2 totalLabel">
-                <!-- 
+            <div class="row">
+
+
+                <div class="col-md-12 mt-2 totalLabel">
+                    <!-- 
                 <label style="font-weight: bolder; font-size: large;">Adicionales</label>
                 <hr> -->
 
 
 
-                <ul class="nav nav-tabs col-md-8" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link formaPago " data-toggle="tab" href="#formaPago" role="tab">FORMA PAGO</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#adicional" role="tab">INFORMACIÓN ADICIONAL</a>
-                    </li>
-                </ul>
+                    <ul class="nav nav-tabs col-md-8" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link formaPago " data-toggle="tab" href="#formaPago" role="tab">FORMA PAGO</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#adicional" role="tab">INFORMACIÓN ADICIONAL</a>
+                        </li>
+                    </ul>
 
-                <div class="tab-content col-md-8">
-                    <div class="tab-pane" id="formaPago" role="tabpanel">
-
-
-
-                        <div class="col-md-12 mt-2">
-
-                            <!-- <label for="example-select" class="form-label">Tipo Pago</label> -->
-                            <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                                <option style="  text-align: center;" selected>SIN UTILIZACIÓN DEL SISTEMA FINANCIERO
-                                </option>
-                                <option style="  text-align: center;">TARJETA DE CREDITO</option>
-                                <option style="  text-align: center;">TARJETA DE DEBITO</option>
-                            </select>
-                        </div>
+                    <div class="tab-content col-md-8">
+                        <div class="tab-pane" id="formaPago" role="tabpanel">
 
 
 
-                        <div class="col-md-12 mt-2">
+                            <div class="col-md-12 mt-2">
+
+                                <!-- <label for="example-select" class="form-label">Tipo Pago</label> -->
+                                <select class="form-control form-control-sm " id="exampleFormControlSelect1">
+                                    <option style="  text-align: center;" selected>SIN UTILIZACIÓN DEL SISTEMA
+                                        FINANCIERO
+                                    </option>
+                                    <option style="  text-align: center;">TARJETA DE CREDITO</option>
+                                    <option style="  text-align: center;">TARJETA DE DEBITO</option>
+                                </select>
+                            </div>
 
 
 
-                            <div class="row">
-
-                                <div class="col-md-3">
-
-                                    <label for="example-select" class="form-label">Tiempo</label>
-                                    <input class="form-control form-control-sm " type="text">
-                                </div>
-
-                                <div class="col-md-3">
-
-                                    <label for="example-select" class="form-label">Plazo</label>
-                                    <input class="form-control form-control-sm " type="text">
-                                </div>
+                            <div class="col-md-12 mt-2">
 
 
-                                <div class="col-md-3">
 
-                                    <label for="example-select" class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm " type="text">
-                                </div>
+                                <div class="row">
 
-                                <div class="col-md-3">
+                                    <div class="col-md-3">
 
-                                    <!-- <label style="visibility: hidden;" for="example-select" class="form-label">Tipo
+                                        <label for="example-select" class="form-label">Tiempo</label>
+                                        <input class="form-control form-control-sm " type="text">
+                                    </div>
+
+                                    <div class="col-md-3">
+
+                                        <label for="example-select" class="form-label">Plazo</label>
+                                        <input class="form-control form-control-sm " type="text">
+                                    </div>
+
+
+                                    <div class="col-md-3">
+
+                                        <label for="example-select" class="form-label">Valor</label>
+                                        <input class="form-control form-control-sm " type="text">
+                                    </div>
+
+                                    <div class="col-md-3">
+
+                                        <!-- <label style="visibility: hidden;" for="example-select" class="form-label">Tipo
                                         Pago</label> -->
-                                    <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
+                                        <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
 
-                                        <i class="fas fa-plus mt-1"></i>
-                                        Agregar
+                                            <i class="fas fa-plus mt-1"></i>
+                                            Agregar
 
 
-                                    </button>
+                                        </button>
+                                    </div>
+
+
+                                </div>
+
+                                <div class="row">
+
+
+                                    <table class="table mt-4 col-md-12">
+                                        <thead>
+                                            <tr style="text-align: center; ">
+                                                <th scope="col">#</th>
+                                                <th scope="col">Forma Pago</th>
+                                                <th scope="col">Plazo</th>
+                                                <th scope="col">Valor</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="text-align: center;">
+                                                <th scope="row">1</th>
+                                                <td>Tarjeta Credito </td>
+                                                <td>2 Años</td>
+                                                <td>$1350</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+
                                 </div>
 
 
                             </div>
 
-                            <div class="row">
-
-
-                                <table class="table mt-4 col-md-12">
-                                    <thead>
-                                        <tr style="text-align: center; ">
-                                            <th scope="col">#</th>
-                                            <th scope="col">Forma Pago</th>
-                                            <th scope="col">Plazo</th>
-                                            <th scope="col">Valor</th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr style="text-align: center;">
-                                            <th scope="row">1</th>
-                                            <td>Tarjeta Credito </td>
-                                            <td>2 Años</td>
-                                            <td>$1350</td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-
-                            </div>
 
 
                         </div>
+                        <div class="tab-pane" id="adicional" role="tabpanel">
+
+
+                            <div class="col-md-12 mt-2">
 
 
 
-                    </div>
-                    <div class="tab-pane" id="adicional" role="tabpanel">
+                                <div class="row">
+
+                                    <div class="col-md-6">
+
+                                        <label for="example-select" class="form-label">Nombre</label>
+                                        <input class="form-control form-control-sm " type="text">
+                                    </div>
+
+                                    <div class="col-md-3">
+
+                                        <label for="example-select" class="form-label">Valor</label>
+                                        <input class="form-control form-control-sm " type="text">
+                                    </div>
 
 
-                        <div class="col-md-12 mt-2">
 
 
+                                    <div class="col-md-3">
 
-                            <div class="row">
 
-                                <div class="col-md-6">
+                                        <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
 
-                                    <label for="example-select" class="form-label">Nombre</label>
-                                    <input class="form-control form-control-sm " type="text">
+                                            <i class="fas fa-plus"></i>
+                                            Agregar
+
+
+                                        </button>
+                                    </div>
+
+
                                 </div>
 
-                                <div class="col-md-3">
-
-                                    <label for="example-select" class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm " type="text">
-                                </div>
+                                <div class="row">
 
 
+                                    <table class="table mt-4 col-md-12">
+                                        <thead>
+                                            <tr style="text-align: center; ">
+                                                <th scope="col">#</th>
+                                                <th scope="col">Nombre</th>
+                                                <th scope="col">Valor</th>
 
 
-                                <div class="col-md-3">
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="text-align: center;">
+                                                <th scope="row">1</th>
+                                                <td>Tarjeta Credito </td>
+                                                <td>$1350</td>
+                                            </tr>
 
+                                        </tbody>
+                                    </table>
 
-                                    <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
-
-                                        <i class="fas fa-plus"></i>
-                                        Agregar
-
-
-                                    </button>
                                 </div>
 
 
                             </div>
 
-                            <div class="row">
-
-
-                                <table class="table mt-4 col-md-12">
-                                    <thead>
-                                        <tr style="text-align: center; ">
-                                            <th scope="col">#</th>
-                                            <th scope="col">Nombre</th>
-                                            <th scope="col">Valor</th>
-
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr style="text-align: center;">
-                                            <th scope="row">1</th>
-                                            <td>Tarjeta Credito </td>
-                                            <td>$1350</td>
-                                        </tr>
-
-                                    </tbody>
-                                </table>
-
-                            </div>
 
 
                         </div>
-
-
-
                     </div>
+
                 </div>
 
+
+
+
+
+
+
+
+            </div>
+
+
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+
+
+
+
+
+
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Subtotal</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+            </div>
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Tot. Descuento</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">IVA 0%</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">IVA 12%</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Total</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
             </div>
 
 
@@ -564,214 +765,11 @@ class="modal fade" id="ModalNuevoCliente" data-backdrop="static" data-keyboard="
 
 
 
-
-
         </div>
+
 
 
 
     </div>
 
-    <div class="col-md-4 mb-3">
-
-
-
-
-
-
-
-
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">Subtotal</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-
-
-
-
-
-        </div>
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">Tot. Descuento</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA 0%</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">IVA 12%</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-        <div class="row">
-
-
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                <label style="font-size: 1.0rem;font-weight:bolder">Total</label>
-
-
-
-
-            </div>
-
-            <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-            </div>
-
-
-
-        </div>
-
-
-
-
-
-
-    </div>
-
-
-
-
-</div>
+</form>

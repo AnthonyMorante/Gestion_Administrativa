@@ -16,6 +16,16 @@ export class ProductosService {
     return this.http.get<Productos[]>(`${this.ruta}/listar/${idEmpresa}`);
   }
 
+
+  listarFactura(idEmpresa:string | null): Observable<Productos[]> {
+    return this.http.get<Productos[]>(`${this.ruta}/listarFactura/${idEmpresa}`);
+  }
+
+
+
+
+  
+
   insertar(productos: Productos) {
     return this.http.post(`${this.ruta}/insertar`, productos);
   }

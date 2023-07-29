@@ -9,6 +9,7 @@ export interface Productos {
     activo?: boolean | null;
     precio?: number | null;
     fechaRegistro?: Date | null;
+    cantidad?: number | null;
     idIva?: string | null;
     idEmpresa?: string | null;
     idEmpresaNavigation?: Empresas | null;
