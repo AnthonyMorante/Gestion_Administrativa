@@ -7,7 +7,7 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InicioComponent } from './Componentes/Inicio/inicio/inicio.component';
-import { DatePipe } from '@angular/common'; 
+import { DatePipe, DecimalPipe } from '@angular/common'; 
 import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -55,7 +55,7 @@ import { ModalClientesComponent } from './Componentes/Compartidos/modal-clientes
     DataTablesModule
  
   ],
-  providers: [DatePipe, { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor ,multi: true },   ],
+  providers: [DecimalPipe,DatePipe, { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor ,multi: true },   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

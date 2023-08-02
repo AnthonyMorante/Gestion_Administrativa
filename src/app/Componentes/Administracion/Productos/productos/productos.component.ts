@@ -129,6 +129,7 @@ export class ProductosComponent {
         totalIva: this.productoForm.get('totalIva')?.value,
         porcentaje: this.productoForm.get('porcentaje')?.value,
         utilidad: this.productoForm.get('utilidad')?.value,
+        idIva: this.productoForm.get('idIva')?.value,
       })
     );
 

@@ -33,8 +33,7 @@
 
         <strong
             style="font-size: 1.5rem ;font-weight: bolder;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
-            Factura: </strong><label style="color: red;font-weight:bolder;font-size: 1.4rem">001-001-000000001</label>
-
+            Factura: </strong><label style="color: red;font-weight:bolder;font-size: 1.4rem">{{establecimiento}}-{{puntoEmision}}-{{secuencial}}</label>
     </div>
 
 </div>
@@ -170,7 +169,7 @@
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Establecimiento</label>
-                    <select formControlName="idEstablecimiento" class="form-control form-control-sm "
+                    <select (change)="cambiarEstablecimiento($event.target)" formControlName="idEstablecimiento" class="form-control form-control-sm "
                         id="exampleFormControlSelect1">
                         <option *ngFor="let item of EstablecimientosList" value={{item.idEstablecimiento}}>
                             {{padLeft.convert(item.nombre,3)}}</option>
@@ -183,7 +182,7 @@
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Punto Emisión</label>
-                    <select formControlName="idPuntoEmision" class="form-control form-control-sm "
+                    <select (change)="cambiarPuntoEmision($event.target)" formControlName="idPuntoEmision" class="form-control form-control-sm "
                         id="exampleFormControlSelect1">
                         <option *ngFor="let item of PuntoEmisionList" value={{item.idPuntoEmision}}>
                             {{padLeft.convert(item.nombre,3)}}</option>
@@ -224,52 +223,87 @@
     </div>
 
 
-
-
-
-    <div class="row mt-2">
-
+    <div class="row">
 
         <div class="col-md-12">
             <hr>
             <label style="font-weight: bolder; font-size: large;">Venta</label>
-
+    
         </div>
+    
+    
 
-        <div class="col-md-7">
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-2">
+            <label for="example-select" class="form-label">Precios</label>
+
+
+            <div >
+
+                <select
+                
+                    [class.is-invalid]="facturaForm.get('precios')!.touched && facturaForm.get('precios')?.invalid" 
+                    (change)="asignarValor($event.target)" formControlName="precios" class="form-control form-control-sm col-md-8 col-12" id="exampleFormControlSelect1">
+                    <option *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2' }}</option>
+               
+                </select>
+          
+            </div>
+       
+
+
+
+     
+        </div>
+    </div>
+
+    <div class="row mt-2">
+
+
+     
+
+        <div class="col-md-6">
 
             <label for="example-select" class="form-label">Productos/Servicio</label>
-            <ng-select  (change)="cargarProducto($event)" formControlName="idProducto" [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true">
+            <ng-select
+    
+            (change)="cargarProducto($event)" formControlName="idProducto" [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true">
                 <ng-option value="">--Seleccione un Producto--</ng-option>
                 <ng-option *ngFor="let item of ProductosList" value={{item.idProducto}}>{{item.nombre}}
-                    ({{item.cantidad}}) - ${{item.precio}} </ng-option>
+                    ({{item.cantidad}}) - ${{item.totalIva}} </ng-option>
             </ng-select>
         </div>
 
 
-        <div class="col-md-1">
+ 
 
-            <label for="example-select" class="form-label">Precios</label>
-            <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                <option selected>2.50</option>
-                <option>3.50</option>
-                <option>4.50</option>
-            </select>
+        
+        <div style="width: 100%;" class="col-md-botones-venta">
+            <label for="example-select" class="form-label">Valor</label>
+            <input
+              (keyup)="calcularTotalVenta()"
+              [class.is-invalid]="facturaForm.get('valor')!.touched && facturaForm.get('valor')?.invalid" 
+              formControlName="valor" class="form-control form-control-sm" type="number">
+          </div>
+        
 
 
-        </div>
 
-
-        <div class="col-md-1">
+        <div style="width: 100%;" class="col-md-botones-venta">
 
             <label for="example-select" class="form-label">Cantidad</label>
-            <input class="form-control form-control-sm " type="text">
+            <input 
+            [class.is-invalid]="facturaForm.get('cantidad')!.touched && facturaForm.get('cantidad')?.invalid" 
+            (keyup)="calcularTotalVenta()" formControlName="cantidad" class="form-control form-control-sm " type="number">
         </div>
 
-        <div class="col-md-1">
+        <div style="width: 100%;" class="col-md-botones-venta">
 
             <label for="example-select" class="form-label">Total</label>
-            <input class="form-control form-control-sm " type="text">
+            <input readonly formControlName="total" class="form-control form-control-sm " type="text">
 
         </div>
 
@@ -296,6 +330,8 @@
        
       </div> -->
     </div>
+
+    
 
 
     <div class="w-100 table-responsive">
