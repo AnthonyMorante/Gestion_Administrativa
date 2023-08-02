@@ -7,7 +7,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
 import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
 import { ClientesService } from 'src/app/Servicios/clientes.service';
@@ -27,6 +27,7 @@ import { NgSelectConfig } from '@ng-select/ng-select';
 import { DetallePrecioProductosService } from 'src/app/Servicios/detalle-precio-productos.service';
 import { SecuencialesService } from 'src/app/Servicios/secuenciales.service';
 import { Secuenciales } from 'src/app/Interfaces/Secuenciales';
+import { Validator } from 'src/app/Compartidos/Validaciones/validations';
 
 declare var $: any;
 
@@ -55,28 +56,21 @@ export class FacturaComponent {
   puntoEmision: string | null = '';
   secuencial: string | null = '';
   PreciosList: any[] = [];
+  DetalleProductosList: any[] = [];
   totalVentas: any;
+  facturaForm: FormGroup;
+  acumulador12:number=0;
+  subtotal12:number=0;
+  subtotal0:number=0;
+  subtotal:number=0;
 
-  facturaForm = new FormGroup({
-    idCliente: new FormControl(),
-    identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
-    razonSocial: new FormControl('', Validators.required),
-    telefono: new FormControl('', [Validators.required]),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    direccion: new FormControl('', Validators.required),
-    idEstablecimiento: new FormControl(),
-    idPuntoEmision: new FormControl(),
-    observacion: new FormControl(),
-    idCiudad: new FormControl('', [Validators.required]),
-    idProvincia: new FormControl('', [Validators.required]),
-    idTipoIdentificacion: new FormControl('', [Validators.required]),
-    idDocumentoEmitir: new FormControl(),
-    idProducto: new FormControl(),
-    precios: new FormControl([Validators.required]),
-    valor: new FormControl(0, [Validators.required]),
-    cantidad: new FormControl(1, [Validators.required]),
-    total: new FormControl('0', [Validators.required]),
-  });
+
+
+
+ 
+
+  
+
 
   constructor(
     private renderer: Renderer2,
@@ -94,8 +88,45 @@ export class FacturaComponent {
     private productosServices: ProductosService,
     private ngSelectConfig: NgSelectConfig,
     private detallePrecioProductosServices: DetallePrecioProductosService,
-    private decimalPipe: DecimalPipe
-  ) {}
+    private decimalPipe: DecimalPipe,
+    private fb: FormBuilder,
+    private validator: Validator,
+    private el: ElementRef,
+  ) {
+
+
+    this.facturaForm = this.fb.group({
+      idCliente: new FormControl(),
+      identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
+      razonSocial: new FormControl('', Validators.required),
+      telefono: new FormControl('', [Validators.required]),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      direccion: new FormControl('', Validators.required),
+      idEstablecimiento: new FormControl(),
+      idPuntoEmision: new FormControl(),
+      observacion: new FormControl(),
+      idCiudad: new FormControl(''),
+      idProvincia: new FormControl(''),
+      idTipoIdentificacion: new FormControl(''),
+      idDocumentoEmitir: new FormControl(),
+      idProducto: new FormControl(),
+      precios: new FormControl([Validators.required]),
+      valor: new FormControl(0, [Validators.required]),
+      cantidad: new FormControl(1, [Validators.required]),
+      total: new FormControl('0', [Validators.required]),
+      detalleFactura: this.fb.array([]),
+      subtotal: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      subtotal12: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      subtotal0: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      descuento: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      totDescuento: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      iva12: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
+      totalFactura: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required])
+      
+    });
+
+
+  }
 
   async ngOnInit() {
     this.elementRef.nativeElement.querySelector('.formaPago').click();
@@ -115,6 +146,109 @@ export class FacturaComponent {
       this.listarSecuenciales(this.idEmpresa);
       this.listarDocumentosEmitir(1);
       this.listarProductos();
+    }
+  }
+
+
+  eliminarProducto(idProducto:string){
+
+   let index= this.DetalleProductosList.findIndex(x=>x.idProducto === idProducto);
+   this.DetalleProductosList.splice(index,1);
+   console.log(this.DetalleProductosList);
+   console.log(this.facturaForm.value.detalleFactura);
+  return
+  }
+
+
+  agregarProducto(){
+
+
+    if (this.facturaForm.invalid) {
+      this.validator.validarTodo(this.facturaForm, this.el);
+      return;
+    }
+
+
+    let idProducto = this.facturaForm.get("idProducto")?.value;
+    let valor = this.facturaForm.get("valor")?.value;
+    let cantidad = this.facturaForm.get("cantidad")?.value;
+    let total = this.facturaForm.get("total")?.value;
+    let producto = this.ProductosList.find(x=>x.idProducto===idProducto);
+
+
+    (this.facturaForm.get('detalleFactura') as FormArray).push(
+      this.fb.group({
+        codigo:producto?.codigo,
+        idProducto: producto?.idProducto,
+        nombre: producto?.nombre,
+        nombrePorcentaje: producto?.idIvaNavigation?.nombre,
+        valorPorcentaje:producto?.idIvaNavigation?.valor ?? 0,
+        porcentaje: parseFloat((parseFloat(total) * (producto?.idIvaNavigation?.valor ?? 0)).toFixed(2)),
+        valor:valor,
+        cantidad:cantidad,
+        total:parseFloat (total),
+      })
+    );
+
+    this.calcularDetalle(this.facturaForm.value.detalleFactura);
+    this.DetalleProductosList=this.facturaForm.value.detalleFactura;
+
+
+
+  }
+
+
+
+  calcularDetalle(detalleFactura:any){
+
+
+
+    this.acumulador12=0;
+    this.subtotal12=0;
+    this.subtotal0=0;
+    this.subtotal=0;
+
+    detalleFactura.forEach((item:any) => {
+
+      if(item.nombrePorcentaje==="12%"){
+
+        let valorSinIva= parseFloat((item.total - item.porcentaje).toFixed(2));
+        this.acumulador12= parseFloat((this.acumulador12 + item.porcentaje).toFixed(2));
+        this.subtotal12= parseFloat((this.subtotal12 + valorSinIva).toFixed(2));
+ 
+      }
+
+      if(item.nombrePorcentaje==="0%"){
+
+        this.subtotal0= parseFloat((this.subtotal0 + item.total).toFixed(2));
+  
+
+      }
+      
+      this.subtotal= this.subtotal0 + this.subtotal12;
+      this.facturaForm.get("subtotal")?.setValue(this.subtotal.toFixed(2));
+      this.facturaForm.get("subtotal12")?.setValue(this.subtotal12.toFixed(2));
+      this.facturaForm.get("subtotal0")?.setValue(this.subtotal0.toFixed(2));
+      this.facturaForm.get("iva12")?.setValue(this.acumulador12.toFixed(2));
+      let totalFactura = (this.subtotal + this.acumulador12);
+      this.facturaForm.get("totalFactura")?.setValue(totalFactura.toFixed(2));
+
+
+      
+
+      
+    
+
+    });
+}
+
+
+  
+  eventPredefault(event: KeyboardEvent) {
+
+    if (event.key === "Enter") {
+
+      event.preventDefault();
     }
   }
 
@@ -179,6 +313,8 @@ export class FacturaComponent {
     this.detallePrecioProductosServices.listar(evento).subscribe({
       next: (res) => {
         let precio = {
+
+          codigo:producto?.codigo,
           idProducto: producto?.idProducto,
           total: producto?.precio,
           totalIva: producto?.totalIva,

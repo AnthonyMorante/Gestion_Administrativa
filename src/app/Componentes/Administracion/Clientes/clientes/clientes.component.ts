@@ -63,7 +63,6 @@ export class ClientesComponent {
     private ciudadesServices: CiudadesService,
     private clientesServices: ClientesService,
     private ngSelectConfig: NgSelectConfig,
-    private elementRef: ElementRef
   ) {
     this.ngSelectConfig.notFoundText = 'No existen coincidencias';
   }

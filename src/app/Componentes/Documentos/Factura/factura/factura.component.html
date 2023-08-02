@@ -33,7 +33,8 @@
 
         <strong
             style="font-size: 1.5rem ;font-weight: bolder;font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">
-            Factura: </strong><label style="color: red;font-weight:bolder;font-size: 1.4rem">{{establecimiento}}-{{puntoEmision}}-{{secuencial}}</label>
+            Factura: </strong><label
+            style="color: red;font-weight:bolder;font-size: 1.4rem">{{establecimiento}}-{{puntoEmision}}-{{secuencial}}</label>
     </div>
 
 </div>
@@ -43,7 +44,8 @@
 
 
 
-<form [formGroup]="facturaForm">
+<form [formGroup]="facturaForm" (keydown)="eventPredefault($event)">
+
     <div class="row">
 
 
@@ -169,8 +171,8 @@
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Establecimiento</label>
-                    <select (change)="cambiarEstablecimiento($event.target)" formControlName="idEstablecimiento" class="form-control form-control-sm "
-                        id="exampleFormControlSelect1">
+                    <select (change)="cambiarEstablecimiento($event.target)" formControlName="idEstablecimiento"
+                        class="form-control form-control-sm " id="exampleFormControlSelect1">
                         <option *ngFor="let item of EstablecimientosList" value={{item.idEstablecimiento}}>
                             {{padLeft.convert(item.nombre,3)}}</option>
 
@@ -182,8 +184,8 @@
                 <div class="col-md-4">
 
                     <label for="example-select" class="form-label">Punto Emisión</label>
-                    <select (change)="cambiarPuntoEmision($event.target)" formControlName="idPuntoEmision" class="form-control form-control-sm "
-                        id="exampleFormControlSelect1">
+                    <select (change)="cambiarPuntoEmision($event.target)" formControlName="idPuntoEmision"
+                        class="form-control form-control-sm " id="exampleFormControlSelect1">
                         <option *ngFor="let item of PuntoEmisionList" value={{item.idPuntoEmision}}>
                             {{padLeft.convert(item.nombre,3)}}</option>
 
@@ -228,10 +230,10 @@
         <div class="col-md-12">
             <hr>
             <label style="font-weight: bolder; font-size: large;">Venta</label>
-    
+
         </div>
-    
-    
+
+
 
     </div>
 
@@ -241,36 +243,35 @@
             <label for="example-select" class="form-label">Precios</label>
 
 
-            <div >
+            <div>
 
-                <select
-                
-                    [class.is-invalid]="facturaForm.get('precios')!.touched && facturaForm.get('precios')?.invalid" 
-                    (change)="asignarValor($event.target)" formControlName="precios" class="form-control form-control-sm col-md-8 col-12" id="exampleFormControlSelect1">
-                    <option *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2' }}</option>
-               
+                <select [class.is-invalid]="facturaForm.get('precios')!.touched && facturaForm.get('precios')?.invalid"
+                    (change)="asignarValor($event.target)" formControlName="precios"
+                    class="form-control form-control-sm col-md-8 col-12" id="exampleFormControlSelect1">
+                    <option *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2'
+                        }}</option>
+
                 </select>
-          
+
             </div>
-       
 
 
 
-     
+
+
         </div>
     </div>
 
     <div class="row mt-2">
 
 
-     
+
 
         <div class="col-md-6">
 
             <label for="example-select" class="form-label">Productos/Servicio</label>
-            <ng-select
-    
-            (change)="cargarProducto($event)" formControlName="idProducto" [multiple]="false" [selectableGroup]="true" [closeOnSelect]="true">
+            <ng-select (change)="cargarProducto($event)" formControlName="idProducto" [multiple]="false"
+                [selectableGroup]="true" [closeOnSelect]="true">
                 <ng-option value="">--Seleccione un Producto--</ng-option>
                 <ng-option *ngFor="let item of ProductosList" value={{item.idProducto}}>{{item.nombre}}
                     ({{item.cantidad}}) - ${{item.totalIva}} </ng-option>
@@ -278,26 +279,25 @@
         </div>
 
 
- 
 
-        
+
+
         <div style="width: 100%;" class="col-md-botones-venta">
             <label for="example-select" class="form-label">Valor</label>
-            <input
-              (keyup)="calcularTotalVenta()"
-              [class.is-invalid]="facturaForm.get('valor')!.touched && facturaForm.get('valor')?.invalid" 
-              formControlName="valor" class="form-control form-control-sm" type="number">
-          </div>
-        
+            <input (keyup)="calcularTotalVenta()"
+                [class.is-invalid]="facturaForm.get('valor')!.touched && facturaForm.get('valor')?.invalid"
+                formControlName="valor" class="form-control form-control-sm" type="number">
+        </div>
+
 
 
 
         <div style="width: 100%;" class="col-md-botones-venta">
 
             <label for="example-select" class="form-label">Cantidad</label>
-            <input 
-            [class.is-invalid]="facturaForm.get('cantidad')!.touched && facturaForm.get('cantidad')?.invalid" 
-            (keyup)="calcularTotalVenta()" formControlName="cantidad" class="form-control form-control-sm " type="number">
+            <input [class.is-invalid]="facturaForm.get('cantidad')!.touched && facturaForm.get('cantidad')?.invalid"
+                (keyup)="calcularTotalVenta()" formControlName="cantidad" class="form-control form-control-sm "
+                type="number">
         </div>
 
         <div style="width: 100%;" class="col-md-botones-venta">
@@ -311,7 +311,7 @@
 
         <div class="col-md-2 botonAgregar " style="margin-top: 1.8rem; ">
 
-            <button style="height: 2.2rem;" class="btn btn-primary">
+            <button (click)="agregarProducto()" style="height: 2.2rem;" class="btn btn-primary">
 
                 <i class="fas fa-plus"></i>
                 Agregar
@@ -331,7 +331,7 @@
       </div> -->
     </div>
 
-    
+
 
 
     <div class="w-100 table-responsive">
@@ -342,58 +342,40 @@
                 <tr style="text-align: center; ">
                     <th scope="col">#</th>
                     <th scope="col">Codigo</th>
+                    <th scope="col">Nombre</th>
                     <th scope="col">Cantidad</th>
                     <th scope="col">Precio</th>
                     <th scope="col">Iva</th>
                     <th scope="col">Subtotal</th>
+                    <th scope="col">Opciones</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr style="text-align: center;">
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+            <tbody >
+         
+                <tr *ngFor="let item of DetalleProductosList; let i = index"  style="text-align: center;">
+                    <th scope="row">{{i+1}}</th>
+                    <td  class="text-center">{{item.codigo}}</td>
+                    <td  class="text-center">{{item.nombre}}</td>
+                    <td  class="text-center">{{item.cantidad}}</td>
+                    <td  class="text-center">{{item.valor - item.porcentaje | number:'1.2-2'}}</td>
+                    <td  class="text-center">{{item.nombrePorcentaje}}</td>
+                    <td  class="text-center">{{item.total}}</td>
+                    <td style="cursor: pointer;">
+                        <i id="edit-icon" data-toggle="tooltip" data-placement="bottom" title="Editar"  class="fas fa-edit mr-2"></i>
+                        <i (click)="eliminarProducto(item.idProducto)" data-toggle="tooltip" data-placement="bottom" title="Eliminar"  class="fas fa-trash-alt"></i>
+                    </td>
                 </tr>
 
-                <tr style="text-align: center;">
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+                <tr >
+                  
+                    <td *ngIf="DetalleProductosList.length==0" colspan="8" style="font-weight: bolder;cursor:pointer" class="text-center">Sin Productos</td>
+               
                 </tr>
 
-                <tr style="text-align: center;">
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
+             
 
-                <tr style="text-align: center;">
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
-
-                <tr style="text-align: center;">
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                </tr>
             </tbody>
+    
         </table>
 
     </div>
@@ -632,7 +614,8 @@
 
 
 
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input formControlName="subtotal" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -648,35 +631,6 @@
 
             </div>
 
-            <div class="row">
-
-
-
-                <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                    <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
-
-
-
-
-                </div>
-
-                <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-                </div>
-
-
-
-            </div>
-
 
             <div class="row">
 
@@ -685,7 +639,7 @@
                 <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                    <label style="font-size: 1.0rem;font-weight:bolder">Tot. Descuento</label>
+                    <label style="font-size: 1.0rem;font-weight:bolder">Subtotal 12%</label>
 
 
 
@@ -696,7 +650,8 @@
 
 
 
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input formControlName="subtotal12" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -715,7 +670,7 @@
                 <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                    <label style="font-size: 1.0rem;font-weight:bolder">IVA 0%</label>
+                    <label style="font-size: 1.0rem;font-weight:bolder">Subtotal 0%</label>
 
 
 
@@ -726,7 +681,8 @@
 
 
 
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input formControlName="subtotal0" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -756,7 +712,7 @@
 
 
 
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input formControlName="iva12" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -767,6 +723,73 @@
 
             </div>
 
+
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input formControlName="descuento" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Tot. Descuento</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input formControlName="totDescuento" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+       
             <div class="row">
 
 
@@ -785,7 +808,7 @@
 
 
 
-                    <input type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input formControlName="totalFactura" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
