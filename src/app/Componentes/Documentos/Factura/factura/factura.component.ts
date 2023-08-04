@@ -68,6 +68,8 @@ export class FacturaComponent {
   subtotal0:number=0;
   subtotal:number=0;
   descuento:number=0;
+  idDetalleProducto:string="";
+  informacionAdicional: any;
 
 
 
@@ -135,10 +137,13 @@ export class FacturaComponent {
       totDescuento: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
       iva12: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),
       totalFactura: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),      
+      informacionAdicional: this.fb.array([]),
+      nombreInformacionAdicional:new FormControl(),
+      valorInformacionAdicional:new FormControl()
     });
 
 
-
+    this.informacionAdicional = this.facturaForm.get('informacionAdicional') as FormArray;
 
 
     this.editarDetalleProductoForm = this.fb.group({
@@ -181,6 +186,46 @@ export class FacturaComponent {
   }
 
 
+  numerosAleatorios() {
+    return Math.floor(100000000 + Math.random() * 900000000);
+  }
+
+
+
+  agregarInformacionAdicional(){
+
+
+   let  nombreInformacionAdicional = this.facturaForm.get("nombreInformacionAdicional")?.value;
+   let  valorInformacionAdicional = this.facturaForm.get("valorInformacionAdicional")?.value;
+
+
+   (this.facturaForm.get('informacionAdicional') as FormArray).push(
+    this.fb.group({
+      id:this.numerosAleatorios(),
+      nombre:nombreInformacionAdicional,
+      valor: valorInformacionAdicional
+    })
+  );
+
+
+ 
+  }
+
+  quitarInformacionAdicional(id: any) {
+
+    const informacionAdicional = this.facturaForm.get(
+      'informacionAdicional'
+    ) as FormArray;
+    const index = informacionAdicional.value.findIndex(
+      (x: any) => x.id === id
+    );
+
+    if (index !== -1) {
+      informacionAdicional.removeAt(index);
+    }
+  }
+
+
   quitarDetalleProducto(idProducto:string){
 
     const detalleProducto = this.facturaForm.get('detalleFactura') as FormArray;
@@ -212,6 +257,56 @@ export class FacturaComponent {
   }
 
 
+  calcularEditarDetallePrecio(){
+
+    const selectPrecios: HTMLSelectElement = this.el.nativeElement.querySelector("#detallePrecio");
+    const selectDetalleIva: HTMLSelectElement = this.el.nativeElement.querySelector("#detalleIva");
+    
+
+
+    let cantidad = this.editarDetalleProductoForm.get("cantidad")?.value;
+    let descuento = this.editarDetalleProductoForm.get("descuento")?.value;
+    const precioSeleccionado = selectPrecios.options[selectPrecios.selectedIndex].getAttribute('data-item-totalIva') ?? "" ;
+    const ivaSeleccionado = selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-porcentaje')??"";
+    let valorSinIva= parseFloat(((parseFloat(precioSeleccionado)) / (1 + parseFloat(ivaSeleccionado))).toFixed(2));
+    let valoCantidadSinIva= parseFloat((valorSinIva * parseFloat(cantidad)).toFixed(2));
+    let sutotal = parseFloat((valoCantidadSinIva - parseFloat(descuento)).toFixed(2))
+    let valoriva = parseFloat((sutotal * parseFloat (ivaSeleccionado)).toFixed(2));
+    let valorTotalIva = parseFloat((sutotal + valoriva).toFixed(2));
+
+    if(descuento==null || descuento ==""){
+
+      this.editarDetalleProductoForm.get("descuento")?.setValue(this.decimalPipe.transform(0.00, '1.2-2'));
+      this.calcularEditarDetallePrecio();
+      return;
+    }
+
+    if(cantidad==null || cantidad =="" || cantidad==0 || cantidad=="0"){
+
+      this.editarDetalleProductoForm.get("cantidad")?.setValue(1);
+      this.calcularEditarDetallePrecio();
+      return;
+    }
+
+    
+
+
+ this.editarDetalleProductoForm.get("precio")?.setValue(this.decimalPipe.transform(valorSinIva, '1.2-2'));
+ this.editarDetalleProductoForm.get("total")?.setValue(this.decimalPipe.transform(sutotal, '1.2-2'));
+ this.editarDetalleProductoForm.get("iva")?.setValue(this.decimalPipe.transform(valoriva, '1.2-2'));
+ this.editarDetalleProductoForm.get("totalIva")?.setValue(this.decimalPipe.transform(valorTotalIva, '1.2-2'));
+
+    
+  
+
+
+    
+
+
+  }
+
+
+
   agregarProducto(){
 
 
@@ -221,9 +316,24 @@ export class FacturaComponent {
     }
 
 
+ 
+
 
     let idProducto = this.facturaForm.get("idProducto")?.value;
+    
     let comprobar= this.comprobarSiExisteProductoDetalle(idProducto)
+
+
+    if (idProducto==null) {
+
+      this.toast.show_warning(
+        'Producto',
+        'Agregue un Producto'
+      );
+      return;
+    }
+    
+
     if (comprobar) {
 
       this.toast.show_warning(
@@ -370,8 +480,24 @@ export class FacturaComponent {
   }
 
   calcularTotalVenta() {
+
+
+
+    if(this.facturaForm.get('cantidad')?.value == null){
+      return
+    }
+
     let valor = this.facturaForm.get('valor')?.value?.toFixed(2);
     let cantidad = this.facturaForm.get('cantidad')?.value?.toFixed(2);
+
+ 
+
+    if (Number.isNaN(parseFloat(cantidad)) || cantidad==undefined) {
+      this.facturaForm.get('total')?.setValue(1);
+      return;
+    }
+
+
     let total = parseFloat(cantidad ?? '') * parseFloat(valor ?? '');
     let valorTotalConvertido = total.toFixed(2);
     this.facturaForm.get('total')?.setValue(this.decimalPipe.transform(valorTotalConvertido, '1.2-2'));
@@ -469,6 +595,14 @@ export class FacturaComponent {
   }
 
 
+  seleccionarTextoCantidadDetalle(){
+
+    this.el.nativeElement.querySelector("#cantidadDetalle").select();
+
+  }
+
+
+
 
   abrirModalEditarDetalle(){
 
@@ -491,15 +625,9 @@ export class FacturaComponent {
   }
 
   cargarModalEditarDetalle(idProducto:string){
-
+    this.idDetalleProducto=idProducto;
     let producto = this.DetalleProductosList.find(x=>x.idProducto ===idProducto);
     this.DetallePreciosList= producto.precios;
-
-
-   
- 
-
-
     let valorIndividualOriginal= (parseFloat((parseFloat(producto.valor) / ( 1 + (producto?.valorPorcentaje ?? 0))).toFixed(2)));
     this.editarDetalleProductoForm.get("nombre")?.setValue(producto.nombre);
     this.editarDetalleProductoForm.get("idPrecio")?.setValue(producto.idDetallePrecioProducto);
@@ -511,12 +639,35 @@ export class FacturaComponent {
     this.editarDetalleProductoForm.get("totalIva")?.setValue(this.decimalPipe.transform(producto.total, '1.2-2'));
     this.editarDetalleProductoForm.get("totalIva")?.setValue(this.decimalPipe.transform(producto.total, '1.2-2'));
     this.editarDetalleProductoForm.get("idIva")?.setValue(producto.idIva);
-    
-    
-
-    console.log(producto);
-
+    setTimeout(() => {this.calcularEditarDetallePrecio();}, 0);
     $('#ModalEditarDetalle').modal('show');
+  }
+
+
+  guardarModalEditarDetalle(){
+
+    let producto= this.DetalleProductosList.find(x=>x.idProducto== this.idDetalleProducto);
+    producto.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value);
+    producto.cantidad=  parseFloat (this.editarDetalleProductoForm.get("cantidad")?.value);
+    producto.porcentaje=  parseFloat (this.editarDetalleProductoForm.get("iva")?.value);
+    producto.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value);
+    const detalleFacturaForm = this.facturaForm.get('detalleFactura' ) as FormArray;
+    let productoForm = detalleFacturaForm.value.find((x:any)=>x.idProducto===this.idDetalleProducto);
+    productoForm.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value);
+    productoForm.cantidad=  parseFloat (this.editarDetalleProductoForm.get("cantidad")?.value);
+    productoForm.porcentaje=  parseFloat (this.editarDetalleProductoForm.get("iva")?.value);
+    productoForm.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value);
+    const selectDetalleIva: HTMLSelectElement = this.el.nativeElement.querySelector("#detalleIva");
+    const ivaSeleccionado = selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-porcentaje')??"";
+    const ivaSeleccionadoNombre = selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-nombre')??"";
+    productoForm.valorPorcentaje= parseFloat (ivaSeleccionado);
+    productoForm.nombrePorcentaje= ivaSeleccionadoNombre;
+    productoForm.idIva= this.editarDetalleProductoForm.get("idIva")?.value;
+    console.log(detalleFacturaForm.value);
+
+
+
+   
 
   }
 

@@ -31,17 +31,26 @@
     aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Editar Producto</h5>
-                <button type="button" class="close" dataar-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
 
-            <div class="modal-body">
+            <form [formGroup]="editarDetalleProductoForm"
+                (ngSubmit)="guardarModalEditarDetalle()">
+
+                <div class="modal-header">
+                    <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Editar Producto</h5>
+                    <button type="button" class="close"  data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
 
 
-                <form [formGroup]="editarDetalleProductoForm">
+
+
+
+
+                <div class="modal-body">
+
+
+
 
 
                     <div class="row">
@@ -56,38 +65,50 @@
 
                             <div class="row">
 
+
+
+                                <div class="col-md-6 ">
+
+                                    <label for="example-select" class="form-label">Precios</label>
+
+                                    <select  (change)="calcularEditarDetallePrecio()" id="detallePrecio" formControlName="idPrecio" class="form-control form-control-sm ">
+                                        <option 
+                                        [attr.data-item-totalIva]="item.totalIva"
+                                        [value]="item.idDetallePrecioProducto"
+                                        *ngFor="let item of DetallePreciosList">
+                                            {{item.totalIva | number: '1.2-2'}}</option>
+                                    </select>
+
+                                </div>
+
                                 <div class="col-md-6 ">
 
                                     <label for="example-select" class="form-label">IVA</label>
-        
-                                    <select formControlName="idIva" class="form-control form-control-sm ">
-                                        <option [value]="item.idIva" *ngFor="let item of DetalleIvasList">
+
+                                    <select 
+                                    (change)="calcularEditarDetallePrecio()"
+                                    id="detalleIva"
+                                    formControlName="idIva" class="form-control form-control-sm ">
+                                        <option 
+                                    
+                                        [attr.data-item-porcentaje]="item.valor"
+                                        [attr.data-item-nombre]="item.nombre"
+                                        [value]="item.idIva" *ngFor="let item of DetalleIvasList">
                                             {{item.nombre}}</option>
                                     </select>
-        
+
                                 </div>
-        
-        
-                                <div class="col-md-6 ">
-        
-                                    <label for="example-select" class="form-label">Precios</label>
-        
-                                    <select formControlName="idPrecio" class="form-control form-control-sm ">
-                                        <option [value]="item.idDetallePrecioProducto" *ngFor="let item of DetallePreciosList">
-                                            {{item.totalIva | number: '1.2-2'}}</option>
-                                    </select>
-        
-                                </div>
-        
+
+
 
                             </div>
 
-                            
+
                         </div>
 
 
 
-                      
+
 
 
 
@@ -104,7 +125,7 @@
                         <div class="col-md-12">
 
                             <label for="example-select" class="form-label">Nombre</label>
-                            <input formControlName="nombre"
+                            <input readonly formControlName="nombre"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -118,7 +139,7 @@
                     </div>
 
 
-                
+
 
 
 
@@ -135,6 +156,7 @@
 
                             <label for="example-select" class="form-label">Precio</label>
                             <input formControlName="precio"
+                                (keyup)="calcularEditarDetallePrecio()"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -144,7 +166,11 @@
 
                             <label for="example-select" class="form-label">Cantidad</label>
                             <input formControlName="cantidad"
-                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+
+                                 id="cantidadDetalle"
+                                 (click)="seleccionarTextoCantidadDetalle()"
+                                 (keyup)="calcularEditarDetallePrecio()"
+                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
                         </div>
@@ -154,7 +180,7 @@
                         <div class="col-md-4">
 
                             <label for="example-select" class="form-label">Total</label>
-                            <input formControlName="total"
+                            <input readonly formControlName="total"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -171,6 +197,9 @@
 
                             <label for="example-select" class="form-label">Descuento</label>
                             <input formControlName="descuento"
+                                 id="descuento"
+                                (click)="seleccionarTexto()"
+                                (keyup)="calcularEditarDetallePrecio()"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -179,7 +208,7 @@
                         <div class="col-md-4">
 
                             <label for="example-select" class="form-label">IVA</label>
-                            <input formControlName="iva"
+                            <input readonly formControlName="iva"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -190,7 +219,7 @@
                         <div class="col-md-4">
 
                             <label for="example-select" class="form-label">Total + IVA</label>
-                            <input formControlName="totalIva"
+                            <input readonly formControlName="totalIva"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
                                 class="form-control form-control-sm" type="text">
 
@@ -200,17 +229,18 @@
 
 
 
-                </form>
-            </div>
+                </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
-                <button type="submit" class="btn btn-primary">Guardar</button>
-                <!-- <button *ngIf="spinnerEspere" class="btn btn-primary" type="button" disabled>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <!-- <button *ngIf="spinnerEspere" class="btn btn-primary" type="button" disabled>
                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     Espere...
                 </button> -->
-            </div>
+                </div>
+
+            </form>
 
         </div>
     </div>
@@ -708,13 +738,13 @@
                                     <div class="col-md-6">
 
                                         <label for="example-select" class="form-label">Nombre</label>
-                                        <input class="form-control form-control-sm " type="text">
+                                        <input formControlName="nombreInformacionAdicional" class="form-control form-control-sm " type="text">
                                     </div>
 
                                     <div class="col-md-3">
 
                                         <label for="example-select" class="form-label">Valor</label>
-                                        <input class="form-control form-control-sm " type="text">
+                                        <input formControlName="valorInformacionAdicional" class="form-control form-control-sm " type="text">
                                     </div>
 
 
@@ -723,7 +753,7 @@
                                     <div class="col-md-3">
 
 
-                                        <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
+                                        <button (click)=" agregarInformacionAdicional()" style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
 
                                             <i class="fas fa-plus"></i>
                                             Agregar
@@ -744,17 +774,26 @@
                                                 <th scope="col">#</th>
                                                 <th scope="col">Nombre</th>
                                                 <th scope="col">Valor</th>
+                                                <th scope="col">Opciones</th>
 
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr style="text-align: center;">
-                                                <th scope="row">1</th>
-                                                <td>Tarjeta Credito </td>
-                                                <td>$1350</td>
+                                            <tr *ngFor="let item of informacionAdicional?.controls; let i = index" style="text-align: center;">
+                                                <th scope="row">{{i+1}}</th>
+                                                <td>{{item.get('nombre').value }} </td>
+                                                <td>{{item.get('valor').value }}</td>
+                                                <td> 
+                                                    <i style="cursor: pointer;" (click)="quitarInformacionAdicional(item.get('id').value )" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Eliminar" class="fas fa-trash-alt"></i>
+                                                </td>
+                                       
                                             </tr>
-
+                                            
+                                            <tr *ngIf="!informacionAdicional?.controls.length" >
+                                                <td colspan="4" class="text-center" style="font-weight: bolder;">Sin Información</td>
+                                            </tr>
                                         </tbody>
                                     </table>
 
@@ -1029,8 +1068,6 @@
 
 
         </div>
-
-
 
 
     </div>
