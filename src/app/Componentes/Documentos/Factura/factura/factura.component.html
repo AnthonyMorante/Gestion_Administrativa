@@ -25,6 +25,198 @@
     </div>
 </div>
 
+
+
+<div class="modal fade" id="ModalEditarDetalle" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 style="font-weight: bolder;" class="modal-title" id="exampleModalLabel">Editar Producto</h5>
+                <button type="button" class="close" dataar-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+
+                <form [formGroup]="editarDetalleProductoForm">
+
+
+                    <div class="row">
+
+
+                        <div class="col-md-6">
+
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="row">
+
+                                <div class="col-md-6 ">
+
+                                    <label for="example-select" class="form-label">IVA</label>
+        
+                                    <select formControlName="idIva" class="form-control form-control-sm ">
+                                        <option [value]="item.idIva" *ngFor="let item of DetalleIvasList">
+                                            {{item.nombre}}</option>
+                                    </select>
+        
+                                </div>
+        
+        
+                                <div class="col-md-6 ">
+        
+                                    <label for="example-select" class="form-label">Precios</label>
+        
+                                    <select formControlName="idPrecio" class="form-control form-control-sm ">
+                                        <option [value]="item.idDetallePrecioProducto" *ngFor="let item of DetallePreciosList">
+                                            {{item.totalIva | number: '1.2-2'}}</option>
+                                    </select>
+        
+                                </div>
+        
+
+                            </div>
+
+                            
+                        </div>
+
+
+
+                      
+
+
+
+
+                    </div>
+
+
+
+
+
+                    <div class="row mt-2">
+
+
+                        <div class="col-md-12">
+
+                            <label for="example-select" class="form-label">Nombre</label>
+                            <input formControlName="nombre"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+
+
+
+
+
+                    </div>
+
+
+                
+
+
+
+
+
+
+
+
+
+                    <div class="row mt-2">
+
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">Precio</label>
+                            <input formControlName="precio"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">Cantidad</label>
+                            <input formControlName="cantidad"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">Total</label>
+                            <input formControlName="total"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="row mt-2">
+
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">Descuento</label>
+                            <input formControlName="descuento"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">IVA</label>
+                            <input formControlName="iva"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+
+
+                        <div class="col-md-4">
+
+                            <label for="example-select" class="form-label">Total + IVA</label>
+                            <input formControlName="totalIva"
+                                [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
+                                class="form-control form-control-sm" type="text">
+
+                        </div>
+
+                    </div>
+
+
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Salir</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <!-- <button *ngIf="spinnerEspere" class="btn btn-primary" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    Espere...
+                </button> -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <app-modal-clientes #modalContainer id="modalContainer"></app-modal-clientes>
 
 <div class="row ">
@@ -245,10 +437,12 @@
 
             <div>
 
-                <select [class.is-invalid]="facturaForm.get('precios')!.touched && facturaForm.get('precios')?.invalid"
+                <select id="precios"
+                    [class.is-invalid]="facturaForm.get('precios')!.touched && facturaForm.get('precios')?.invalid"
                     (change)="asignarValor($event.target)" formControlName="precios"
-                    class="form-control form-control-sm col-md-8 col-12" id="exampleFormControlSelect1">
-                    <option *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2'
+                    class="form-control form-control-sm col-md-8 col-12">
+                    <option [attr.data-item-idDetallePrecioProducto]="item.idDetallePrecioProducto"
+                        *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2'
                         }}</option>
 
                 </select>
@@ -350,32 +544,35 @@
                     <th scope="col">Opciones</th>
                 </tr>
             </thead>
-            <tbody >
-         
-                <tr *ngFor="let item of DetalleProductosList; let i = index"  style="text-align: center;">
+            <tbody>
+
+                <tr *ngFor="let item of DetalleProductosList; let i = index" style="text-align: center;">
                     <th scope="row">{{i+1}}</th>
-                    <td  class="text-center">{{item.codigo}}</td>
-                    <td  class="text-center">{{item.nombre}}</td>
-                    <td  class="text-center">{{item.cantidad}}</td>
-                    <td  class="text-center">{{item.valor - item.porcentaje | number:'1.2-2'}}</td>
-                    <td  class="text-center">{{item.nombrePorcentaje}}</td>
-                    <td  class="text-center">{{item.total}}</td>
+                    <td class="text-center">{{item.codigo}}</td>
+                    <td class="text-center">{{item.nombre}}</td>
+                    <td class="text-center">{{item.cantidad}}</td>
+                    <td class="text-center">{{item.totalSinIva | number:'1.2-2'}}</td>
+                    <td class="text-center">{{item.nombrePorcentaje}}</td>
+                    <td class="text-center">{{item.total | number:'1.2-2'}}</td>
                     <td style="cursor: pointer;">
-                        <i id="edit-icon" data-toggle="tooltip" data-placement="bottom" title="Editar"  class="fas fa-edit mr-2"></i>
-                        <i (click)="eliminarProducto(item.idProducto)" data-toggle="tooltip" data-placement="bottom" title="Eliminar"  class="fas fa-trash-alt"></i>
+                        <i (click)="cargarModalEditarDetalle(item.idProducto)" id="edit-icon" data-toggle="tooltip"
+                            data-placement="bottom" title="Editar" class="fas fa-edit mr-2"></i>
+                        <i (click)="quitarDetalleProducto(item.idProducto)" data-toggle="tooltip"
+                            data-placement="bottom" title="Eliminar" class="fas fa-trash-alt"></i>
                     </td>
                 </tr>
 
-                <tr >
-                  
-                    <td *ngIf="DetalleProductosList.length==0" colspan="8" style="font-weight: bolder;cursor:pointer" class="text-center">Sin Productos</td>
-               
+                <tr>
+
+                    <td *ngIf="DetalleProductosList.length==0" colspan="8" style="font-weight: bolder;cursor:pointer"
+                        class="text-center">Sin Productos</td>
+
                 </tr>
 
-             
+
 
             </tbody>
-    
+
         </table>
 
     </div>
@@ -596,41 +793,6 @@
 
 
 
-            <div class="row">
-
-
-
-                <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-                    <label style="font-size: 1.0rem;font-weight:bolder">Subtotal</label>
-
-
-
-
-                </div>
-
-                <div class="col-md-6 mt-2 total" style="text-align: end;">
-
-
-
-                    <input formControlName="subtotal" type="text"
-                        class="form-control form-control-sm col-sm-3 col-md-12">
-
-
-
-
-                </div>
-
-
-
-
-
-
-
-
-            </div>
-
 
             <div class="row">
 
@@ -650,7 +812,7 @@
 
 
 
-                    <input formControlName="subtotal12" type="text"
+                    <input readonly formControlName="subtotal12" type="text"
                         class="form-control form-control-sm col-sm-3 col-md-12">
 
 
@@ -681,7 +843,7 @@
 
 
 
-                    <input formControlName="subtotal0" type="text"
+                    <input readonly formControlName="subtotal0" type="text"
                         class="form-control form-control-sm col-sm-3 col-md-12">
 
 
@@ -692,6 +854,45 @@
 
 
             </div>
+
+
+
+
+            <div class="row">
+
+
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+                    <label style="font-size: 1.0rem;font-weight:bolder">Subtotal</label>
+
+
+
+
+                </div>
+
+                <div class="col-md-6 mt-2 total" style="text-align: end;">
+
+
+
+                    <input readonly formControlName="subtotal" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+            </div>
+
 
 
             <div class="row">
@@ -712,7 +913,8 @@
 
 
 
-                    <input formControlName="iva12" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input readonly formControlName="iva12" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -725,7 +927,7 @@
 
 
 
-
+            <!-- 
             <div class="row">
 
 
@@ -733,7 +935,7 @@
                 <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                    <label style="font-size: 1.0rem;font-weight:bolder">Descuento</label>
+                    <label style="font-size: 1.0rem;font-weight:bolder">Descuento%</label>
 
 
 
@@ -744,7 +946,7 @@
 
 
 
-                    <input formControlName="descuento" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input id="descuento" (click)="seleccionarTexto()"  (keyup)="calcularDetalle()" formControlName="descuento" type="number" class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -753,7 +955,7 @@
 
 
 
-            </div>
+            </div> -->
 
 
             <div class="row">
@@ -774,7 +976,8 @@
 
 
 
-                    <input formControlName="totDescuento" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input readonly formControlName="totDescuento" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 
@@ -789,7 +992,7 @@
 
 
 
-       
+
             <div class="row">
 
 
@@ -808,7 +1011,8 @@
 
 
 
-                    <input formControlName="totalFactura" type="text" class="form-control form-control-sm col-sm-3 col-md-12">
+                    <input readonly formControlName="totalFactura" type="text"
+                        class="form-control form-control-sm col-sm-3 col-md-12">
 
 
 

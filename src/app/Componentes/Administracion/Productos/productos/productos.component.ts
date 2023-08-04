@@ -233,6 +233,8 @@ export class ProductosComponent {
 
       let iva = parseFloat(valorIva) * precioControl.value;
       let totalIva = precioControl.value + iva;
+
+      
       this.productoForm.get('precioIva')?.setValue(totalIva.toFixed(2));
       this.productoForm.get('valorIva')?.setValue(iva.toFixed(2));
       this.productoForm.get('totalIva')?.setValue(totalIva.toFixed(2));
@@ -507,6 +509,8 @@ export class ProductosComponent {
   }
 
   guardar(producto: Productos) {
+
+
     
     this.spinnerEspere = true;
     this.spinnerGuardar = false;
