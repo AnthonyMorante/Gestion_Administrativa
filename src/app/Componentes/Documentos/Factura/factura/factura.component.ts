@@ -29,6 +29,11 @@ import { SecuencialesService } from 'src/app/Servicios/secuenciales.service';
 import { Secuenciales } from 'src/app/Interfaces/Secuenciales';
 import { Validator } from 'src/app/Compartidos/Validaciones/validations';
 import { IvasService } from 'src/app/Servicios/ivas.service';
+import { FormaPagosService } from 'src/app/Servicios/forma-pagos.service';
+import { TiempoFormaPagosService } from 'src/app/Servicios/tiempo-forma-pagos.service';
+import { TiempoFormaPagos } from 'src/app/Interfaces/TiempoFormaPagos';
+import { FormaPagos } from 'src/app/Interfaces/FormaPagos';
+import { event } from 'jquery';
 
 declare var $: any;
 
@@ -60,6 +65,8 @@ export class FacturaComponent {
   DetallePreciosList: any[] = [];
   DetalleProductosList: any[] = [];
   DetalleIvasList: any[] = [];
+  FormaPagosList: FormaPagos[] = [];
+  TiempoFormaPagosList: TiempoFormaPagos[] = [];
   totalVentas: any;
   facturaForm: FormGroup;
   editarDetalleProductoForm: FormGroup;
@@ -70,6 +77,8 @@ export class FacturaComponent {
   descuento:number=0;
   idDetalleProducto:string="";
   informacionAdicional: any;
+  formaPagos: any;
+  acumFormaPago:number=0;
 
 
 
@@ -100,6 +109,8 @@ export class FacturaComponent {
     private validator: Validator,
     private el: ElementRef,
     private ivasService: IvasService,
+    private formaPagosService: FormaPagosService,
+    private tiempoFormaPagosService: TiempoFormaPagosService,
   ) {
 
 
@@ -139,11 +150,24 @@ export class FacturaComponent {
       totalFactura: new FormControl(this.decimalPipe.transform(0.00, '1.2-2'), [Validators.required]),      
       informacionAdicional: this.fb.array([]),
       nombreInformacionAdicional:new FormControl(),
-      valorInformacionAdicional:new FormControl()
+      valorInformacionAdicional:new FormControl(),
+      idFormaPago: new FormControl([Validators.required]),
+      idTiempoFormaPago: new FormControl(),
+      plazoFormaPago: new FormControl(),
+      valorFormaPago: new FormControl(),
+      formaPago: this.fb.array([]),
+
+      
     });
 
 
+
+
     this.informacionAdicional = this.facturaForm.get('informacionAdicional') as FormArray;
+    this.formaPagos = this.facturaForm.get('formaPago') as FormArray;
+
+    
+
 
 
     this.editarDetalleProductoForm = this.fb.group({
@@ -181,7 +205,10 @@ export class FacturaComponent {
       this.listarPuntoEmision(this.idEmpresa);
       this.listarSecuenciales(this.idEmpresa);
       this.listarDocumentosEmitir(1);
-      this.listarProductos();
+      this.listarProductos(); 
+      this.listarFormaPagos();
+      this.listarTiempoFormaPagos();
+      
     }
   }
 
@@ -192,24 +219,51 @@ export class FacturaComponent {
 
 
 
+
+  
+
+
   agregarInformacionAdicional(){
 
 
-   let  nombreInformacionAdicional = this.facturaForm.get("nombreInformacionAdicional")?.value;
-   let  valorInformacionAdicional = this.facturaForm.get("valorInformacionAdicional")?.value;
+   let  nombreInformacionAdicional = this.facturaForm.get("nombreInformacionAdicional");
+   let  valorInformacionAdicional = this.facturaForm.get("valorInformacionAdicional");
 
 
    (this.facturaForm.get('informacionAdicional') as FormArray).push(
     this.fb.group({
       id:this.numerosAleatorios(),
-      nombre:nombreInformacionAdicional,
-      valor: valorInformacionAdicional
+      nombre:nombreInformacionAdicional?.value,
+      valor: valorInformacionAdicional?.value
     })
   );
+
+  nombreInformacionAdicional?.setValue("");
+  valorInformacionAdicional?.setValue("");
 
 
  
   }
+
+
+  
+  quitarFormaPago(idFormaPago: any) {
+
+    const formaPago = this.facturaForm.get(
+      'formaPago'
+    ) as FormArray;
+    const index = formaPago.value.findIndex(
+      (x: any) => x.idFormaPago === idFormaPago
+    );
+
+    if (index !== -1) {
+      formaPago.removeAt(index);
+    }
+
+    this.calcularFormaPago();
+ 
+  }
+
 
   quitarInformacionAdicional(id: any) {
 
@@ -347,6 +401,7 @@ export class FacturaComponent {
     let valor = this.facturaForm.get("valor")?.value;
     let cantidad = this.facturaForm.get("cantidad")?.value;
     let total = this.facturaForm.get("total")?.value;
+    total = total.replace(",","");  
     let producto = this.ProductosList.find(x=>x.idProducto===idProducto);
     let valorOriginal= (parseFloat((parseFloat(total) / ( 1 + (producto?.idIvaNavigation?.valor ?? 0))).toFixed(2)));
   
@@ -412,6 +467,8 @@ export class FacturaComponent {
       this.facturaForm.get("iva12")?.setValue(this.decimalPipe.transform(0.00, '1.2-2'));
       this.facturaForm.get("totalFactura")?.setValue(this.decimalPipe.transform(0.00, '1.2-2'));
       this.facturaForm.get("totDescuento")?.setValue(this.decimalPipe.transform(0.00, '1.2-2'));
+      this.facturaForm.get("valorFormaPago")?.setValue(this.decimalPipe.transform(0.00, '1.2-2'));
+      this.facturaForm.get("plazoFormaPago")?.setValue(1);
       
       return;
 
@@ -435,16 +492,18 @@ export class FacturaComponent {
 
       }
       
-      let descuento =  parseFloat(this.facturaForm.get("descuento")?.value);
+      // let descuento =  parseFloat(this.facturaForm.get("descuento")?.value);
   
-      this.facturaForm.get("subtotal12")?.setValue(this.subtotal12.toFixed(2));
-      this.facturaForm.get("subtotal0")?.setValue(this.subtotal0.toFixed(2));
+      this.facturaForm.get("subtotal12")?.setValue(parseFloat(this.subtotal12.toFixed(2)));
+      this.facturaForm.get("subtotal0")?.setValue(parseFloat(this.subtotal0.toFixed(2)));
       this.subtotal =this.subtotal0 + this.subtotal12;
-      this.facturaForm.get("subtotal")?.setValue(this.subtotal.toFixed(2));
+      this.facturaForm.get("subtotal")?.setValue(parseFloat (this.subtotal.toFixed(2)));
       this.acumulador12 = parseFloat((this.subtotal12 * 0.12).toFixed(2)) ;
-      this.facturaForm.get("iva12")?.setValue(this.acumulador12.toFixed(2));
+      this.facturaForm.get("iva12")?.setValue(parseFloat (this.acumulador12.toFixed(2)));
       let totalFactura = (this.subtotal + this.acumulador12);
-      this.facturaForm.get("totalFactura")?.setValue(totalFactura.toFixed(2));
+      this.facturaForm.get("totalFactura")?.setValue(parseFloat (totalFactura.toFixed(2)));
+      this.facturaForm.get("valorFormaPago")?.setValue(totalFactura);
+      this.facturaForm.get("plazoFormaPago")?.setValue(1);
 
   
  
@@ -468,12 +527,128 @@ export class FacturaComponent {
   }
 
   asignarValor(evento: any) {
+
     let valor = parseFloat(evento.value).toFixed(2);
 
     this.facturaForm.get('valor')?.setValue(parseFloat(valor));
 
     this.calcularTotalVenta();
   }
+
+
+
+  asignarvalorFormaPago(evento: any){
+    
+    let valor =  this.facturaForm.get('valorFormaPago');
+    let totalFactura = parseFloat (this.facturaForm.get("totalFactura")?.value);
+
+    if(evento.value ==""){
+      return;
+    } 
+    if(parseFloat(valor?.value)> parseFloat((totalFactura  - this.acumFormaPago  ).toFixed(2))){
+      valor?.setValue(parseFloat((totalFactura  - this.acumFormaPago  ).toFixed(2)));
+      return
+      
+    }
+
+    if(this.acumFormaPago== totalFactura){
+
+      this.facturaForm.get('valorFormaPago')?.setValue(parseFloat ((this.acumFormaPago - totalFactura).toFixed(2)));
+      return
+    }
+
+    if(parseFloat (evento.value) > totalFactura){
+
+      valor?.setValue(this.decimalPipe.transform(totalFactura, '1.2-2'))
+    
+    }
+
+  }
+
+
+
+  agregarFormaPago(){
+
+
+    
+
+    const selectPrecios: HTMLSelectElement = this.el.nativeElement.querySelector("#idFormaPago");
+    const selectTiempo: HTMLSelectElement = this.el.nativeElement.querySelector("#idTiempoFormaPago");
+    let formaPago = selectPrecios.options[selectPrecios.selectedIndex].getAttribute('data-item-formaPago') ?? "" ;
+    let tiempo = selectTiempo.options[selectTiempo.selectedIndex].getAttribute('data-item-tiempo') ?? "" ;
+    let plazo =  this.facturaForm.get('plazoFormaPago')?.value;
+    let valor =  this.facturaForm.get('valorFormaPago')?.value;
+    // valor=valor.replace(",",".");
+
+
+
+
+    if(valor<=0){
+
+      this.toast.show_warning("Forma Pago","Ya se asignado la Totalidad");
+      return
+      
+    }
+    
+
+    (this.facturaForm.get('formaPago') as FormArray).push(
+      this.fb.group({
+        idFormaPago:selectPrecios.value,
+        formaPago:formaPago,
+        plazo: plazo,
+        valor:  parseFloat(valor),
+        tiempo: tiempo
+      })
+    );
+
+   
+  this.calcularFormaPago();
+
+
+  }
+
+
+  calcularFormaPago(){
+
+    let totalFactura =  this.facturaForm.get('totalFactura')?.value;
+
+    if(this.formaPagos?.controls.length.length !=0 ){
+
+      this.acumFormaPago=0;
+
+      this.formaPagos?.controls.forEach((item:any) => {
+
+        this.acumFormaPago= this.acumFormaPago + item.value.valor;
+      
+      });
+ 
+  
+      let restante = parseFloat((parseFloat(totalFactura) - this.acumFormaPago).toFixed(2));
+
+      if(restante<0){
+      alert("");
+       return
+        
+      }
+
+
+
+
+      this.facturaForm.get('valorFormaPago')?.setValue(restante);
+
+  
+
+    }
+
+  }
+
+  guardarFactura(){
+
+
+    console.log(this.facturaForm.value);
+
+  }
+
 
   asignarCantidad(evento: any) {
     this.calcularTotalVenta();
@@ -647,27 +822,27 @@ export class FacturaComponent {
   guardarModalEditarDetalle(){
 
     let producto= this.DetalleProductosList.find(x=>x.idProducto== this.idDetalleProducto);
-    producto.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value);
+    producto.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value.replace(",",""));
+    console.log(this.editarDetalleProductoForm.get("precio")?.value.replace(",",""))
     producto.cantidad=  parseFloat (this.editarDetalleProductoForm.get("cantidad")?.value);
     producto.porcentaje=  parseFloat (this.editarDetalleProductoForm.get("iva")?.value);
-    producto.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value);
+    producto.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value.replace(",",""));
     const detalleFacturaForm = this.facturaForm.get('detalleFactura' ) as FormArray;
     let productoForm = detalleFacturaForm.value.find((x:any)=>x.idProducto===this.idDetalleProducto);
-    productoForm.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value);
+    productoForm.totalSinIva=  parseFloat (this.editarDetalleProductoForm.get("precio")?.value.replace(",",""));
     productoForm.cantidad=  parseFloat (this.editarDetalleProductoForm.get("cantidad")?.value);
-    productoForm.porcentaje=  parseFloat (this.editarDetalleProductoForm.get("iva")?.value);
-    productoForm.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value);
+    productoForm.porcentaje=  parseFloat (this.editarDetalleProductoForm.get("iva")?.value.replace(",",""));
+    productoForm.total=  parseFloat (this.editarDetalleProductoForm.get("totalIva")?.value.replace(",",""));
     const selectDetalleIva: HTMLSelectElement = this.el.nativeElement.querySelector("#detalleIva");
     const ivaSeleccionado = selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-porcentaje')??"";
     const ivaSeleccionadoNombre = selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-nombre')??"";
     productoForm.valorPorcentaje= parseFloat (ivaSeleccionado);
     productoForm.nombrePorcentaje= ivaSeleccionadoNombre;
     productoForm.idIva= this.editarDetalleProductoForm.get("idIva")?.value;
-    console.log(detalleFacturaForm.value);
+    this.calcularDetalle();
+    $('#ModalEditarDetalle').modal('hide');
+    
 
-
-
-   
 
   }
 
@@ -685,6 +860,34 @@ export class FacturaComponent {
       },
     });
   }
+
+
+  listarFormaPagos() {
+    this.formaPagosService.listar().subscribe({
+      next: (res) => {
+        this.FormaPagosList = res;
+        this.facturaForm.get('idFormaPago')?.setValue(this.FormaPagosList[4]?.idFormaPago);
+      },
+      error: (err) => {
+        this.toast.show_error('Error', 'Al listar las Formas Pagos');
+      },
+    });
+  }
+
+
+  listarTiempoFormaPagos() {
+    this.tiempoFormaPagosService.listar().subscribe({
+      next: (res) => {
+        this.TiempoFormaPagosList = res;
+        this.facturaForm.get('idTiempoFormaPago')?.setValue(this.TiempoFormaPagosList[0]?.idTiempoFormaPago);
+      },
+      error: (err) => {
+        this.toast.show_error('Error', 'Al listar las Formas Pagos');
+      },
+    });
+  }
+
+
 
   listarDocumentosEmitir(codigo: number) {
     this.documentosEmitirService.listar(codigo).subscribe({

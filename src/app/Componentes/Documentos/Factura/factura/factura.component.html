@@ -1,3 +1,7 @@
+
+
+<a (click)="guardarFactura()" id="btnGuardarFactura" class="btn-flotante btn btn-primary">Generar</a>
+
 <div (keyup.enter)="registrar.click()" (keydown.esc)="cancelar.click()" class="modal fade" id="ModalNuevoCliente"
     data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
@@ -568,9 +572,10 @@
                     <th scope="col">Codigo</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Cantidad</th>
-                    <th scope="col">Precio</th>
+                    <th scope="col">Valor</th>
+                    <th scope="col">Subt</th>
                     <th scope="col">Iva</th>
-                    <th scope="col">Subtotal</th>
+                    <th scope="col">Sub + IVA</th>
                     <th scope="col">Opciones</th>
                 </tr>
             </thead>
@@ -581,6 +586,7 @@
                     <td class="text-center">{{item.codigo}}</td>
                     <td class="text-center">{{item.nombre}}</td>
                     <td class="text-center">{{item.cantidad}}</td>
+                    <td class="text-center">{{item.valor}}</td>
                     <td class="text-center">{{item.totalSinIva | number:'1.2-2'}}</td>
                     <td class="text-center">{{item.nombrePorcentaje}}</td>
                     <td class="text-center">{{item.total | number:'1.2-2'}}</td>
@@ -642,12 +648,10 @@
                             <div class="col-md-12 mt-2">
 
                                 <!-- <label for="example-select" class="form-label">Tipo Pago</label> -->
-                                <select class="form-control form-control-sm " id="exampleFormControlSelect1">
-                                    <option style="  text-align: center;" selected>SIN UTILIZACIÓN DEL SISTEMA
-                                        FINANCIERO
+                                <select id="idFormaPago" formControlName="idFormaPago" class="form-control form-control-sm ">
+                                    <option  [attr.data-item-formaPago]="item.nombre" *ngFor="let item of FormaPagosList" [value]="item.idFormaPago
+                                    ">{{item.nombre}}
                                     </option>
-                                    <option style="  text-align: center;">TARJETA DE CREDITO</option>
-                                    <option style="  text-align: center;">TARJETA DE DEBITO</option>
                                 </select>
                             </div>
 
@@ -662,27 +666,31 @@
                                     <div class="col-md-3">
 
                                         <label for="example-select" class="form-label">Tiempo</label>
-                                        <input class="form-control form-control-sm " type="text">
+                                         <select id="idTiempoFormaPago" formControlName="idTiempoFormaPago" class="form-control form-control-sm ">
+                                            <option [attr.data-item-tiempo]="item.nombre" *ngFor="let item of TiempoFormaPagosList" [value]="item.idTiempoFormaPago"
+                                            >{{item.nombre}}
+                                            </option>
+                                        </select>
                                     </div>
 
                                     <div class="col-md-3">
 
                                         <label for="example-select" class="form-label">Plazo</label>
-                                        <input class="form-control form-control-sm " type="text">
+                                        <input formControlName="plazoFormaPago" class="form-control form-control-sm " type="text">
                                     </div>
 
 
                                     <div class="col-md-3">
 
                                         <label for="example-select" class="form-label">Valor</label>
-                                        <input class="form-control form-control-sm " type="text">
+                                        <input (keyup)="asignarvalorFormaPago($event.target)" formControlName="valorFormaPago"  class="form-control form-control-sm " type="text">
                                     </div>
 
                                     <div class="col-md-3">
 
                                         <!-- <label style="visibility: hidden;" for="example-select" class="form-label">Tipo
                                         Pago</label> -->
-                                        <button style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
+                                        <button (click)="agregarFormaPago()" style="height: 2.2rem; margin-top: 1.7rem;" class="btn btn-primary">
 
                                             <i class="fas fa-plus mt-1"></i>
                                             Agregar
@@ -704,15 +712,26 @@
                                                 <th scope="col">Forma Pago</th>
                                                 <th scope="col">Plazo</th>
                                                 <th scope="col">Valor</th>
+                                                <th scope="col">Tiempo</th>
+                                                <th scope="col">Opciones</th>
 
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr style="text-align: center;">
-                                                <th scope="row">1</th>
-                                                <td>Tarjeta Credito </td>
-                                                <td>2 Años</td>
-                                                <td>$1350</td>
+                                            <tr  *ngFor="let item of formaPagos?.controls; let i = index" style="text-align: center;">
+                                                <th scope="row">{{i+1}}</th>
+                                                <td>{{item.get('formaPago').value}} </td>
+                                                <td>{{item.get('plazo').value }}</td>
+                                                <td>{{item.get('valor').value | number: '1.2-2' }}</td>
+                                                <td>{{item.get('tiempo').value }}</td>
+                                                <td> 
+                                                    <i style="cursor: pointer;" (click)="quitarFormaPago(item.get('idFormaPago').value )" data-toggle="tooltip"
+                                                    data-placement="bottom" title="Eliminar" class="fas fa-trash-alt"></i>
+                                                </td>
+                                            </tr>
+
+                                            <tr *ngIf="!formaPagos?.controls.length" >
+                                                <td colspan="6" class="text-center" style="font-weight: bolder;">Sin Forma Pago</td>
                                             </tr>
 
                                         </tbody>
