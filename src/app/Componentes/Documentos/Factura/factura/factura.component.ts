@@ -476,7 +476,7 @@ export class FacturaComponent {
       this.facturaForm
         .get('totalFactura')
         ?.setValue(parseFloat(totalFactura.toFixed(2)));
-      this.facturaForm.get('valorFormaPago')?.setValue(totalFactura);
+      this.facturaForm.get('valorFormaPago')?.setValue(parseFloat (totalFactura.toFixed(2)));
       this.facturaForm.get('plazoFormaPago')?.setValue(1);
     });
   }
