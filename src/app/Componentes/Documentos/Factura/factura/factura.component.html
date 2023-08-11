@@ -80,7 +80,7 @@
                                         [attr.data-item-totalIva]="item.totalIva"
                                         [value]="item.idDetallePrecioProducto"
                                         *ngFor="let item of DetallePreciosList">
-                                            {{item.totalIva | number: '1.2-2'}}</option>
+                                            {{item.totalIva }}</option>
                                     </select>
 
                                 </div>
@@ -205,7 +205,7 @@
                                 (click)="seleccionarTexto()"
                                 (keyup)="calcularEditarDetallePrecio()"
                                 [class.is-invalid]="facturaForm.get('razonSocial')!.touched && facturaForm.get('razonSocial')?.invalid"
-                                class="form-control form-control-sm" type="text">
+                                class="form-control form-control-sm" type="number">
 
                         </div>
 
@@ -476,7 +476,7 @@
                     (change)="asignarValor($event.target)" formControlName="precios"
                     class="form-control form-control-sm col-md-8 col-12">
                     <option [attr.data-item-idDetallePrecioProducto]="item.idDetallePrecioProducto"
-                        *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva | number: '1.2-2'
+                        *ngFor="let item of PreciosList" [value]="item.totalIva">{{item.totalIva 
                         }}</option>
 
                 </select>
@@ -567,7 +567,7 @@
 
         <table class="table mt-4 ">
             <thead>
-                <tr style="text-align: center; ">
+                <tr style="text-align: center; font-size: 1rem; ">
                     <th scope="col">#</th>
                     <th scope="col">Codigo</th>
                     <th scope="col">Nombre</th>
@@ -581,15 +581,15 @@
             </thead>
             <tbody>
 
-                <tr *ngFor="let item of DetalleProductosList; let i = index" style="text-align: center;">
+                <tr *ngFor="let item of DetalleProductosList; let i = index" style="text-align: center;font-weight:bolder; font-size: 1rem;">
                     <th scope="row">{{i+1}}</th>
                     <td class="text-center">{{item.codigo}}</td>
                     <td class="text-center">{{item.nombre}}</td>
                     <td class="text-center">{{item.cantidad}}</td>
                     <td class="text-center">{{item.valor}}</td>
-                    <td class="text-center">{{item.totalSinIva | number:'1.2-2'}}</td>
+                    <td class="text-center">{{item.totalSinIva }}</td>
                     <td class="text-center">{{item.nombrePorcentaje}}</td>
-                    <td class="text-center">{{item.total | number:'1.2-2'}}</td>
+                    <td class="text-center">{{item.total }}</td>
                     <td style="cursor: pointer;">
                         <i (click)="cargarModalEditarDetalle(item.idProducto)" id="edit-icon" data-toggle="tooltip"
                             data-placement="bottom" title="Editar" class="fas fa-edit mr-2"></i>
@@ -600,7 +600,7 @@
 
                 <tr>
 
-                    <td *ngIf="DetalleProductosList.length==0" colspan="8" style="font-weight: bolder;cursor:pointer"
+                    <td *ngIf="DetalleProductosList.length==0" colspan="9" style="font-weight: bolder;cursor:pointer"
                         class="text-center">Sin Productos</td>
 
                 </tr>
@@ -722,7 +722,7 @@
                                                 <th scope="row">{{i+1}}</th>
                                                 <td>{{item.get('formaPago').value}} </td>
                                                 <td>{{item.get('plazo').value }}</td>
-                                                <td>{{item.get('valor').value | number: '1.2-2' }}</td>
+                                                <td>{{item.get('valor').value }}</td>
                                                 <td>{{item.get('tiempo').value }}</td>
                                                 <td> 
                                                     <i style="cursor: pointer;" (click)="quitarFormaPago(item.get('idFormaPago').value )" data-toggle="tooltip"
@@ -1058,7 +1058,7 @@
                 <div class="col-md-6 mt-2 total" style="text-align: end;">
 
 
-                    <label style="font-size: 1.0rem;font-weight:bolder">Total</label>
+                    <label style="font-size: 1.2rem;font-weight:bolder">Total</label>
 
 
 
@@ -1069,7 +1069,7 @@
 
 
 
-                    <input readonly formControlName="totalFactura" type="text"
+                    <input style="font-size: 17px;font-weight:bolder" readonly formControlName="totalFactura" type="text"
                         class="form-control form-control-sm col-sm-3 col-md-12">
 
 
@@ -1081,6 +1081,8 @@
 
             </div>
 
+
+         
 
 
 
