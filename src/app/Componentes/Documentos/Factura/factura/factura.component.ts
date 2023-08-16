@@ -40,6 +40,7 @@ import { TiempoFormaPagosService } from 'src/app/Servicios/tiempo-forma-pagos.se
 import { TiempoFormaPagos } from 'src/app/Interfaces/TiempoFormaPagos';
 import { FormaPagos } from 'src/app/Interfaces/FormaPagos';
 import { event } from 'jquery';
+import { FacturasService } from 'src/app/Servicios/facturas.service';
 
 declare var $: any;
 
@@ -86,6 +87,7 @@ export class FacturaComponent {
   formaPagos: any;
   acumFormaPago: number = 0;
 
+
   constructor(
     private renderer: Renderer2,
     private elementRef: ElementRef,
@@ -108,26 +110,25 @@ export class FacturaComponent {
     private el: ElementRef,
     private ivasService: IvasService,
     private formaPagosService: FormaPagosService,
-    private tiempoFormaPagosService: TiempoFormaPagosService
+    private tiempoFormaPagosService: TiempoFormaPagosService,
+    private facturasService: FacturasService
   ) {
     this.facturaForm = this.fb.group({
+
+      fechaEmision: new FormControl(),
       idCliente: new FormControl(),
       identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
       razonSocial: new FormControl('', Validators.required),
       telefono: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       direccion: new FormControl('', Validators.required),
-      // identificacion: new FormControl(''),
-      // razonSocial: new FormControl(''),
-      // telefono: new FormControl(''),
-      // email: new FormControl(''),
-      // direccion: new FormControl(''),
       idEstablecimiento: new FormControl(),
       idPuntoEmision: new FormControl(),
       observacion: new FormControl(),
       idCiudad: new FormControl(''),
       idProvincia: new FormControl(''),
       idTipoIdentificacion: new FormControl(''),
+      codigoTipoIdentificacion: new FormControl(''),
       idDocumentoEmitir: new FormControl(),
       idProducto: new FormControl(),
       precios: new FormControl([Validators.required]),
@@ -164,6 +165,10 @@ export class FacturaComponent {
       plazoFormaPago: new FormControl(),
       valorFormaPago: new FormControl(),
       formaPago: this.fb.array([]),
+
+      establecimiento: new FormControl(),
+      puntoEmision: new FormControl(),
+      secuencial: new FormControl()
     });
 
     this.informacionAdicional = this.facturaForm.get(
@@ -190,7 +195,7 @@ export class FacturaComponent {
       this.fechaActual,
       'yyyy-MM-dd'
     );
-
+    this.facturaForm.get('fechaEmision')?.setValue(this.fechaFormateada);
     this.token = localStorage.getItem('token');
     this.ngSelectConfig.notFoundText = 'No existen coincidencias';
 
@@ -529,6 +534,8 @@ export class FacturaComponent {
       this.el.nativeElement.querySelector('#idFormaPago');
     const selectTiempo: HTMLSelectElement =
       this.el.nativeElement.querySelector('#idTiempoFormaPago');
+
+    
     let formaPago =
       selectPrecios.options[selectPrecios.selectedIndex].getAttribute(
         'data-item-formaPago'
@@ -552,6 +559,7 @@ export class FacturaComponent {
         plazo: plazo,
         valor: parseFloat(valor),
         tiempo: tiempo,
+        idTiempoFormaPago:selectTiempo.value
       })
     );
 
@@ -582,7 +590,39 @@ export class FacturaComponent {
   }
 
   guardarFactura() {
-    console.log(this.facturaForm.value);
+
+    
+    this.facturaForm.get("establecimiento")?.setValue(this.establecimiento);
+    this.facturaForm.get("puntoEmision")?.setValue(this.puntoEmision);
+    this.facturaForm.get("secuencial")?.setValue(this.secuencial);
+
+
+    if (this.token != null) {
+      let res = jwt_decode(this.token) as { idEmpresa: string,idUsuario:string };
+      this.facturaForm.value.idEmpresa=res.idEmpresa;
+      this.facturaForm.value.idUsuario=res.idUsuario;
+    }
+
+    
+
+    this.facturasService.insertar(this.facturaForm.value).subscribe({
+      next:(value)=> {
+
+
+          
+      },error:(err)=> {
+
+        console.log(err);
+    
+        this.toast.show_error(
+          'Error',
+          'Al generar la Factura'
+        );
+          
+      },
+    })
+
+    
   }
 
   asignarCantidad(evento: any) {
@@ -915,7 +955,6 @@ export class FacturaComponent {
     this.clientesServices.cargarPorIdentificacion(evento.value).subscribe({
       next: (res) => {
         this.spinnerIdentificacion = false;
-
         if (res == null) {
           $('#ModalNuevoCliente').modal('show');
           return;
@@ -926,6 +965,10 @@ export class FacturaComponent {
         this.facturaForm.get('email')?.setValue(res.email ?? '');
         this.facturaForm.get('direccion')?.setValue(res.direccion ?? '');
         this.facturaForm.get('idCliente')?.setValue(res.idCliente ?? '');
+        this.facturaForm.get('idCiudad')?.setValue(res.idCiudad ?? '');
+        this.facturaForm.get('idTipoIdentificacion')?.setValue(res.idTipoIdentificacion ?? '');
+        this.facturaForm.get('codigoTipoIdentificacion')?.setValue(res.idTipoIdentificacionNavigation?.codigo?? '');
+        
       },
       error: (err) => {
         this.spinnerIdentificacion = false;

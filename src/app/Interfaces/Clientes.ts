@@ -16,7 +16,7 @@ export interface Clientes {
     idEmpresa?: string | null ;
     idTipoIdentificacion?: string | null ;
     idCiudadNavigation?: Ciudades | null ;
-    dTipoIdentificacionNavigation?: TipoIdentificaciones | null;
+    idTipoIdentificacionNavigation?: TipoIdentificaciones | null;
     
 
   }

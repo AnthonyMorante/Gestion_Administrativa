@@ -75,12 +75,12 @@ export class LoginComponent {
           console.log(err);
           if(err.error.error_description ==="Contraseña Incorrecta"){
  
-           this.toast.show_error("Login","Incorrect Credentials");
+           this.toast.show_error("Login","Credenciales Incorrectas");
            return;
 
           } 
           this.btnLogin=false;
-          this.toast.show_error("Error","Error Try Later");
+          this.toast.show_error("Error","Error Intente más Tarde");
           
         },
         })
