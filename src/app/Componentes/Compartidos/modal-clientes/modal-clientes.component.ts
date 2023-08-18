@@ -280,9 +280,8 @@ export class ModalClientesComponent {
         this.tipoIdentificacionesList = res;
 
         this.selectedTipoNotificacion = this.tipoIdentificacionesList.find(
-          (item) => item.nombre === 'Cedula/Ruc'
+          (item) => item.nombre === 'Ruc'
         );
-
         this.clienteForm
           .get('idTipoIdentificacion')
           ?.setValue(this.selectedTipoNotificacion.idTipoIdentificacion);

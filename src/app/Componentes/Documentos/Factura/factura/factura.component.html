@@ -569,13 +569,14 @@
             <thead>
                 <tr style="text-align: center; font-size: 1rem; ">
                     <th scope="col">#</th>
-                    <th scope="col">Codigo</th>
+                    <th scope="col">Cod</th>
                     <th scope="col">Nombre</th>
-                    <th scope="col">Cantidad</th>
+                    <th scope="col">Cant</th>
                     <th scope="col">Valor</th>
                     <th scope="col">Subt</th>
                     <th scope="col">Iva</th>
                     <th scope="col">Sub + IVA</th>
+                    <th scope="col">Desc</th>
                     <th scope="col">Opciones</th>
                 </tr>
             </thead>
@@ -590,6 +591,8 @@
                     <td class="text-center">{{item.totalSinIva }}</td>
                     <td class="text-center">{{item.nombrePorcentaje}}</td>
                     <td class="text-center">{{item.total }}</td>
+                    <td class="text-center">{{item.descuento |number:'1.2'}}</td>
+                    
                     <td style="cursor: pointer;">
                         <i (click)="cargarModalEditarDetalle(item.idProducto)" id="edit-icon" data-toggle="tooltip"
                             data-placement="bottom" title="Editar" class="fas fa-edit mr-2"></i>

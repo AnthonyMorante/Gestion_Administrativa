@@ -78,6 +78,7 @@ export class FacturaComponent {
   facturaForm: FormGroup;
   editarDetalleProductoForm: FormGroup;
   acumulador12: number = 0;
+  acumuladorDescuento:number=0;
   subtotal12: number = 0;
   subtotal0: number = 0;
   subtotal: number = 0;
@@ -377,6 +378,14 @@ export class FacturaComponent {
       ).toFixed(2)
     );
 
+    let valorOriginalProducto = parseFloat(
+      (
+        parseFloat(valor) /
+        (1 + (producto?.idIvaNavigation?.valor ?? 0))
+      ).toFixed(2)
+    );
+
+
     const selectElement: HTMLSelectElement =
       this.el.nativeElement.querySelector('#precios');
     const idDetallePrecioProducto = selectElement.options[
@@ -392,6 +401,7 @@ export class FacturaComponent {
         valorPorcentaje: producto?.idIvaNavigation?.valor ?? 0,
         porcentaje: parseFloat((total - valorOriginal).toFixed(2)),
         valor: valor,
+        descuento: 0,
         tarifaPorcentaje: producto?.idIvaNavigation?.descripcion,
         cantidad: cantidad,
         total: parseFloat(total),
@@ -399,6 +409,7 @@ export class FacturaComponent {
         idIva: producto?.idIvaNavigation?.idIva,
         precios: this.fb.array(this.PreciosList),
         idDetallePrecioProducto: idDetallePrecioProducto,
+        valorProductoSinIva:valorOriginalProducto
       })
     );
 
@@ -422,6 +433,7 @@ export class FacturaComponent {
     this.subtotal0 = 0;
     this.subtotal = 0;
     this.descuento = 0;
+    this.acumuladorDescuento=0;
 
     if (detalleFactura.length === 0) {
       this.facturaForm
@@ -461,8 +473,12 @@ export class FacturaComponent {
       if (item.nombrePorcentaje === '0%') {
         this.subtotal0 = parseFloat((this.subtotal0 + item.total).toFixed(2));
       }
-
-      // let descuento =  parseFloat(this.facturaForm.get("descuento")?.value);
+ 
+      this.acumuladorDescuento=parseFloat ((this.acumuladorDescuento + item.descuento).toFixed(2));
+ 
+      this.facturaForm
+      .get('totDescuento')
+      ?.setValue(this.acumuladorDescuento);
 
       this.facturaForm
         .get('subtotal12')
@@ -485,6 +501,8 @@ export class FacturaComponent {
       this.facturaForm.get('valorFormaPago')?.setValue(parseFloat (totalFactura.toFixed(2)));
       this.facturaForm.get('plazoFormaPago')?.setValue(1);
     });
+
+    console.log(this.facturaForm.value);
   }
 
   eventPredefault(event: KeyboardEvent) {
@@ -605,6 +623,7 @@ export class FacturaComponent {
     }
 
     
+    console.log(this.facturaForm.value);
 
     this.facturasService.insertar(this.facturaForm.value).subscribe({
       next:(value)=> {
