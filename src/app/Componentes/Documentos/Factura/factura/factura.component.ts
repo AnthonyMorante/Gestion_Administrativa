@@ -392,6 +392,7 @@ export class FacturaComponent {
         valorPorcentaje: producto?.idIvaNavigation?.valor ?? 0,
         porcentaje: parseFloat((total - valorOriginal).toFixed(2)),
         valor: valor,
+        tarifaPorcentaje: producto?.idIvaNavigation?.descripcion,
         cantidad: cantidad,
         total: parseFloat(total),
         totalSinIva: valorOriginal,
