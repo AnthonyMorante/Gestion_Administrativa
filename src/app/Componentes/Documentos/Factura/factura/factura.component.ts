@@ -72,6 +72,7 @@ export class FacturaComponent {
   DetallePreciosList: any[] = [];
   DetalleProductosList: any[] = [];
   DetalleIvasList: any[] = [];
+  UnProducto: any[] = [];
   FormaPagosList: FormaPagos[] = [];
   TiempoFormaPagosList: TiempoFormaPagos[] = [];
   totalVentas: any;
@@ -118,11 +119,16 @@ export class FacturaComponent {
 
       fechaEmision: new FormControl(),
       idCliente: new FormControl(),
-      identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
-      razonSocial: new FormControl('', Validators.required),
-      telefono: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      direccion: new FormControl('', Validators.required),
+      // identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
+      // razonSocial: new FormControl('', Validators.required),
+      // telefono: new FormControl('', [Validators.required]),
+      // email: new FormControl('', [Validators.required, Validators.email]),
+      // direccion: new FormControl('', Validators.required),
+      identificacion: new FormControl(''),
+      razonSocial: new FormControl(''),
+      telefono: new FormControl(''),
+      email: new FormControl(''),
+      direccion: new FormControl(''),
       idEstablecimiento: new FormControl(),
       idPuntoEmision: new FormControl(),
       observacion: new FormControl(),
@@ -187,6 +193,8 @@ export class FacturaComponent {
       iva: new FormControl(),
       totalIva: new FormControl(),
       idIva: new FormControl(),
+      precioSinIva: new FormControl(),
+      
     });
   }
 
@@ -290,38 +298,23 @@ export class FacturaComponent {
   }
 
   calcularEditarDetallePrecio() {
-    const selectPrecios: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#detallePrecio');
-    const selectDetalleIva: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#detalleIva');
-
-    let cantidad = this.editarDetalleProductoForm.get('cantidad')?.value;
+    // const selectPrecios: HTMLSelectElement =this.el.nativeElement.querySelector('#detallePrecio');
+    // const precioSeleccionado =selectPrecios.options[selectPrecios.selectedIndex].getAttribute('data-item-totalIva') ?? '';
+    let cantidad = this.editarDetalleProductoForm.get('cantidad');
+    let precio = this.editarDetalleProductoForm.get('precio');
     let descuento = this.editarDetalleProductoForm.get('descuento')?.value;
-    const precioSeleccionado =
-      selectPrecios.options[selectPrecios.selectedIndex].getAttribute(
-        'data-item-totalIva'
-      ) ?? '';
-    const ivaSeleccionado =
-      selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute(
-        'data-item-porcentaje'
-      ) ?? '';
-    let valorSinIva = parseFloat(
-      (
-        parseFloat(precioSeleccionado) /
-        (1 + parseFloat(ivaSeleccionado))
-      ).toFixed(2)
-    );
-    let valoCantidadSinIva = parseFloat(
-      (valorSinIva * parseFloat(cantidad)).toFixed(2)
-    );
-    let sutotal = parseFloat(
-      (valoCantidadSinIva - parseFloat(descuento)).toFixed(2)
-    );
-    let valoriva = parseFloat(
-      (sutotal * parseFloat(ivaSeleccionado)).toFixed(2)
-    );
-    let valorTotalIva = parseFloat((sutotal + valoriva).toFixed(2));
-
+    const selectDetalleIva: HTMLSelectElement =this.el.nativeElement.querySelector('#detalleIva');
+    const ivaSeleccionado =selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute('data-item-porcentaje') ?? '';
+    let valorSinIva = parseFloat(((parseFloat(precio?.value)) * (parseFloat(cantidad?.value)) /(1 + parseFloat(ivaSeleccionado))).toFixed(2));
+    // let valoCantidadSinIva = parseFloat((valorSinIva * parseFloat(cantidad?.value)).toFixed(2));
+    let subtotal = parseFloat((valorSinIva - parseFloat(descuento)).toFixed(2));
+    let valorIva = parseFloat((subtotal * parseFloat(ivaSeleccionado)).toFixed(2));
+    let valorTotalIva = parseFloat((subtotal + valorIva).toFixed(2));
+    console.log("valorSinIva......"+ valorSinIva);
+    console.log("subtotal......"+ subtotal);
+    console.log("valorIva......"+ valorIva);
+    console.log("valorTotalIva......"+ valorTotalIva);
+  
     if (descuento == null || descuento == '') {
       this.editarDetalleProductoForm
         .get('descuento')
@@ -330,21 +323,25 @@ export class FacturaComponent {
       return;
     }
 
-    if (
-      cantidad == null ||
-      cantidad == '' ||
-      cantidad == 0 ||
-      cantidad == '0'
+    if (cantidad?.value == null ||cantidad.value == '' ||cantidad.value == 0 ||cantidad.value == '0'
     ) {
       this.editarDetalleProductoForm.get('cantidad')?.setValue(1);
       this.calcularEditarDetallePrecio();
       return;
     }
 
-    this.editarDetalleProductoForm.get('precio')?.setValue(valorSinIva);
-    this.editarDetalleProductoForm.get('total')?.setValue(sutotal);
-    this.editarDetalleProductoForm.get('iva')?.setValue(valoriva);
+    this.editarDetalleProductoForm.get('precioSinIva')?.setValue(subtotal);
+    this.editarDetalleProductoForm.get('total')?.setValue(subtotal);
+    this.editarDetalleProductoForm.get('iva')?.setValue(valorIva);
     this.editarDetalleProductoForm.get('totalIva')?.setValue(valorTotalIva);
+
+    valorSinIva=0;
+    subtotal=0;
+    valorIva=0;
+    valorTotalIva=0;
+    // valorCantidadSinIva=0;
+    // cantidad?.value=0;
+ 
   }
 
   agregarProducto() {
@@ -501,8 +498,6 @@ export class FacturaComponent {
       this.facturaForm.get('valorFormaPago')?.setValue(parseFloat (totalFactura.toFixed(2)));
       this.facturaForm.get('plazoFormaPago')?.setValue(1);
     });
-
-    console.log(this.facturaForm.value);
   }
 
   eventPredefault(event: KeyboardEvent) {
@@ -600,7 +595,6 @@ export class FacturaComponent {
       );
 
       if (restante < 0) {
-        alert('');
         return;
       }
 
@@ -622,9 +616,7 @@ export class FacturaComponent {
       this.facturaForm.value.idUsuario=res.idUsuario;
     }
 
-    
-    console.log(this.facturaForm.value);
-
+  
     this.facturasService.insertar(this.facturaForm.value).subscribe({
       next:(value)=> {
 
@@ -650,6 +642,22 @@ export class FacturaComponent {
   }
 
   calcularTotalVenta() {
+
+
+    let idProductoSeleccionado = this.facturaForm.get('idProducto')?.value;
+    let valorSeleccionado = this.ProductosList.find(item => item.idProducto === idProductoSeleccionado);
+    let stock = valorSeleccionado?.cantidad;
+
+    if(stock!=null  )
+    if(this.facturaForm.get('cantidad')?.value > stock){
+
+      this.toast.show_warning("Cantidad","Mayor a Stock");
+      this.facturaForm.get('cantidad')?.setValue(stock);
+      return;
+      }
+
+   
+
     if (this.facturaForm.get('cantidad')?.value == null) {
       return;
     }
@@ -704,6 +712,8 @@ export class FacturaComponent {
 
     this.detallePrecioProductosServices.listar(evento).subscribe({
       next: (res) => {
+
+
         let precio = {
           idDetallePrecioProducto: 'default',
           idProducto: producto?.idProducto,
@@ -773,6 +783,7 @@ export class FacturaComponent {
     let producto = this.DetalleProductosList.find(
       (x) => x.idProducto === idProducto
     );
+
     this.DetallePreciosList = producto.precios;
     let valorIndividualOriginal = parseFloat(
       (
@@ -781,21 +792,18 @@ export class FacturaComponent {
       ).toFixed(2)
     );
     this.editarDetalleProductoForm.get('nombre')?.setValue(producto.nombre);
-    this.editarDetalleProductoForm
-      .get('idPrecio')
-      ?.setValue(producto.idDetallePrecioProducto);
-    this.editarDetalleProductoForm
-      .get('precio')
-      ?.setValue(valorIndividualOriginal);
+    this.editarDetalleProductoForm.get('idPrecio')?.setValue(producto.idDetallePrecioProducto);
+    this.editarDetalleProductoForm.get('precio')?.setValue(producto.valor);
     this.editarDetalleProductoForm.get('cantidad')?.setValue(producto.cantidad);
-    this.editarDetalleProductoForm.get('total')?.setValue(producto.totalSinIva);
-    this.editarDetalleProductoForm
-      .get('descuento')
-      ?.setValue(producto.descuento);
+    this.editarDetalleProductoForm.get('total')?.setValue(producto.valor);
+    this.editarDetalleProductoForm.get('descuento')?.setValue(producto.descuento??0);
     this.editarDetalleProductoForm.get('iva')?.setValue(producto.porcentaje);
     this.editarDetalleProductoForm.get('totalIva')?.setValue(producto.total);
     this.editarDetalleProductoForm.get('totalIva')?.setValue(producto.total);
     this.editarDetalleProductoForm.get('idIva')?.setValue(producto.idIva);
+    this.editarDetalleProductoForm.get('precioSinIva')?.setValue(producto.totalSinIva);
+
+    
     setTimeout(() => {
       this.calcularEditarDetallePrecio();
     }, 0);
@@ -808,7 +816,7 @@ export class FacturaComponent {
     );
     
     producto.totalSinIva = parseFloat(
-      this.editarDetalleProductoForm.get('total')?.value
+      this.editarDetalleProductoForm.get('precioSinIva')?.value
     );
     producto.cantidad = parseFloat(
       this.editarDetalleProductoForm.get('cantidad')?.value
@@ -1027,7 +1035,6 @@ export class FacturaComponent {
     );
     if (component) {
       component.destroy();
-      alert('destruido');
     }
   }
 }
