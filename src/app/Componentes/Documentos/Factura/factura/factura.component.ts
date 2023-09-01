@@ -43,6 +43,7 @@ import { event } from 'jquery';
 import { FacturasService } from 'src/app/Servicios/facturas.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 declare var $: any;
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-factura',
@@ -194,13 +195,12 @@ export class FacturaComponent {
   }
 
   async ngOnInit() {
-    // Add an event listener for the 'afterprint' event
+
     this.renderer.listen(
       this.elementRef.nativeElement.ownerDocument,
       'afterprint',
       () => {
         console.log('User has printed the document');
-        // Add your code here to perform actions after the user prints the document
       }
     );
 
@@ -621,7 +621,17 @@ export class FacturaComponent {
     }
   }
 
+
+  abrirModalConfirmacionFactura(){
+    $('#ModalConfirmarFactura').modal('show');
+  }
+
+  cerrarModalConfirmacionFactura(){
+    $('#ModalConfirmarFactura').modal('hide');
+  }
+
   guardarFactura() {
+    $('#ModalConfirmarFactura').modal('hide');
     this.botonGuardarLoader = true;
 
     if (this.facturaForm.invalid) {
@@ -690,18 +700,33 @@ export class FacturaComponent {
 
           setTimeout(() => { 
 
-            alert('Factura Generada');
-            window.location.reload();
+            Swal.fire({
+              html:`<label style='font-size:1.1rem'>¿Desea Imprimir Orden de Compra?</label>`,
+              showCancelButton: true,
+              cancelButtonText:'Cancelar',
+              confirmButtonText: 'Aceptar',
+            }).then((result) => {
+              if (result.isConfirmed) {
+        
+                this.toast.show_success('Factura', 'Generada Correctamente');
+                setTimeout(function() {
+                  window.location.reload();
+                }, 1500);
+               
+              } else if (result.isDenied) {
+                
+              }
+            });
+ 
 
           }, 1000); 
 
         };
 
-        this.facturaForm.reset();
-        this.editarDetalleProductoForm.reset();
-        this.clearFormArray(this.informacionAdicional);
-        this.clearFormArray(this.formaPagos);
-
+        // this.facturaForm.reset();
+        // this.editarDetalleProductoForm.reset();
+        // this.clearFormArray(this.informacionAdicional);
+        // this.clearFormArray(this.formaPagos);
         // this.DetalleProductosList=[];
         // this.acumulador12 = 0;
         // this.acumuladorDescuento=0;

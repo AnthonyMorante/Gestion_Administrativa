@@ -4,7 +4,7 @@
 
 
 
-<a *ngIf="!botonGuardarLoader" (click)="guardarFactura()" id="btnGuardarFactura" class="btn-flotante btn btn-primary">Generar</a>
+<a *ngIf="!botonGuardarLoader" (click)="abrirModalConfirmacionFactura()" id="btnGuardarFactura" class="btn-flotante btn btn-primary">Generar</a>
 <a  *ngIf="botonGuardarLoader" class="btn-flotante btn btn-primary" disabled>Generando...</a>
 
 
@@ -56,6 +56,39 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- <div (keyup.enter)="registrar.click()" (keydown.esc)="cancelar.click()" class="modal fade" id="ModalConfirmarFactura" -->
+<div  class="modal fade" id="ModalConfirmarFactura"
+    data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-body">
+
+
+                <div class="text-center">
+                    <i style="font-size: 39px;" class="fas fa-exclamation-triangle text-warning"></i>
+                    <h4 style="font-weight: bolder;font-size:20px" class="mt-2">¡Advertencia!</h4>
+                    <p style="font-size: 18px;" class="mt-3"> Seguro que desea registrar la Factura</p>
+                    <button #cancelar (click)="cerrarModalConfirmacionFactura()" type="button" class="btn btn-secondary my-2 mr-2"
+                        data-bs-dismiss="modal">Cancelar</button>
+                    <button #registrar (click)="guardarFactura()" type="button" class="btn btn-primary my-2"
+                        data-bs-dismiss="modal">Registrar</button>
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
 
 
 
