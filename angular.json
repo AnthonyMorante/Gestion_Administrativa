@@ -25,11 +25,7 @@
               "src/assets"
             ],
             "styles": [
-
               "src/styles.css",
-              "node_modules/sweetalert2/src/sweetalert2.scss",
-              "node_modules/ngx-toastr/toastr.css",
-              "./src/assets/vendor/fontawesome-free/css/all.min.css",
               "src/assets/tools/datatables.css",
               "src/assets/template/assets/css/bootstrap.min.css",
               "src/assets/template/assets/plugins/metismenu/css/metisMenu.min.css",
@@ -38,13 +34,10 @@
               "src/assets/template/assets/css/semi-dark.css",
               "src/assets/template/assets/css/app.css",
               "./src/assets/tools/toast.css"
-
             ],
             "scripts": [
-
-              "./src/assets/vendor/jquery/jquery.js",
-              "src/assets/template/assets/js/bootstrap.bundle.min.js",
               "node_modules/jquery/dist/jquery.js",
+              "src/assets/template/assets/js/bootstrap.bundle.min.js",
               "src/assets/template/assets/plugins/simplebar/js/simplebar.min.js",
               "src/assets/template/assets/plugins/metismenu/js/metisMenu.min.js",
               "src/assets/template/assets/js/app.js",
@@ -52,11 +45,7 @@
               "./src/assets/tools/forms.js",
               "node_modules/datatables.net/js/jquery.dataTables.js",
               "node_modules/datatables.net-bs/js/dataTables.bootstrap.min.js"
-
             ]
-
-
-
           },
           "configurations": {
             "production": {

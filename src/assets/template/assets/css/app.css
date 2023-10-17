@@ -1636,7 +1636,7 @@ form.readonly ng-select .ng-select-container {
 }
 
 ng-select.ng-select-focused .ng-select-container {
-  border: 1px solid #DED0AF !important;
+  border: 1px solid #1C86EA !important;
   box-shadow: 0 0 0 .19rem rgba(26, 47, 87, .10) !important;
 }
 
@@ -1709,3 +1709,64 @@ ul.metismenu li.home a:not(.active) *{
 ul.metismenu li.home a:not(.active):hover *{
   color:white !important;
 }
+
+
+.toggle-control {
+  display: block;
+  position: relative;
+  padding-left: 2.083rem;
+  margin-bottom: 0.75rem;
+  margin-left: auto;
+  margin-right: auto;
+  cursor: pointer;
+  width: 38px !important;
+  font-size: 1.375rem;
+  user-select: none;
+}
+
+.toggle-control input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.toggle-control input:checked ~ .control {
+  background-color: dodgerblue;
+}
+
+.toggle-control input.success:checked ~ .control {
+  background-color:#16e15e;
+}
+
+.toggle-control input:checked ~ .control:after {
+  left: 1.146rem;
+}
+.toggle-control .control {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1.042rem;
+  width: 2.083rem;
+  border-radius: 1.563rem;
+  background-color: darkgray;
+  transition: background-color 0.15s ease-in;
+}
+.toggle-control .control:after {
+  content: "";
+  position: absolute;
+  left: 0.104rem;
+  top: 0.104rem;
+  width: 0.83rem;
+  height: 0.83rem;
+  border-radius: 0.521rem;
+  background: white;
+  transition: left 0.15s ease-in;
+}
+/* td.w-switch,
+th.w-switch
+{
+  width: 93px !important;
+  min-width: 93px !important;
+  max-width: 93px !important;
+} */

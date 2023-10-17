@@ -1,0 +1,141 @@
+<div class="row page-title"><i class='bi-people'></i>Empleados</div>
+<div class="component-content">
+    <div class=" my-2">
+        <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+            Nuevo Registro <i class="bi-plus"></i>
+        </button>
+    </div>
+    <div class="table-responsive p-1">
+        <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
+            <thead>
+                <tr>
+                    <th class="text-center w-gear"><i class="bi-gear"></i></th>
+                    <th>IDENTIFICACION</th>
+                    <th>RAZÓN SOCIAL</th>
+                    <th class="text-end">Teléfono</th>
+                    <th>Dirección</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="lista?.length>0" class="">
+                <tr *ngFor="let item of lista">
+                    <td class="text-center">
+                        <button (click)="editar(item.idEmpleado)" type="button" class="btn btn-primary text-white btn-sm"
+                        style="padding:2px 0 2px 6px"><i class="bi-pencil-square" style="font-size:12px"></i></button>
+                        <button (click)="eliminar(item.idEmpleado)" type="button" class="btn btn-danger text-white btn-sm"
+                        style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
+                    </td>
+                    <td>{{item.identificacion}}</td>
+                    <td width="35%">{{item.razonSocial}}</td>
+                    <td class="text-end">{{item.telefono}}</td>
+                    <td width="35%">{{item.direccion}}</td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="lista?.length==0">
+                <tr>
+                    <td colspan="5" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content bg-primary">
+            <div class="modal-header py-2">
+                <label class="modal-title text-white" id="modalDatosLabel">{{tituloModal}}</label>
+                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"
+                    (click)="modal.hide()">
+                </button>
+            </div>
+            <div class="modal-body bg-white">
+                <form #frmDatos class="row">
+                    <div class="col-sm-6">
+                        <label class="form-label">Tipo Documento</label>
+                        <select class="form-select form-select-sm" id="idTipoIdentificacion" name="idTipoIdentificacion"
+                            (change)="handleDocumento($event.target)">
+                            <option *ngFor="let item of listaTipoIdentificaciones"
+                                value="{{item.idTipoIdentificacion}}">
+                                {{item.nombre}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Identificacion</label>
+                        <input type="text" class="form-control form-control-sm" id="identificacion" name="identificacion" maxlength="30" />
+                        <div class="invalid-feedback">
+                            *Campo Requerido
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <label class="form-label">Razón Social</label>
+                        <input type="text" class="form-control form-control-sm" id="razonSocial" name="razonSocial"
+                            maxlength="500" />
+                        <div class="invalid-feedback">
+                            *Campo Requerido
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control form-control-sm text-end" id="telefono" name="telefono"
+                            data-validate="numeros" maxLength="500" maxlength="500" />
+                        <div class="invalid-feedback">
+                            *Campo Requerido
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <label class="form-label">Email</label>
+                        <input type="text" class="form-control form-control-sm" id="email" name="email"
+                            data-validate="email" maxLength="500" />
+                        <div class="invalid-feedback">
+                            *Campo Requerido
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Provincia</label>
+                        <ng-select #idProvincia id="idProvincia" [clearable]="true" placeholder="Seleccione"
+                            (change)="comboCiudades($event)" notFoundText="Sin resultados">
+                            <ng-option *ngFor="let item of listaProvincias"
+                                [value]="item.idProvincia">{{item.nombre}}</ng-option>
+                        </ng-select>
+                        <div class="invalid-feedback">
+                            * Campo Requerido
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label">Ciudad</label>
+                        <ng-select #idCiudad id="idCiudad" [clearable]="true"
+                            placeholder="{{!idProvincia.selectedValues[0] ?'Seleccione una provincia':'Seleccione'}}"
+                            notFoundText="Sin resultados">
+                            <ng-option *ngFor="let item of listaCiudades"
+                                [value]="item.idCiudad">{{item.nombre}}</ng-option>
+                        </ng-select>
+                        <div class="invalid-feedback">
+                            * Campo Requerido
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <label class="form-label">Dirección</label>
+                        <textarea type="text" class="form-control form-control-sm" id="direccion" name="direccion"
+                            maxLength="500"></textarea>
+                        <div class="invalid-feedback">
+                            *Campo Requerido
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <label class="form-label">Observaciones</label>
+                        <textarea type="text" class="form-control form-control-sm" id="observacion"
+                            name="observacion" data-validate="no-validate" maxLength="500"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Guardar</button>
+                <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

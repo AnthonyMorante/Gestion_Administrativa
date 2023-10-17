@@ -5,7 +5,6 @@ import { AxiosService } from 'src/app/Services/axios.service';
 import { DataTableDirective } from 'angular-datatables';
 import { js } from '../../../../../main';
 import { NgSelectComponent } from '@ng-select/ng-select';
-declare var $: any;
 @Component({
   selector: 'app-clientes',
   templateUrl: './clientes.component.html',
@@ -13,6 +12,7 @@ declare var $: any;
 })
 export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
   baseUrl = `${global.BASE_API_URL}api/`;
+  componentTitle: string = "";
   //Datatable
   lista: any = [];
   @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
@@ -26,7 +26,7 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
   tituloModal: string = "Nuevo registro";
   idCliente: string = "";
   identificacion: any;
-  fechaRegistro:Date=new Date();
+  fechaRegistro: Date = new Date();
   //Combos
   @ViewChild('idProvincia', { static: true }) idProvincia: NgSelectComponent = {} as NgSelectComponent;
   @ViewChild('idCiudad', { static: true }) idCiudad: NgSelectComponent = {} as NgSelectComponent;
@@ -55,10 +55,10 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarClientes() {
     try {
       const url = `${this.baseUrl}Clientes/listar`;
-      const columns=js.dtColumns("idEmpresa,identificacion,telefono,razonSocial,direccion");
+      const columns = "idEmpresa,identificacion,telefono,razonSocial,direccion";
       //DataTables
       this.dtOptions = {
-        destroy:true,
+        destroy: true,
         serverSide: true,
         pageLength: 10,
         pagingType: 'full_numbers',
@@ -78,16 +78,16 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
             js.handleError(e);
           }
         },
-        columns:columns,
+        columns: columns.split(",").map((x: string) => { return { data: x } }),
         columnDefs: [{ targets: [0], searchable: false, orderable: false }],
-        order: [[1,"asc"]]
+        order: [[1, "asc"]]
       };
       //DataTables
     } catch (e) {
       js.handleError(e);
     }
   }
-  reloadDataTable():void{
+  reloadDataTable(): void {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
   }
   async comboTipoIdentificaciones(): Promise<void> {
@@ -123,8 +123,8 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.idCliente = "";
     this.idCiudad.handleClearClick();
     this.idProvincia.handleClearClick();
-    this.listaCiudades=[];
-    js.limpiarForm(this.frmDatos.nativeElement,100);
+    this.listaCiudades = [];
+    js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
   handleDocumento(idTipoIdentificacion: any): void {
     const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
@@ -143,17 +143,17 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async editar(idCliente:string):Promise<void>{
+  async editar(idCliente: string): Promise<void> {
     try {
-      this.tituloModal="Editar registro"
-      this.idCliente="";
-      const url=`${this.baseUrl}Clientes/cargar/${idCliente}`;
-      const res=(await this.axios.get(url)).data;
-      res.idProvincia=res.idCiudadNavigation.idProvincia;
-      js.cargarFormulario(this.frmDatos.nativeElement,res);
+      this.tituloModal = "Editar registro"
+      this.idCliente = "";
+      const url = `${this.baseUrl}Clientes/cargar/${idCliente}`;
+      const res = (await this.axios.get(url)).data;
+      res.idProvincia = res.idCiudadNavigation.idProvincia;
+      js.cargarFormulario(this.frmDatos.nativeElement, res);
       this.idProvincia.select(this.idProvincia.itemsList.findItem(res.idProvincia));
-      setTimeout(()=>this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)),100);
-      this.idCliente=res.idCliente;
+      setTimeout(() => this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)), 100);
+      this.idCliente = res.idCliente;
       this.modal.show();
     } catch (e) {
       js.handleError(e);
@@ -164,34 +164,34 @@ export class ClientesComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
       js.loaderShow();
-      const url=`${this.baseUrl}Clientes/${!this.idCliente?"insertar":"actualizar"}`;
-      const data=new FormData(this.frmDatos.nativeElement);
-      if(!!this.idCliente)data.append("idCliente",this.idCliente);
+      const url = `${this.baseUrl}Clientes/${!this.idCliente ? "insertar" : "actualizar"}`;
+      const data = new FormData(this.frmDatos.nativeElement);
+      if (!!this.idCliente) data.append("idCliente", this.idCliente);
       data.append("idProvincia", this.idProvincia.selectedValues[0]);
       data.append("idCiudad", this.idCiudad.selectedValues[0]);
-      if(!this.idCliente) await this.axios.postFormJson(url,data);
-      else await this.axios.putFormJson(url,data);
-      js.toastSuccess(`Registro ${!this.idCliente?"guardado":"editado"} exitosamente`);
+      if (!this.idCliente) await this.axios.postFormJson(url, data);
+      else await this.axios.putFormJson(url, data);
+      js.toastSuccess(`Registro ${!this.idCliente ? "guardado" : "editado"} exitosamente`);
       this.modal.hide();
       this.reloadDataTable();
     } catch (e) {
       js.handleError(e);
-    }finally{
+    } finally {
       js.loaderHide();
     }
   }
 
-  async eliminar(idCliente:string):Promise<void>{
+  async eliminar(idCliente: string): Promise<void> {
     try {
-      if(!await js.toastPreguntar(`
+      if (!await js.toastPreguntar(`
       <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
       <p class='fs-md'>¿Está seguro que desea eliminar este cliente?</p>
       <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
       </i>Esta acción no se puede deshacer ni revertir.</p>
-      `,"Si, Eliminar"))return;
-      const url=`${this.baseUrl}Clientes/eliminar/${idCliente}`;
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Clientes/eliminar/${idCliente}`;
       await this.axios.delete(url);
-      js.toastSuccess("Cliente eliminado exitosamente");      
+      js.toastSuccess("Cliente eliminado exitosamente");
       this.reloadDataTable();
     } catch (e) {
       js.handleError(e);

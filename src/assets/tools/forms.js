@@ -215,7 +215,7 @@ function limpiarSelect(e) {
 
 function cargarFormulario(e, t) {
     try {
-        
+
         if (!t) throw Error("No se han enviado los datos o el form");
         limpiarForm(e),
             Object.keys(t).forEach((_) => {
@@ -1437,11 +1437,5 @@ function validarClaves(idClave, idConfir) {
             confir.classList.add("is-invalid");
         }
         resolve(mensaje);
-    });
-}
-
-function dtColumns(values){
-    return values.split(",").map(x=>{
-        return {data:x};
     });
 }

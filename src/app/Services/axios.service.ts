@@ -39,10 +39,7 @@ export class AxiosService {
   }
 
   public async postFormJson(url: string, form: any): Promise<any> {
-    let obj:any={};
-    form.forEach(function(value:any, key:string){
-      obj[key] = value;
-  });
+    const obj=await this.formToJson(form);
     return await axios.post(url, JSON.stringify(obj), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -54,10 +51,7 @@ export class AxiosService {
   }
 
   public async putFormJson(url: string, form: any): Promise<any> {
-    let obj:any={};
-    form.forEach(function(value:any, key:string){
-      obj[key] = value;
-  });
+    const obj=await this.formToJson(form);
     return await axios.put(url, JSON.stringify(obj), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -79,7 +73,7 @@ export class AxiosService {
   }
   public async postXForm(url: string, object: any): Promise<any> {
     const body = new URLSearchParams();
-    Object.keys(object).forEach(key=>body.append(key,object[key]));
+    Object.keys(object).forEach(key => body.append(key, object[key]));
     return await axios.post(url, body.toString(), {
       headers: {
         'Content-Type': `application/x-www-form-urlencoded`,
@@ -96,6 +90,23 @@ export class AxiosService {
         'Content-Type': `application/json`,
       },
     }));
+  }
+
+  public formToJson(form: any) {
+    return new Promise((resolve:any)=>{
+      let obj: any = {};
+      try {
+        let list=Array.from(form);
+        for (let index = 0; index <list.length; index++) {
+          const [key,value]:any=list[index];
+          obj[key]=value;
+          if(index==list.length-1) resolve(obj);
+        }
+      } catch (e) {
+        console.warn(e);
+        resolve(obj);
+      }
+    });
   }
 
 }
