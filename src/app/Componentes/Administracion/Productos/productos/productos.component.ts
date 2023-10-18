@@ -21,6 +21,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   //Modal
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmDetalle', { static: true }) frmDetalle: ElementRef = {} as ElementRef;
   modal: any;
   tituloModal: string = "Nuevo registro";
   idProducto: string = "";
@@ -38,6 +39,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       backdrop: 'static',
     });
     js.activarValidadores(this.frmDatos.nativeElement);
+    js.activarValidadores(this.frmDetalle.nativeElement);
     this.listarProductos();
     this.comboIvas();
   }
@@ -101,6 +103,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.idProducto = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
     this.detallePrecios=[];
+    js.limpiarForm(this.frmDetalle.nativeElement, 100);
   }
 
   async editar(idProducto: string): Promise<void> {
@@ -177,6 +180,24 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async eliminarPrecio(precio:any): Promise<void> {
+    try {
+      if (!await js.toastPreguntar(`
+      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
+      <p class='fs-md'>¿Está seguro que desea eliminar este precio?</p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
+      </i>Esta acción no se puede deshacer ni revertir.</p>
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Productos/eliminarPrecio/${precio.idDetallePrecioProducto}`;
+      if(!precio.idDetallePrecioProducto.startsWith("_"))await this.axios.delete(url);
+      this.detallePrecios.splice(this.detallePrecios.indexOf(precio),1);
+      js.toastSuccess("Producto eliminado exitosamente");
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
   handleIva(){
     try {
       const totalIva=this.el.nativeElement.querySelector("#totalIva");
@@ -190,6 +211,35 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
         totalIva.value="0";
       }
       totalIva.classList.remove("is-invalid");
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  handleIvaGanancia(){
+    try {
+      const totalIva=this.el.nativeElement.querySelector("#totalIvaD");
+      const precio=this.el.nativeElement.querySelector("#precio");
+      const porcentaje=this.el.nativeElement.querySelector("#porcentaje");
+      const idIva=this.el.nativeElement.querySelector("#idIvaD");
+      const total=this.el.nativeElement.querySelector("#total");
+      if(!!precio.value && !!porcentaje.value){
+        const valorIva=this.listaIvas.find((x:any)=>x.idIva==idIva.value)?.valor;
+        const valorPrecio=parseFloat(precio.value.replaceAll(",","."));
+        totalIva.value=(valorPrecio+(valorIva*valorPrecio)).toFixed(2).replaceAll(".",",");
+        total.value=(((valorPrecio+(valorIva*valorPrecio))*parseInt(porcentaje))/100).toFixed(2);
+      }else{
+        totalIva.value="0";
+      }
+      totalIva.classList.remove("is-invalid");
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  agregarPrecio(){
+    try {
+
     } catch (e) {
       js.handleError(e);
     }

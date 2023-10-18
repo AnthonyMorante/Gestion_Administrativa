@@ -1770,3 +1770,34 @@ th.w-switch
   min-width: 93px !important;
   max-width: 93px !important;
 } */
+
+
+.title-line {
+	margin:0 0 1em;
+	color:#9999;
+	text-align:center;
+  display:flex;
+  align-items:center;
+}
+.title-line:before,.title-line:after {
+	content:" ";
+  flex:1 0 0%;
+	height:1px;
+	background:#9999;
+  margin:0 1.5rem 0 0;
+}
+.title-line:after {
+  margin:0 0 0 1.5rem;
+}
+
+.btn-sm-agregar{
+  padding-right: 15px;
+  margin-top: 25px;
+}
+
+.btn-sm-agregar i{
+  position: absolute;
+  font-size: 11px;
+  margin-top:1px;
+  margin-left: 1px;
+}
