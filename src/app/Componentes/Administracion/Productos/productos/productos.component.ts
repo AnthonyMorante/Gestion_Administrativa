@@ -22,6 +22,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDetalle', { static: true }) frmDetalle: ElementRef = {} as ElementRef;
+  @ViewChild('totalIva', { static: true }) totalIva: ElementRef = {} as ElementRef;
   modal: any;
   tituloModal: string = "Nuevo registro";
   idProducto: string = "";
