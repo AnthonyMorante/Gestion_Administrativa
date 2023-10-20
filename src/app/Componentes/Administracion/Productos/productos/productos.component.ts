@@ -33,7 +33,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   listaIvas: any = [];
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
       keyboard: false,
       backdrop: 'static',
@@ -43,10 +43,10 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.listarProductos();
     this.comboIvas();
   }
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
   }
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
   async listarProductos() {
