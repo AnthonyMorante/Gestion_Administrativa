@@ -22,16 +22,16 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDetalle', { static: true }) frmDetalle: ElementRef = {} as ElementRef;
+  @ViewChild('totalIva', { static: true }) totalIva: ElementRef = {} as ElementRef;
   modal: any;
   tituloModal: string = "Nuevo registro";
   idProducto: string = "";
-  detallePrecios:any=[];
+  detallePrecios: any = [];
   identificacion: any;
   fechaRegistro: Date = new Date();
   //Combos
   listaIvas: any = [];
-
-  constructor(private axios: AxiosService,private el:ElementRef) { }
+  constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
     this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
@@ -102,7 +102,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tituloModal = "Nuevo registro";
     this.idProducto = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
-    this.detallePrecios=[];
+    this.detallePrecios = [];
     js.limpiarForm(this.frmDetalle.nativeElement, 100);
   }
 
@@ -112,9 +112,9 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       this.idProducto = "";
       const url = `${this.baseUrl}Productos/cargar/${idProducto}`;
       const res = (await this.axios.get(url)).data;
-      this.detallePrecios=res.detallePrecios;
+      this.detallePrecios = res.detallePrecios;
       js.cargarFormulario(this.frmDatos.nativeElement, res.producto);
-      this.idProducto=res.producto.idProducto;
+      this.idProducto = res.producto.idProducto;
       this.modal.show();
     } catch (e) {
       js.handleError(e);
@@ -125,11 +125,15 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
       js.loaderShow();
-      const url = `${this.baseUrl}Productos/${!this.idProducto ? "insertar" : "actualizar"}`;
-      const data = new FormData(this.frmDatos.nativeElement);
-      if (!!this.idProducto) data.append("idProducto", this.idProducto);
-      if (!this.idProducto) await this.axios.postFormJson(url, data);
-      else await this.axios.putFormJson(url, data);
+      const url = `${this.baseUrl}Productos/guardar`;
+      let data: any = await this.axios.formToJsonTypes(this.frmDatos.nativeElement);
+      if (!!this.idProducto) data.idProducto = this.idProducto;
+      data.DetallePrecioProductos = [...this.detallePrecios].map((x: any) => {
+        if (!!this.idProducto) x.idProducto = this.idProducto;
+        delete x.idDetallePrecioProducto;
+        return x;
+      });
+      await this.axios.postJson(url, data);
       js.toastSuccess(`Registro ${!this.idProducto ? "guardado" : "editado"} exitosamente`);
       this.modal.hide();
       this.reloadDataTable();
@@ -180,7 +184,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async eliminarPrecio(precio:any): Promise<void> {
+  async eliminarPrecio(precio: any): Promise<void> {
     try {
       if (!await js.toastPreguntar(`
       <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
@@ -189,8 +193,8 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       </i>Esta acción no se puede deshacer ni revertir.</p>
       `, "Si, Eliminar")) return;
       const url = `${this.baseUrl}Productos/eliminarPrecio/${precio.idDetallePrecioProducto}`;
-      if(!precio.idDetallePrecioProducto.startsWith("_"))await this.axios.delete(url);
-      this.detallePrecios.splice(this.detallePrecios.indexOf(precio),1);
+      if (!precio.idDetallePrecioProducto.startsWith("_")) await this.axios.delete(url);
+      this.detallePrecios.splice(this.detallePrecios.indexOf(precio), 1);
       js.toastSuccess("Producto eliminado exitosamente");
       this.reloadDataTable();
     } catch (e) {
@@ -198,17 +202,28 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleIva(){
+  handleIva() {
     try {
-      const totalIva=this.el.nativeElement.querySelector("#totalIva");
-      const precio=this.el.nativeElement.querySelector("#precio");
-      const idIva=this.el.nativeElement.querySelector("#idIva");
-      if(!!precio.value){
-        const valorIva=this.listaIvas.find((x:any)=>x.idIva==idIva.value)?.valor;
-        const valorPrecio=parseFloat(precio.value.replaceAll(",","."));
-        totalIva.value=(valorPrecio+(valorIva*valorPrecio)).toFixed(2).replaceAll(".",",");
-      }else{
-        totalIva.value="0";
+      const totalIva = this.el.nativeElement.querySelector("#totalIva");
+      const precio = this.el.nativeElement.querySelector("#precio");
+      const idIva = this.el.nativeElement.querySelector("#idIva");
+      if (!!precio.value) {
+        const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        const valorPrecio = parseFloat(precio.value.replaceAll(",", "."));
+        const valorIva = valorPrecio * parseFloat(iva);
+        totalIva.value = (valorPrecio + valorIva).toFixed(2).replaceAll(".", ",");
+        this.detallePrecios = [...this.detallePrecios].map((x: any) => {
+          const iva = this.listaIvas.find((i: any) => i.idIva == x.idIva)?.valor;
+          const valorIva = precio.value.replaceAll(",", ".") * parseFloat(iva);
+          const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
+          const valorPorcentaje = (parseFloat(precio.value.replaceAll(",", ".")) * x.porcentaje) / 100;
+          x.total = valorPorcentaje;
+          x.totalIva = valorPrecio;
+          return x;
+        });
+        console.log(this.detallePrecios);
+      } else {
+        totalIva.value = "0";
       }
       totalIva.classList.remove("is-invalid");
     } catch (e) {
@@ -216,33 +231,51 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleIvaGanancia(){
+  handleIvaGanancia() {
     try {
-      const totalIva=this.el.nativeElement.querySelector("#totalIvaD");
-      const precio=this.el.nativeElement.querySelector("#precio");
-      const porcentaje=this.el.nativeElement.querySelector("#porcentaje");
-      const idIva=this.el.nativeElement.querySelector("#idIvaD");
-      const total=this.el.nativeElement.querySelector("#total");
-      if(!!precio.value && !!porcentaje.value){
-        const valorIva=this.listaIvas.find((x:any)=>x.idIva==idIva.value)?.valor;
-        const valorPrecio=parseFloat(precio.value.replaceAll(",","."));
-        totalIva.value=(valorPrecio+(valorIva*valorPrecio)).toFixed(2).replaceAll(".",",");
-        total.value=(((valorPrecio+(valorIva*valorPrecio))*parseInt(porcentaje))/100).toFixed(2);
-      }else{
-        totalIva.value="0";
+      const totalIva = this.el.nativeElement.querySelector("#totalIvaD");
+      const precio = this.el.nativeElement.querySelector("#precio");
+      const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
+      const idIva = this.el.nativeElement.querySelector("#idIvaD");
+      const total = this.el.nativeElement.querySelector("#total");
+      if (!!precio.value && !!porcentaje.value) {
+        const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
+        const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
+        const valorPorcentaje = (valorPrecio * parseInt(porcentaje.value)) / 100;
+        total.value = valorPorcentaje.toFixed(2).replaceAll(".", ",");
+        totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
+      } else {
+        totalIva.value = "0";
       }
-      totalIva.classList.remove("is-invalid");
+      js.limpiarValidadores(this.frmDetalle.nativeElement);
     } catch (e) {
       js.handleError(e);
     }
   }
 
-  agregarPrecio(){
+  async agregarPrecio(): Promise<void> {
     try {
-
+      if (!this.totalIva.nativeElement.value) throw new Error("Primero debe generar un precio para el producto.");
+      if (!await js.validarTodo(this.frmDetalle.nativeElement)) throw new Error("Verifique los campos requeridos");
+      let obj: any = await this.axios.formToJsonTypes(this.frmDetalle.nativeElement);
+      let totalIva = parseFloat(obj.totalIvaD) - parseFloat(obj.total);
+      this.detallePrecios.push({
+        idDetallePrecioProducto: `_${(new Date()).getTime()}`,
+        totalIva: totalIva,
+        porcentaje: obj.porcentaje,
+        total: obj.total,
+        activo: true,
+        idIva: obj.idIvaD
+      });
+      js.limpiarForm(this.frmDetalle.nativeElement);
     } catch (e) {
       js.handleError(e);
     }
+  }
+
+  getIva(idIva: string): any {
+    return this.listaIvas.find((x: any) => x.idIva == idIva);
   }
 
 }

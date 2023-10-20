@@ -18,8 +18,8 @@ export class AxiosService {
     }));
   }
 
-  public async postForm(url: string, form: any): Promise<any> {
-    return await axios.post(url, form, {
+  public async postForm(url: string, formData: FormData): Promise<any> {
+    return await axios.post(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
           global.token.user
@@ -28,8 +28,8 @@ export class AxiosService {
     });
   }
 
-  public async putForm(url: string, form: any): Promise<any> {
-    return await axios.put(url, form, {
+  public async putForm(url: string, formData: FormData): Promise<any> {
+    return await axios.put(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
           global.token.user
@@ -38,8 +38,9 @@ export class AxiosService {
     });
   }
 
-  public async postFormJson(url: string, form: any): Promise<any> {
-    const obj=await this.formToJson(form);
+  public async postFormJson(url: string, formData: FormData): Promise<any> {
+    const obj = await this.formToJson(formData);
+    console.log(obj);
     return await axios.post(url, JSON.stringify(obj), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -50,8 +51,8 @@ export class AxiosService {
     });
   }
 
-  public async putFormJson(url: string, form: any): Promise<any> {
-    const obj=await this.formToJson(form);
+  public async putFormJson(url: string, formData: FormData): Promise<any> {
+    const obj = await this.formToJson(formData);
     return await axios.put(url, JSON.stringify(obj), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -92,15 +93,15 @@ export class AxiosService {
     }));
   }
 
-  public formToJson(form: any) {
-    return new Promise((resolve:any)=>{
+  public formToJson(formData: any) {
+    return new Promise((resolve: any) => {
       let obj: any = {};
       try {
-        let list=Array.from(form);
-        for (let index = 0; index <list.length; index++) {
-          const [key,value]:any=list[index];
-          obj[key]=value;
-          if(index==list.length-1) resolve(obj);
+        let list = Array.from(formData);
+        for (let index = 0; index < list.length; index++) {
+          const [key, value]: any = list[index];
+          obj[key] = value;
+          if (index == list.length - 1) resolve(obj);
         }
       } catch (e) {
         console.warn(e);
@@ -108,5 +109,41 @@ export class AxiosService {
       }
     });
   }
+
+  public formToJsonTypes(form: any) {
+    return new Promise(async (resolve: any) => {
+      let obj: any = {};
+      try {
+        const referencias = ["numeros", "decimal"];
+        let numeros: any = await new Promise((res: any) => {
+          let numericos: any = [];
+          for (let index = 0; index < form.length; index++) {
+            try {
+              const element = form[index];
+              const validate = element?.dataset?.validate;
+              if (!!validate) {
+                if (!!referencias.find((x: string) => x == validate)) numericos.push(index);
+              }
+            } catch (e) {
+              console.warn(e);
+            }
+            if (form.length - 1 == index) res(numericos);
+          }
+        });
+        let formData: any = new FormData(form);
+        let list = Array.from(formData);
+        for (let index = 0; index < list.length; index++) {
+          const [key, value]: any = list[index];
+          obj[key] = (!!numeros.find((x: number) => x == index)) ? parseFloat(value.replaceAll(",", ".")) : value;
+          if (index == list.length - 1) resolve(obj);
+        }
+      } catch (e) {
+        console.warn(e);
+        resolve(obj);
+      }
+    });
+  }
+
+
 
 }
