@@ -1,443 +1,205 @@
-import { Component, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { NgSelectConfig } from '@ng-select/ng-select';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { global, js } from '../../../../../main';
+import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
-import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
-import { Validator } from 'src/app/Compartidos/Validaciones/validations';
-import { Ciudades } from 'src/app/Interfaces/Ciudades';
-import { Proveedores } from 'src/app/Interfaces/Proveedores';
-import { Provincias } from 'src/app/Interfaces/Provincias';
-import { TipoIdentificaciones } from 'src/app/Interfaces/TipoIdentificaciones';
-import { CiudadesService } from 'src/app/Servicios/ciudades.service';
-import { ProveedoresService } from 'src/app/Servicios/proveedores.service';
-import { ProvinciasService } from 'src/app/Servicios/provincias.service';
-import { TipoIdentificacionesService } from 'src/app/Servicios/tipo-identificaciones.service';
-import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
-import jwt_decode from "jwt-decode";
-declare var $: any;
+import { NgSelectComponent } from '@ng-select/ng-select';
+import { AxiosService } from 'src/app/Services/axios.service';
+
 
 @Component({
   selector: 'app-proveedores',
   templateUrl: './proveedores.component.html',
   styleUrls: ['./proveedores.component.css']
 })
-export class ProveedoresComponent {
+export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  ProveedoresForm = new FormGroup({
-    idProveedor: new FormControl(),
-    identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
-    razonSocial: new FormControl('', Validators.required),
-    representante: new FormControl('', Validators.required),
-    direccion: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    telefono: new FormControl('', [Validators.required]),
-    paginaWeb: new FormControl(),
-    observacion: new FormControl(),
-    idCiudad: new FormControl('', [Validators.required]),
-    idProvincia: new FormControl('', [Validators.required]),
-    idTipoIdentificacion: new FormControl('', [Validators.required]),
-  });
-
-  tipoIdentificacionesList: TipoIdentificaciones[] = [];
-  provinciasList: Provincias[] = [];
-  ciudadesList: Ciudades[] = [];
-  provinciaDefault: any;
-  ciudadDefault: any;
-  tipoIdentificacionDefault: any;
-  selectedProvincia: any;
-  selectedTipoNotificacion: any;
+  baseUrl = `${global.BASE_API_URL}api/`;
+  componentTitle: string = "";
+  //Datatable
+  lista: any = [];
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
   dtOptions: DataTables.Settings = {};
-  dtTrigger: any = new Subject();
-  spinner: boolean = true;
-  spinnerCargar: boolean = true;
-  spinnerEditar: boolean = false;
-  spinnerGuardar: boolean = true;
-  spinnerEspere: boolean = false;
-  idProveedor: string = '';
-  spinnerWarning: boolean = false;
-  token:string | null="";
-  idEmpresa:string | null="";
-  constructor(
-    private toast: ToastComponent,
-    private el: ElementRef,
-    private validator: Validator,
-    private tipoIdentificacionesServices: TipoIdentificacionesService,
-    private provinciasServices: ProvinciasService,
-    private ciudadesServices: CiudadesService,
-    private ProveedoresServices: ProveedoresService,
-    private ngSelectConfig: NgSelectConfig,
-    private elementRef: ElementRef
-  ) {
-    this.ngSelectConfig.notFoundText = 'No existen coincidencias';
-  }
+  dtTrigger: Subject<any> = new Subject<any>();
+  mensajeDataTable: string = js.loaderDataTable();
+  //Modal
+  @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  modal: any;
+  tituloModal: string = "Nuevo registro";
+  idProveedor: string = "";
+  identificacion: any;
+  fechaRegistro: Date = new Date();
+  //Combos
+  @ViewChild('idProvincia', { static: true }) idProvincia: NgSelectComponent = {} as NgSelectComponent;
+  @ViewChild('idCiudad', { static: true }) idCiudad: NgSelectComponent = {} as NgSelectComponent;
+  listaTipoIdentificaciones: any = [];
+  listaProvincias: any = [];
+  listaCiudades: any = [];
+  constructor(private axios: AxiosService) { }
 
   ngOnInit() {
-
-
-    this.token = localStorage.getItem("token");
-    if(this.token != null){
-      const res = jwt_decode(this.token) as { idEmpresa: string };
-      this.idEmpresa = res.idEmpresa;
-      this.listarProveedores(this.idEmpresa);
-      this.listarTiposNotificaciones();
-      this.listarProvicias();
-
-    }
-
-
-
+    this.identificacion = document.querySelector("#identificacion");
+    this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
+      keyboard: false,
+      backdrop: 'static',
+    });
+    js.activarValidadores(this.frmDatos.nativeElement);
+    this.listarProveedores();
+    this.comboTipoIdentificaciones();
+    this.comboProvincia();
   }
-
   ngAfterViewInit(): void {
-    // if instance exist destroy
-    if ($.fn.DataTable.isDataTable('table')) {
-      $('table').DataTable().destroy();
-    }
-
-    this.dtTrigger.next();
-    setTimeout(() => {
-      $('table').DataTable(this.dtOptions);
-    }, 0);
+    this.dtTrigger.next(this.dtOptions);
   }
-
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
-
-  listarProveedores(idEmpresa:string | null) {
-    this.dtOptions = {
-      lengthMenu: [10, 25, 50, 75, 100],
-      destroy: true,
-      scrollX: true,
-      columnDefs: [
-        {
-          targets: [0, 1, 2, 3, 4, 5, 6, 7],
-          className: 'text-center',
-          width: 'auto',
+  async listarProveedores() {
+    try {
+      const url = `${this.baseUrl}Proveedores/listar`;
+      const columns = "idEmpresa,identificacion,telefono,razonSocial,direccion,representante";
+      //DataTables
+      this.dtOptions = {
+        destroy: true,
+        serverSide: true,
+        pageLength: 10,
+        pagingType: 'full_numbers',
+        language: js.dataTableEs(),
+        ajax: async (_data: any, resolve) => {
+          try {
+            this.lista = [];
+            const res = (await this.axios.postJson(url, _data)).data;
+            this.lista = res.data;
+            (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
+            resolve({
+              recordsTotal: res.recordsTotal,
+              recordsFiltered: res.recordsFiltered,
+              data: [],
+            });
+          } catch (e) {
+            js.handleError(e);
+          }
         },
-        { targets: [7], orderable: false },
-        { targets: '_all', className: 'dt-nowrap' }
-      ],
-      columns: [
-        {
-          title: 'Identificación',
-          data: 'identificacion',
-        },
-        {
-          title: 'Email',
-          data: 'email',
-        },
-        {
-          title: 'Razon Social',
-          data: 'razonSocial',
-        },
-        {
-          title: 'Telefono',
-          data: 'telefono',
-        },
-        {
-          title: 'Ciudad',
-          data: 'idCiudadNavigation.nombre',
-        },
-        {
-          title: 'Dirección',
-          data: 'direccion',
-        },
-        {
-          title: 'Registro',
-          data: 'fechaRegistro',
-          render: (data: any, type: any, full: any, meta: any) => {
-            data = data.split('T');
-            return data[0];
-          },
-        },
-        {
-          title: 'Opciones',
-          data: 'idProveedor',
-          render: (data: any, type: any, full: any, meta: any) => {
-            return `
-                      <div style="cursor: pointer;">
-                      
-                          <i id="edit-icon" data-toggle="tooltip" data-placement="bottom" title="Editar"  class="fas fa-edit mr-2"></i> <i data-toggle="tooltip" data-placement="bottom" title="Eliminar"  class="fas fa-trash-alt"></i>
-                      
-                      </div>`;
-          },
-          createdCell: (
-            cell: any,
-            cellData: any,
-            rowData: any,
-            rowIndex: any,
-            colIndex: any
-          ) => {
-            $(cell)
-              .find('.fa-edit')
-              .click(() => {
-                this.cargar(cellData, rowData.idCiudadNavigation.idProvincia);
-              });
-            $(cell)
-              .find('.fa-trash-alt')
-              .click(() => {
-                this.eliminar(cellData);
-              });
-          },
-        },
-      ],
-    };
-
-    this.ProveedoresServices.listar(idEmpresa).subscribe({
-      next: (res) => {
-        this.dtOptions.data = res;
-        this.dtTrigger.next();
-        this.spinner = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar los Proveedores');
-      },
-    });
+        columns: columns.split(",").map((x: string) => { return { data: x } }),
+        columnDefs: [{ targets: [0], searchable: false, orderable: false }],
+        order: [[1, "asc"]]
+      };
+      //DataTables
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+  reloadDataTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
+  }
+  async comboTipoIdentificaciones(): Promise<void> {
+    try {
+      const url = `${this.baseUrl}TipoIdentificaciones/listar`;
+      this.listaTipoIdentificaciones = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
   }
 
-  editar() {
-    this.spinnerEspere = true;
-    this.spinnerEditar = false;
-    this.ProveedoresServices.actualizar(this.ProveedoresForm.value).subscribe({
-      next: (res) => {
-        
-
-        if(res ==="ok"){
-
-          this.toast.show_success('Proveedores', 'Editado con Éxito');
-          $('#exampleModal').modal('hide');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = false;
-          this.listarProveedores(this.idEmpresa);
-          return;
-
-        }
-
-        if(res ==="repetido"){
-
-          this.toast.show_warning('Proveedore', 'Ya se encuentra registrado');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = false;
-          return;
-
-        }
-      
-  
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al actualizar el Proveedore');
-        this.spinner = false;
-        this.spinnerEspere = false;
-      },
-    });
+  async comboProvincia(): Promise<void> {
+    this.idProvincia.handleClearClick();
+    this.idCiudad.handleClearClick();
+    this.idProvincia.handleClearClick();
+    const url = `${this.baseUrl}Provincias/listar`;
+    this.listaProvincias = (await this.axios.get(url)).data;
   }
-
-  cargar(idProveedor: string, idProvincia: string) {
-    $('#exampleModal').modal('show');
-    this.spinnerCargar = true;
-    this.spinnerGuardar = false;
-    this.spinnerEditar = true;
-    this.ProveedoresServices.cargar(idProveedor).subscribe({
-      next: (res) => {
-        this.listarCiudades(idProvincia);
-        this.ProveedoresForm.patchValue(
-          Object.assign(
-            {
-              idProvincia: idProvincia,
-            },
-            res
-          )
-        );
-
-        this.spinnerCargar = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Proveedore');
-      },
-    });
-  }
-
-  eliminar(idProveedor: any) {
-    $('#ModalWarning').modal('show');
-    this.idProveedor = idProveedor;
-  }
-
-  confirmarEliminacion() {
-    this.spinnerWarning = true;
-    this.ProveedoresServices.eliminar(this.idProveedor).subscribe({
-      next: (res) => {
-        this.listarProveedores(this.idEmpresa);
-        this.toast.show_success('Proveedores', 'Eliminado con Éxito');
-        $('#ModalWarning').modal('hide');
-        this.spinnerWarning = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al eliminar el Proveedore');
-      },
-    });
-  }
-
-  cerrarModalWarning() {
-    $('#ModalWarning').modal('hide');
-    this.idProveedor = '';
-  }
-
-  listarTiposNotificaciones() {
-    this.tipoIdentificacionesServices.listar().subscribe({
-      next: (res) => {
-        this.tipoIdentificacionesList = res;
-        this.selectedTipoNotificacion = this.tipoIdentificacionesList.find(
-          (item) => item.nombre === 'Cedula/Ruc'
-        );
-        this.ProveedoresForm
-          .get('idTipoIdentificacion')
-          ?.setValue(this.selectedTipoNotificacion.idTipoIdentificacion);
-      },
-      error: (err) => {
-        this.toast.show_error(
-          'Error',
-          'Al listar los Tipos de Identificaciones'
-        );
-      },
-    });
-  }
-
-  listarProvicias() {
-    this.provinciasServices.listar().subscribe({
-      next: (res) => {
-        this.provinciasList = res;
-      },
-      error: (err) => {
-        this.toast.show_error(
-          'Error',
-          'Al listar los Tipos de Identificaciones'
-        );
-      },
-    });
-  }
-
-  listarCiudades(idProvincia: any) {
-    this.ciudadesServices.listar(idProvincia).subscribe({
-      next: (res) => {
-        this.ciudadesList = res;
-        this.ProveedoresForm
-          .get('idCiudad')
-          ?.setValue(this.ciudadesList[0].idCiudad);
-      },
-      error: (err) => {
-        this.toast.show_error(
-          'Error',
-          'Al listar los Tipos de Identificaciones'
-        );
-      },
-    });
-  }
-
-  listarCiudadesSet(idProvincia: any) {
-    this.ciudadesServices.listar(idProvincia).subscribe({
-      next: (res) => {
-        this.ciudadesList = res;
-        this.ProveedoresForm
-          .get('idCiudad')
-          ?.setValue(this.ciudadesList[0].idCiudad);
-      },
-      error: (err) => {
-        this.toast.show_error(
-          'Error',
-          'Al listar los Tipos de Identificaciones'
-        );
-      },
-    });
-  }
-
-  abrirModal() {
-    this.spinnerCargar = false;
-    this.spinnerEditar = false;
-    this.spinnerGuardar = true;
-    $('#exampleModal').modal('show');
-
-    this.listarCiudades(this.provinciasList[0].idProvincia ?? '');
-
-    this.ProveedoresForm.patchValue({
-      idProvincia: this.provinciasList[0].idProvincia ?? '',
-      idTipoIdentificacion:
-        this.tipoIdentificacionesList[1].idTipoIdentificacion ?? '',
-    });
-  }
-
-  guardar(Proveedore: Proveedores) {
-
-
-    this.spinnerEspere = true;
-    this.spinnerGuardar = false;
-
-    if (this.ProveedoresForm.invalid) {
-      this.validator.validarTodo(this.ProveedoresForm, this.el);
-      this.spinnerEspere = false;
-      this.spinnerGuardar = true;
+  async comboCiudades(idProvincia: any): Promise<void> {
+    this.listaCiudades = [];
+    if (!idProvincia) {
+      this.idCiudad.handleClearClick();
       return;
     }
-
-    
-    Proveedore.telefono = Proveedore.telefono?.toString();
-    Proveedore.idEmpresa = this.idEmpresa;
-
-
-    this.ProveedoresServices.insertar(Proveedore).subscribe({
-      next: (res) => {
-        if (res == 'ok') {
-          this.listarProveedores(this.idEmpresa);
-          this.toast.show_success('Proveedores', 'Proveedore Guardado Con Éxito');
-          this.limpiar();
-          this.spinnerEspere = true;
-          this.spinnerGuardar = false;
-          return;
-        }
-
-        if (res == 'repetido') {
-          this.toast.show_warning('Proveedores', 'Ya se encuentra registrado');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = true;
-          return;
-        }
-      },
-      error: (err) => {
-        console.log(err);
-        this.toast.show_error('Proveedores', 'Error al guardar el Proveedor');
-      },
-    });
+    this.idCiudad.handleClearClick();
+    const url = `${this.baseUrl}Ciudades/listar?idProvincia=${idProvincia}`;
+    this.listaCiudades = (await this.axios.get(url)).data;
   }
 
-  cambiarValidacion(evento: any) {
-    this.ProveedoresForm.controls['identificacion'].clearValidators();
-    this.ProveedoresForm.controls['identificacion'].setValidators([
-      Validators.required,
-    ]);
-    if (evento == '893ed699-7e94-44a8-befd-414026a2a918') {
-      this.ProveedoresForm.controls['identificacion'].setValidators([
-        Validators.required,
-        cedulaRuc(),
-      ]);
+
+  nuevo() {
+    this.tituloModal = "Nuevo registro";
+    this.idProveedor = "";
+    this.idCiudad.handleClearClick();
+    this.idProvincia.handleClearClick();
+    this.listaCiudades = [];
+    js.limpiarForm(this.frmDatos.nativeElement, 100);
+  }
+  handleDocumento(idTipoIdentificacion: any): void {
+    const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
+    if (tipo == 5) {
+      this.identificacion.setAttribute("data-validate", "cedula");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarCedula(this.identificacion);
+    } else if (tipo == 4) {
+      this.identificacion.setAttribute("data-validate", "ruc");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarRuc(this.identificacion);
+    } else {
+      this.identificacion.removeAttribute("data-validate");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarVacio(this.identificacion);
+    }
+  }
+
+  async editar(idProveedor: string): Promise<void> {
+    try {
+      this.tituloModal = "Editar registro"
+      this.idProveedor = "";
+      const url = `${this.baseUrl}Proveedores/cargar/${idProveedor}`;
+      const res = (await this.axios.get(url)).data;
+      res.idProvincia = res.idCiudadNavigation.idProvincia;
+      js.cargarFormulario(this.frmDatos.nativeElement, res);
+      this.idProvincia.select(this.idProvincia.itemsList.findItem(res.idProvincia));
+      setTimeout(() => this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)), 100);
+      this.idProveedor = res.idProveedor;
+      this.modal.show();
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async guardar(): Promise<void> {
+    try {
+      if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      js.loaderShow();
+      const url = `${this.baseUrl}Proveedores/${!this.idProveedor ? "insertar" : "actualizar"}`;
+      const data = new FormData(this.frmDatos.nativeElement);
+      if (!!this.idProveedor) data.append("idProveedor", this.idProveedor);
+      data.append("idProvincia", this.idProvincia.selectedValues[0]);
+      data.append("idCiudad", this.idCiudad.selectedValues[0]);
+      if (!this.idProveedor) await this.axios.postFormJson(url, data);
+      else await this.axios.putFormJson(url, data);
+      js.toastSuccess(`Registro ${!this.idProveedor ? "guardado" : "editado"} exitosamente`);
+      this.modal.hide();
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
+    }
+  }
+
+  async eliminar(idProveedor: string): Promise<void> {
+    try {
+      if (!await js.toastPreguntar(`
+      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
+      <p class='fs-md'>¿Está seguro que desea eliminar este Proveedor?</p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
+      </i>Esta acción no se puede deshacer ni revertir.</p>
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Proveedores/eliminar/${idProveedor}`;
+      await this.axios.delete(url);
+      js.toastSuccess("Proveedor eliminado exitosamente");
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
     }
 
-    if (parseInt(evento.value) == 2) {
-      this.ProveedoresForm.controls['identificacion'].setValidators([
-        Validators.required,
-      ]);
-    }
-
-    this.ProveedoresForm.get('identificacion')?.setValue('');
-  }
-
-  limpiar() {
-    this.ProveedoresForm.reset();
-    $('#exampleModal').modal('hide');
-    this.spinnerEspere = false;
-  }
-
-  setearValorRepresentante(evento: any) {
-    this.ProveedoresForm.get('representante')?.setValue(evento.value);
   }
 
 }
+
