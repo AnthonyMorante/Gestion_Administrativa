@@ -1,1166 +1,213 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
-import {
-  Component,
-  ComponentRef,
-  ElementRef,
-  Renderer2,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
-import { cedulaRuc } from 'src/app/Compartidos/Validaciones/cedulaRuc';
-import { ClientesService } from 'src/app/Servicios/clientes.service';
-import { ModalClientesComponent } from 'src/app/Componentes/Compartidos/modal-clientes/modal-clientes.component';
-import { CedulaService } from 'src/app/Componentes/Servicios/Cedula/cedula.service';
-import jwt_decode from 'jwt-decode';
-import { EstablecimientosService } from 'src/app/Servicios/establecimientos.service';
-import { PuntoEmisionesService } from 'src/app/Servicios/punto-emisiones.service';
-import { Establecimientos } from 'src/app/Interfaces/Establecimientos';
-import { PuntoEmisiones } from 'src/app/Interfaces/PuntoEmisiones';
-import { PadLeftLibrary } from 'src/app/Compartidos/Librerias/padLeft';
-import { DocumentosEmitirService } from 'src/app/Servicios/documentos-emitir.service';
-import { DocumentosEmitir } from 'src/app/Interfaces/DocumentosEmitir';
-import { Productos } from 'src/app/Interfaces/Productos';
-import { ProductosService } from 'src/app/Servicios/productos.service';
-import { NgSelectConfig } from '@ng-select/ng-select';
-import { DetallePrecioProductosService } from 'src/app/Servicios/detalle-precio-productos.service';
-import { SecuencialesService } from 'src/app/Servicios/secuenciales.service';
-import { Secuenciales } from 'src/app/Interfaces/Secuenciales';
-import { Validator } from 'src/app/Compartidos/Validaciones/validations';
-import { IvasService } from 'src/app/Servicios/ivas.service';
-import { FormaPagosService } from 'src/app/Servicios/forma-pagos.service';
-import { TiempoFormaPagosService } from 'src/app/Servicios/tiempo-forma-pagos.service';
-import { TiempoFormaPagos } from 'src/app/Interfaces/TiempoFormaPagos';
-import { FormaPagos } from 'src/app/Interfaces/FormaPagos';
-import { event } from 'jquery';
-import { FacturasService } from 'src/app/Servicios/facturas.service';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-declare var $: any;
-import Swal from 'sweetalert2';
+
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Subject } from 'rxjs';
+import { global } from 'src/main';
+import { AxiosService } from 'src/app/Services/axios.service';
+import { DataTableDirective } from 'angular-datatables';
+import { js } from '../../../../../main';
+import { NgSelectComponent } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-factura',
   templateUrl: './factura.component.html',
   styleUrls: ['./factura.component.css'],
 })
-export class FacturaComponent {
-  @ViewChild('modalContainer', { read: ViewContainerRef })
-  modalContainer!: ViewContainerRef;
-  dynamicComponentRef!: ComponentRef<ModalClientesComponent>;
+export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
+  baseUrl = `${global.BASE_API_URL}api/`;
+  componentTitle: string = "";
+  //Datatable
+  lista: any = [];
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  mensajeDataTable: string = js.loaderDataTable();
+  //Modal
+  @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  modal: any;
+  tituloModal: string = "Nuevo registro";
+  idCliente: string = "";
+  identificacion: any;
+  fechaRegistro: Date = new Date();
+  //Combos
+  @ViewChild('idProvincia', { static: true }) idProvincia: NgSelectComponent = {} as NgSelectComponent;
+  @ViewChild('idCiudad', { static: true }) idCiudad: NgSelectComponent = {} as NgSelectComponent;
+  listaTipoIdentificaciones: any = [];
+  listaProvincias: any = [];
+  listaCiudades: any = [];
+  constructor(private axios: AxiosService) { }
 
-  fechaActual: Date = new Date();
-  fechaFormateada: any;
-  spinnerIdentificacion: boolean = false;
-  component: any;
-  token: string | null = '``';
-  idEmpresa: string | null = '';
-  EstablecimientosList: Establecimientos[] = [];
-  PuntoEmisionList: PuntoEmisiones[] = [];
-  SecuencialesList: Secuenciales[] = [];
-  DocumentosEmitirList: DocumentosEmitir[] = [];
-  ProductosList: Productos[] = [];
-  establecimiento: string | null = '';
-  puntoEmision: string | null = '';
-  secuencial: string | null = '';
-  PreciosList: any[] = [];
-  DetallePreciosList: any[] = [];
-  DetalleProductosList: any[] = [];
-  DetalleIvasList: any[] = [];
-  UnProducto: any[] = [];
-  FormaPagosList: FormaPagos[] = [];
-  TiempoFormaPagosList: TiempoFormaPagos[] = [];
-  totalVentas: any;
-  facturaForm: FormGroup;
-  editarDetalleProductoForm: FormGroup;
-  acumulador12: number = 0;
-  acumuladorDescuento: number = 0;
-  subtotal12: number = 0;
-  subtotal0: number = 0;
-  subtotal: number = 0;
-  descuento: number = 0;
-  acumFormaPago: number = 0;
-  idDetalleProducto: string = '';
-  informacionAdicional: any;
-  formaPagos: any;
-  pdfUrl: any;
-  botonGuardarLoader: boolean = false;
-
-  constructor(
-    private renderer: Renderer2,
-    private elementRef: ElementRef,
-    private datePipe: DatePipe,
-    private clientesServices: ClientesService,
-    private toast: ToastComponent,
-    public padLeft: PadLeftLibrary,
-    public viewContainerRef: ViewContainerRef,
-    private cedulaService: CedulaService,
-    private establecimientoService: EstablecimientosService,
-    private puntoEmisionService: PuntoEmisionesService,
-    private secuencialesService: SecuencialesService,
-    private documentosEmitirService: DocumentosEmitirService,
-    private productosServices: ProductosService,
-    private ngSelectConfig: NgSelectConfig,
-    private detallePrecioProductosServices: DetallePrecioProductosService,
-    private decimalPipe: DecimalPipe,
-    private fb: FormBuilder,
-    private validator: Validator,
-    private el: ElementRef,
-    private ivasService: IvasService,
-    private formaPagosService: FormaPagosService,
-    private tiempoFormaPagosService: TiempoFormaPagosService,
-    private facturasService: FacturasService,
-    private sanitizer: DomSanitizer
-  ) {
-    this.facturaForm = this.fb.group({
-      fechaEmision: new FormControl(),
-      idCliente: new FormControl(),
-      identificacion: new FormControl('', [Validators.required, cedulaRuc()]),
-      razonSocial: new FormControl('', Validators.required),
-      telefono: new FormControl('', [Validators.required]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      direccion: new FormControl('', Validators.required),
-      idEstablecimiento: new FormControl(),
-      idPuntoEmision: new FormControl(),
-      observacion: new FormControl(),
-      idCiudad: new FormControl(''),
-      idProvincia: new FormControl(''),
-      idTipoIdentificacion: new FormControl(''),
-      codigoTipoIdentificacion: new FormControl(''),
-      idDocumentoEmitir: new FormControl(),
-      idProducto: new FormControl(),
-      precios: new FormControl([Validators.required]),
-      valor: new FormControl(0, [Validators.required]),
-      cantidad: new FormControl(1, [Validators.required]),
-      total: new FormControl('0', [Validators.required]),
-      detalleFactura: this.fb.array([]),
-      subtotal: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      subtotal12: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      subtotal0: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      descuento: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      totDescuento: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      iva12: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      totalFactura: new FormControl(this.decimalPipe.transform(0.0, '1.2-2'), [
-        Validators.required,
-      ]),
-      informacionAdicional: this.fb.array([]),
-      nombreInformacionAdicional: new FormControl(),
-      valorInformacionAdicional: new FormControl(),
-      idFormaPago: new FormControl([Validators.required]),
-      idTiempoFormaPago: new FormControl(),
-      plazoFormaPago: new FormControl(),
-      valorFormaPago: new FormControl(),
-      formaPago: this.fb.array([]),
-
-      establecimiento: new FormControl(),
-      puntoEmision: new FormControl(),
-      secuencial: new FormControl(),
+  ngOnInit() {
+    this.identificacion = document.querySelector("#identificacion");
+    this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
+      keyboard: false,
+      backdrop: 'static',
     });
-
-    this.informacionAdicional = this.facturaForm.get(
-      'informacionAdicional'
-    ) as FormArray;
-    this.formaPagos = this.facturaForm.get('formaPago') as FormArray;
-
-    this.editarDetalleProductoForm = this.fb.group({
-      idPrecio: new FormControl(),
-      nombre: new FormControl(),
-      precio: new FormControl(),
-      cantidad: new FormControl(),
-      total: new FormControl(),
-      descuento: new FormControl(),
-      iva: new FormControl(),
-      totalIva: new FormControl(),
-      idIva: new FormControl(),
-      precioSinIva: new FormControl(),
-    });
+    js.activarValidadores(this.frmDatos.nativeElement);
+    this.listarFacturas();
+    this.comboTipoIdentificaciones();
+    this.comboProvincia();
   }
-
-  async ngOnInit() {
-
-    this.renderer.listen(
-      this.elementRef.nativeElement.ownerDocument,
-      'afterprint',
-      () => {
-        console.log('User has printed the document');
-      }
-    );
-
-    this.elementRef.nativeElement.querySelector('.formaPago').click();
-    this.fechaFormateada = this.datePipe.transform(
-      this.fechaActual,
-      'yyyy-MM-dd'
-    );
-    this.facturaForm.get('fechaEmision')?.setValue(this.fechaFormateada);
-    this.listarDatos();
+  ngAfterViewInit(): void {
+    this.dtTrigger.next(this.dtOptions);
   }
-
-  listarDatos() {
-    this.token = localStorage.getItem('token');
-    this.ngSelectConfig.notFoundText = 'No existen coincidencias';
-
-    if (this.token != null) {
-      const res = jwt_decode(this.token) as { idEmpresa: string };
-      this.idEmpresa = res.idEmpresa;
-      this.listarIvas();
-      this.listarEstablecimiento(this.idEmpresa);
-      this.listarPuntoEmision(this.idEmpresa);
-      this.listarSecuenciales(this.idEmpresa);
-      this.listarDocumentosEmitir(1);
-      this.listarProductos();
-      this.listarFormaPagos();
-      this.listarTiempoFormaPagos();
-    }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
-
-  numerosAleatorios() {
-    return Math.floor(100000000 + Math.random() * 900000000);
-  }
-
-  agregarInformacionAdicional() {
-    let nombreInformacionAdicional = this.facturaForm.get(
-      'nombreInformacionAdicional'
-    );
-    let valorInformacionAdicional = this.facturaForm.get(
-      'valorInformacionAdicional'
-    );
-
-    (this.facturaForm.get('informacionAdicional') as FormArray).push(
-      this.fb.group({
-        id: this.numerosAleatorios(),
-        nombre: nombreInformacionAdicional?.value,
-        valor: valorInformacionAdicional?.value,
-      })
-    );
-
-    nombreInformacionAdicional?.setValue('');
-    valorInformacionAdicional?.setValue('');
-  }
-
-  quitarFormaPago(idFormaPago: any) {
-    const formaPago = this.facturaForm.get('formaPago') as FormArray;
-    const index = formaPago.value.findIndex(
-      (x: any) => x.idFormaPago === idFormaPago
-    );
-
-    if (index !== -1) {
-      formaPago.removeAt(index);
-    }
-
-    this.calcularFormaPago();
-  }
-
-  quitarInformacionAdicional(id: any) {
-    const informacionAdicional = this.facturaForm.get(
-      'informacionAdicional'
-    ) as FormArray;
-    const index = informacionAdicional.value.findIndex((x: any) => x.id === id);
-
-    if (index !== -1) {
-      informacionAdicional.removeAt(index);
-    }
-  }
-
-  quitarDetalleProducto(idProducto: string) {
-    const detalleProducto = this.facturaForm.get('detalleFactura') as FormArray;
-    const indexDetalleProductoForm = detalleProducto.value.findIndex(
-      (x: any) => x.idProducto === idProducto
-    );
-    if (indexDetalleProductoForm !== -1) {
-      detalleProducto.removeAt(indexDetalleProductoForm);
-      let index = this.DetalleProductosList.findIndex(
-        (x) => x.idProducto === idProducto
-      );
-      this.DetalleProductosList.splice(index, 1);
-    }
-
-    this.calcularDetalle();
-  }
-
-  comprobarSiExisteProductoDetalle(idProducto: string) {
-    const detalleProducto = this.facturaForm.get('detalleFactura') as FormArray;
-    const indexDetalleProductoForm = detalleProducto.value.findIndex(
-      (x: any) => x.idProducto === idProducto
-    );
-    if (indexDetalleProductoForm !== -1) {
-      return true;
-    }
-    return false;
-  }
-
-  calcularEditarDetallePrecio() {
-    // const selectPrecios: HTMLSelectElement =this.el.nativeElement.querySelector('#detallePrecio');
-    // const precioSeleccionado =selectPrecios.options[selectPrecios.selectedIndex].getAttribute('data-item-totalIva') ?? '';
-    let cantidad = this.editarDetalleProductoForm.get('cantidad');
-    let precio = this.editarDetalleProductoForm.get('precio');
-    let descuento = this.editarDetalleProductoForm.get('descuento')?.value;
-    const selectDetalleIva: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#detalleIva');
-    const ivaSeleccionado =
-      selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute(
-        'data-item-porcentaje'
-      ) ?? '';
-    let valorSinIva = parseFloat(
-      (
-        (parseFloat(precio?.value) * parseFloat(cantidad?.value)) /
-        (1 + parseFloat(ivaSeleccionado))
-      ).toFixed(2)
-    );
-    // let valoCantidadSinIva = parseFloat((valorSinIva * parseFloat(cantidad?.value)).toFixed(2));
-    let subtotal = parseFloat((valorSinIva - parseFloat(descuento)).toFixed(2));
-    let valorIva = parseFloat(
-      (subtotal * parseFloat(ivaSeleccionado)).toFixed(2)
-    );
-    let valorTotalIva = parseFloat((subtotal + valorIva).toFixed(2));
-
-    if (descuento == null || descuento == '') {
-      this.editarDetalleProductoForm
-        .get('descuento')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.calcularEditarDetallePrecio();
-      return;
-    }
-
-    if (
-      cantidad?.value == null ||
-      cantidad.value == '' ||
-      cantidad.value == 0 ||
-      cantidad.value == '0'
-    ) {
-      this.editarDetalleProductoForm.get('cantidad')?.setValue(1);
-      this.calcularEditarDetallePrecio();
-      return;
-    }
-
-    this.editarDetalleProductoForm.get('precioSinIva')?.setValue(subtotal);
-    this.editarDetalleProductoForm.get('total')?.setValue(subtotal);
-    this.editarDetalleProductoForm.get('iva')?.setValue(valorIva);
-    this.editarDetalleProductoForm.get('totalIva')?.setValue(valorTotalIva);
-
-    valorSinIva = 0;
-    subtotal = 0;
-    valorIva = 0;
-    valorTotalIva = 0;
-    // valorCantidadSinIva=0;
-    // cantidad?.value=0;
-  }
-
-  agregarProducto() {
-    if (this.facturaForm.invalid) {
-      this.validator.validarTodo(this.facturaForm, this.el);
-      return;
-    }
-
-    let idProducto = this.facturaForm.get('idProducto')?.value;
-
-    let comprobar = this.comprobarSiExisteProductoDetalle(idProducto);
-
-    if (idProducto == null) {
-      this.toast.show_warning('Producto', 'Agregue un Producto');
-      return;
-    }
-
-    if (comprobar) {
-      this.toast.show_warning('Producto', 'Ya Se Encuentra Agregado');
-      return;
-    }
-
-    let valor = this.facturaForm.get('valor')?.value;
-    let cantidad = this.facturaForm.get('cantidad')?.value;
-    let total = this.facturaForm.get('total')?.value;
-    let producto = this.ProductosList.find((x) => x.idProducto === idProducto);
-    let valorOriginal = parseFloat(
-      (
-        parseFloat(total) /
-        (1 + (producto?.idIvaNavigation?.valor ?? 0))
-      ).toFixed(2)
-    );
-
-    let valorOriginalProducto = parseFloat(
-      (
-        parseFloat(valor) /
-        (1 + (producto?.idIvaNavigation?.valor ?? 0))
-      ).toFixed(2)
-    );
-
-    const selectElement: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#precios');
-    const idDetallePrecioProducto = selectElement.options[
-      selectElement.selectedIndex
-    ].getAttribute('data-item-idDetallePrecioProducto');
-
-    (this.facturaForm.get('detalleFactura') as FormArray).push(
-      this.fb.group({
-        codigo: producto?.codigo,
-        idProducto: producto?.idProducto,
-        nombre: producto?.nombre,
-        nombrePorcentaje: producto?.idIvaNavigation?.nombre,
-        valorPorcentaje: producto?.idIvaNavigation?.valor ?? 0,
-        porcentaje: parseFloat((total - valorOriginal).toFixed(2)),
-        valor: valor,
-        descuento: 0,
-        tarifaPorcentaje: producto?.idIvaNavigation?.descripcion,
-        cantidad: cantidad,
-        total: parseFloat(total),
-        totalSinIva: valorOriginal,
-        idIva: producto?.idIvaNavigation?.idIva,
-        precios: this.fb.array(this.PreciosList),
-        idDetallePrecioProducto: idDetallePrecioProducto,
-        valorProductoSinIva: valorOriginalProducto,
-      })
-    );
-
-    this.calcularDetalle();
-    this.DetalleProductosList = this.facturaForm.value.detalleFactura;
-    this.facturaForm
-      .get('valor')
-      ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-    this.facturaForm
-      .get('total')
-      ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-    this.facturaForm.get('cantidad')?.setValue(1);
-    this.facturaForm.get('idProducto')?.setValue(null);
-  }
-
-  calcularDetalle() {
-    let detalleFactura = this.facturaForm.value.detalleFactura;
-
-    this.acumulador12 = 0;
-    this.subtotal12 = 0;
-    this.subtotal0 = 0;
-    this.subtotal = 0;
-    this.descuento = 0;
-    this.acumuladorDescuento = 0;
-
-    if (detalleFactura.length === 0) {
-      this.facturaForm
-        .get('subtotal12')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('subtotal0')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('subtotal')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('iva12')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('totalFactura')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('totDescuento')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm
-        .get('valorFormaPago')
-        ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-      this.facturaForm.get('plazoFormaPago')?.setValue(1);
-
-      return;
-    }
-
-    detalleFactura.forEach((item: any) => {
-      if (item.nombrePorcentaje === '12%') {
-        let valorSinIva = parseFloat((item.total - item.porcentaje).toFixed(2));
-        this.subtotal12 = parseFloat(
-          (this.subtotal12 + valorSinIva).toFixed(2)
-        );
-      }
-
-      if (item.nombrePorcentaje === '0%') {
-        this.subtotal0 = parseFloat((this.subtotal0 + item.total).toFixed(2));
-      }
-
-      this.acumuladorDescuento = parseFloat(
-        (this.acumuladorDescuento + item.descuento).toFixed(2)
-      );
-
-      this.facturaForm.get('totDescuento')?.setValue(this.acumuladorDescuento);
-
-      this.facturaForm
-        .get('subtotal12')
-        ?.setValue(parseFloat(this.subtotal12.toFixed(2)));
-      this.facturaForm
-        .get('subtotal0')
-        ?.setValue(parseFloat(this.subtotal0.toFixed(2)));
-      this.subtotal = this.subtotal0 + this.subtotal12;
-      this.facturaForm
-        .get('subtotal')
-        ?.setValue(parseFloat(this.subtotal.toFixed(2)));
-      this.acumulador12 = parseFloat((this.subtotal12 * 0.12).toFixed(2));
-      this.facturaForm
-        .get('iva12')
-        ?.setValue(parseFloat(this.acumulador12.toFixed(2)));
-      let totalFactura = this.subtotal + this.acumulador12;
-      this.facturaForm
-        .get('totalFactura')
-        ?.setValue(parseFloat(totalFactura.toFixed(2)));
-      this.facturaForm
-        .get('valorFormaPago')
-        ?.setValue(parseFloat(totalFactura.toFixed(2)));
-      this.facturaForm.get('plazoFormaPago')?.setValue(1);
-    });
-  }
-
-  eventPredefault(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-    }
-  }
-
-  asignarValor(evento: any) {
-    let valor = parseFloat(evento.value).toFixed(2);
-
-    this.facturaForm.get('valor')?.setValue(parseFloat(valor));
-
-    this.calcularTotalVenta();
-  }
-
-  asignarvalorFormaPago(evento: any) {
-    let valor = this.facturaForm.get('valorFormaPago');
-    let totalFactura = parseFloat(this.facturaForm.get('totalFactura')?.value);
-
-    if (evento.value == '') {
-      return;
-    }
-    if (
-      parseFloat(valor?.value) >
-      parseFloat((totalFactura - this.acumFormaPago).toFixed(2))
-    ) {
-      valor?.setValue(
-        parseFloat((totalFactura - this.acumFormaPago).toFixed(2))
-      );
-      return;
-    }
-
-    if (this.acumFormaPago == totalFactura) {
-      this.facturaForm
-        .get('valorFormaPago')
-        ?.setValue(parseFloat((this.acumFormaPago - totalFactura).toFixed(2)));
-      return;
-    }
-
-    if (parseFloat(evento.value) > totalFactura) {
-      valor?.setValue(totalFactura);
-    }
-  }
-
-  agregarFormaPago() {
-    const selectPrecios: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#idFormaPago');
-    const selectTiempo: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#idTiempoFormaPago');
-
-    let formaPago =
-      selectPrecios.options[selectPrecios.selectedIndex].getAttribute(
-        'data-item-formaPago'
-      ) ?? '';
-    let tiempo =
-      selectTiempo.options[selectTiempo.selectedIndex].getAttribute(
-        'data-item-tiempo'
-      ) ?? '';
-    let plazo = this.facturaForm.get('plazoFormaPago')?.value;
-    let valor = this.facturaForm.get('valorFormaPago')?.value;
-
-    if (valor <= 0) {
-      this.toast.show_warning('Forma Pago', 'Ya se asignado la Totalidad');
-      return;
-    }
-
-    (this.facturaForm.get('formaPago') as FormArray).push(
-      this.fb.group({
-        idFormaPago: selectPrecios.value,
-        formaPago: formaPago,
-        plazo: plazo,
-        valor: parseFloat(valor),
-        tiempo: tiempo,
-        idTiempoFormaPago: selectTiempo.value,
-      })
-    );
-
-    this.calcularFormaPago();
-  }
-
-  calcularFormaPago() {
-    let totalFactura = this.facturaForm.get('totalFactura')?.value;
-
-    if (this.formaPagos?.controls.length.length != 0) {
-      this.acumFormaPago = 0;
-
-      this.formaPagos?.controls.forEach((item: any) => {
-        this.acumFormaPago = this.acumFormaPago + item.value.valor;
-      });
-
-      let restante = parseFloat(
-        (parseFloat(totalFactura) - this.acumFormaPago).toFixed(2)
-      );
-
-      if (restante < 0) {
-        return;
-      }
-
-      this.facturaForm.get('valorFormaPago')?.setValue(restante);
-    }
-  }
-
-
-  abrirModalConfirmacionFactura(){
-    $('#ModalConfirmarFactura').modal('show');
-  }
-
-  cerrarModalConfirmacionFactura(){
-    $('#ModalConfirmarFactura').modal('hide');
-  }
-
-  guardarFactura() {
-    $('#ModalConfirmarFactura').modal('hide');
-    this.botonGuardarLoader = true;
-
-    if (this.facturaForm.invalid) {
-      this.validator.validarTodo(this.facturaForm, this.el);
-      this.toast.show_warning('Factura', 'Revise los campos');
-      this.botonGuardarLoader = false;
-      return;
-    }
-
-    if (this.DetalleProductosList.length == 0) {
-      this.toast.show_warning(
-        'Detalle Producto',
-        'Agregue un Producto Factura'
-      );
-      this.botonGuardarLoader = false;
-      return;
-    }
-
-    let valor =
-      parseFloat(this.facturaForm.get('valorFormaPago')?.value) -
-      parseFloat(this.facturaForm.get('totalFactura')?.value);
-    this.facturaForm.get('valorFormaPago')?.setValue(valor);
-
-    if (this.facturaForm.get('formaPago')?.value.length == 0) {
-      (this.facturaForm.get('formaPago') as FormArray).push(
-        this.fb.group({
-          idFormaPago: '234c0c98-1831-42ab-a3bb-9b4b2caae4f1',
-          formaPago: 'SIN UTILIZACION DEL SISTEMA FINANCIERO',
-          plazo: '0',
-          valor: parseFloat(this.facturaForm.get('totalFactura')?.value),
-          tiempo: 'DIAS',
-          idTiempoFormaPago: '0c99e1ec-c09e-41e4-80e1-1f0769c68593',
-        })
-      );
-    }
-
-    this.facturaForm.get('establecimiento')?.setValue(this.establecimiento);
-    this.facturaForm.get('puntoEmision')?.setValue(this.puntoEmision);
-    this.facturaForm.get('secuencial')?.setValue(this.secuencial);
-
-    if (this.token != null) {
-      let res = jwt_decode(this.token) as {
-        idEmpresa: string;
-        idUsuario: string;
-      };
-      this.facturaForm.value.idEmpresa = res.idEmpresa;
-      this.facturaForm.value.idUsuario = res.idUsuario;
-    }
-
-    this.facturasService.insertar(this.facturaForm.value).subscribe({
-      next: (value) => {
-        const decodedValue = atob(value.toString());
-        const pdfData = new Uint8Array(decodedValue.length);
-        for (let i = 0; i < decodedValue.length; i++) {
-          pdfData[i] = decodedValue.charCodeAt(i);
-        }
-        const blob = new Blob([pdfData], { type: 'application/pdf' });
-        this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-          URL.createObjectURL(blob)
-        );
-        const pdfIframe = this.el.nativeElement.querySelector('#pdfIframe');
-        pdfIframe.src = this.pdfUrl.changingThisBreaksApplicationSecurity;
-        pdfIframe.onload = () => {
-
-          pdfIframe.contentWindow.print();
-
-          setTimeout(() => { 
-
-            Swal.fire({
-              html:`<label style='font-size:1.1rem'>¿Desea Imprimir Orden de Compra?</label>`,
-              showCancelButton: true,
-              cancelButtonText:'Cancelar',
-              confirmButtonText: 'Aceptar',
-            }).then((result) => {
-              if (result.isConfirmed) {
-        
-                this.toast.show_success('Factura', 'Generada Correctamente');
-                setTimeout(function() {
-                  window.location.reload();
-                }, 1500);
-               
-              } else if (result.isDenied) {
-                
-              }
+  async listarFacturas() {
+    try {
+      const url = `${this.baseUrl}Facturas/listar`;
+      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmsion,fechaAutorizacion";
+      //DataTables
+      this.dtOptions = {
+        destroy: true,
+        serverSide: true,
+        pageLength: 10,
+        pagingType: 'full_numbers',
+        language: js.dataTableEs(),
+        ajax: async (_data: any, resolve) => {
+          try {
+            this.lista = [];
+            const res = (await this.axios.postJson(url, _data)).data;
+            this.lista = res.data;
+            (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
+            resolve({
+              recordsTotal: res.recordsTotal,
+              recordsFiltered: res.recordsFiltered,
+              data: [],
             });
- 
-
-          }, 1000); 
-
-        };
-
-        // this.facturaForm.reset();
-        // this.editarDetalleProductoForm.reset();
-        // this.clearFormArray(this.informacionAdicional);
-        // this.clearFormArray(this.formaPagos);
-        // this.DetalleProductosList=[];
-        // this.acumulador12 = 0;
-        // this.acumuladorDescuento=0;
-        // this.subtotal12= 0;
-        // this.subtotal0= 0;
-        // this.subtotal= 0;
-        // this.descuento = 0;
-        // this.acumFormaPago = 0;
-        // this.listarDatos();
-        this.botonGuardarLoader = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al generar la Factura');
-        this.botonGuardarLoader = false;
-      },
-    });
+          } catch (e) {
+            js.handleError(e);
+          }
+        },
+        columns: columns.split(",").map((x: string) => { return { data: x } }),
+        columnDefs: [{ targets: [0], searchable: false, orderable: false }],
+        order: [[1, "desc"]]
+      };
+      //DataTables
+    } catch (e) {
+      js.handleError(e);
+    }
   }
-
-  clearFormArray(formArray: FormArray) {
-    while (formArray.length) {
-      formArray.removeAt(0);
+  reloadDataTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
+  }
+  async comboTipoIdentificaciones(): Promise<void> {
+    try {
+      const url = `${this.baseUrl}TipoIdentificaciones/listar`;
+      this.listaTipoIdentificaciones = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
     }
   }
 
-  asignarCantidad(evento: any) {
-    this.calcularTotalVenta();
+  async comboProvincia(): Promise<void> {
+    this.idProvincia.handleClearClick();
+    this.idCiudad.handleClearClick();
+    this.idProvincia.handleClearClick();
+    const url = `${this.baseUrl}Provincias/listar`;
+    this.listaProvincias = (await this.axios.get(url)).data;
   }
-
-  calcularTotalVenta() {
-    let idProductoSeleccionado = this.facturaForm.get('idProducto')?.value;
-    let valorSeleccionado = this.ProductosList.find(
-      (item) => item.idProducto === idProductoSeleccionado
-    );
-    let stock = valorSeleccionado?.cantidad;
-
-    if (stock != null)
-      if (this.facturaForm.get('cantidad')?.value > stock) {
-        this.toast.show_warning('Cantidad', 'Mayor a Stock');
-        this.facturaForm
-          .get('valor')
-          ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-        this.facturaForm
-          .get('total')
-          ?.setValue(this.decimalPipe.transform(0.0, '1.2-2'));
-        this.facturaForm.get('cantidad')?.setValue(1);
-        this.facturaForm.get('idProducto')?.setValue(null);
-        this.PreciosList = [];
-
-        return;
-      }
-
-    if (this.facturaForm.get('cantidad')?.value == null) {
+  async comboCiudades(idProvincia: any): Promise<void> {
+    this.listaCiudades = [];
+    if (!idProvincia) {
+      this.idCiudad.handleClearClick();
       return;
     }
-
-    let valor = this.facturaForm.get('valor')?.value?.toFixed(2);
-    let cantidad = this.facturaForm.get('cantidad')?.value?.toFixed(2);
-
-    if (Number.isNaN(parseFloat(cantidad)) || cantidad == undefined) {
-      this.facturaForm.get('total')?.setValue(1);
-      return;
-    }
-
-    let total = parseFloat(cantidad ?? '') * parseFloat(valor ?? '');
-    let valorTotalConvertido = total.toFixed(2);
-    this.facturaForm.get('total')?.setValue(valorTotalConvertido);
-
-    if (Number.isNaN(total)) {
-      this.facturaForm.get('total')?.setValue('0');
-      return;
-    }
+    this.idCiudad.handleClearClick();
+    const url = `${this.baseUrl}Ciudades/listar?idProvincia=${idProvincia}`;
+    this.listaCiudades = (await this.axios.get(url)).data;
   }
 
-  cambiarEstablecimiento(evento: any) {
-    let establecimiento = this.EstablecimientosList.find(
-      (x) => x.idEstablecimiento === evento.value
-    );
-    this.establecimiento = this.padLeft.convert(establecimiento?.nombre, 3);
+
+  nuevo() {
+    this.tituloModal = "Nuevo registro";
+    this.idCliente = "";
+    this.idCiudad.handleClearClick();
+    this.idProvincia.handleClearClick();
+    this.listaCiudades = [];
+    js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
-
-  cambiarPuntoEmision(evento: any) {
-    let puntoEmision = this.PuntoEmisionList.find(
-      (x) => x.idPuntoEmision === evento.value
-    );
-    this.puntoEmision = this.padLeft.convert(puntoEmision?.nombre, 3);
-  }
-
-  limpiarVenta() {
-    this.facturaForm.get('valor')?.setValue(0);
-    this.facturaForm.get('cantidad')?.setValue(1);
-    this.facturaForm.get('total')?.setValue('0');
-  }
-
-  cargarProducto(evento: any) {
-    this.PreciosList = [];
-
-    if (evento === undefined || evento === '') {
-      this.limpiarVenta();
-      return;
-    }
-
-    let producto = this.ProductosList.find((x) => x.idProducto === evento);
-
-    this.detallePrecioProductosServices.listar(evento).subscribe({
-      next: (res) => {
-        let precio = {
-          idDetallePrecioProducto: 'default',
-          idProducto: producto?.idProducto,
-          total: producto?.precio,
-          totalIva: producto?.totalIva,
-          porcentaje: producto?.idIvaNavigation?.valor,
-          idIva: producto?.idIva,
-        };
-
-        this.PreciosList.push(precio);
-
-        if (res.length != 0) {
-          res.forEach((item) => {
-            let precioDetalle = {
-              idDetallePrecioProducto: item.idDetallePrecioProducto,
-              idProducto: item.idProducto,
-              total: item.total,
-              totalIva: item.totalIva,
-              porcentaje: item.porcentaje,
-              idIva: item.idIva,
-            };
-
-            this.PreciosList.push(precioDetalle);
-          });
-        }
-
-        this.facturaForm.get('precios')?.setValue(this.PreciosList[0].totalIva);
-
-        this.facturaForm.get('valor')?.setValue(this.PreciosList[0].totalIva);
-
-        this.calcularTotalVenta();
-      },
-      error: () => {
-        this.toast.show_error(
-          'Error',
-          'Al listar el Detalle del Precio Producto'
-        );
-      },
-    });
-  }
-
-  seleccionarTexto() {
-    this.el.nativeElement.querySelector('#descuento').select();
-  }
-
-  seleccionarTextoCantidadDetalle() {
-    this.el.nativeElement.querySelector('#cantidadDetalle').select();
-  }
-
-  abrirModalEditarDetalle() {
-    $('#ModalEditarDetalle').modal('show');
-  }
-
-  listarIvas() {
-    this.ivasService.listar().subscribe({
-      next: (res) => {
-        this.DetalleIvasList = res;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar los Ivas');
-      },
-    });
-  }
-
-  cargarModalEditarDetalle(idProducto: string) {
-    this.idDetalleProducto = idProducto;
-    let producto = this.DetalleProductosList.find(
-      (x) => x.idProducto === idProducto
-    );
-
-    this.DetallePreciosList = producto.precios;
-    let valorIndividualOriginal = parseFloat(
-      (
-        parseFloat(producto.valor) /
-        (1 + (producto?.valorPorcentaje ?? 0))
-      ).toFixed(2)
-    );
-    this.editarDetalleProductoForm.get('nombre')?.setValue(producto.nombre);
-    this.editarDetalleProductoForm
-      .get('idPrecio')
-      ?.setValue(producto.idDetallePrecioProducto);
-    this.editarDetalleProductoForm.get('precio')?.setValue(producto.valor);
-    this.editarDetalleProductoForm.get('cantidad')?.setValue(producto.cantidad);
-    this.editarDetalleProductoForm.get('total')?.setValue(producto.valor);
-    this.editarDetalleProductoForm
-      .get('descuento')
-      ?.setValue(producto.descuento ?? 0);
-    this.editarDetalleProductoForm.get('iva')?.setValue(producto.porcentaje);
-    this.editarDetalleProductoForm.get('totalIva')?.setValue(producto.total);
-    this.editarDetalleProductoForm.get('totalIva')?.setValue(producto.total);
-    this.editarDetalleProductoForm.get('idIva')?.setValue(producto.idIva);
-    this.editarDetalleProductoForm
-      .get('precioSinIva')
-      ?.setValue(producto.totalSinIva);
-
-    setTimeout(() => {
-      this.calcularEditarDetallePrecio();
-    }, 0);
-    $('#ModalEditarDetalle').modal('show');
-  }
-
-  guardarModalEditarDetalle() {
-    let producto = this.DetalleProductosList.find(
-      (x) => x.idProducto == this.idDetalleProducto
-    );
-
-    producto.totalSinIva = parseFloat(
-      this.editarDetalleProductoForm.get('precioSinIva')?.value
-    );
-    producto.cantidad = parseFloat(
-      this.editarDetalleProductoForm.get('cantidad')?.value
-    );
-    producto.descuento = parseFloat(
-      this.editarDetalleProductoForm.get('descuento')?.value
-    );
-    producto.porcentaje = parseFloat(
-      this.editarDetalleProductoForm.get('iva')?.value
-    );
-    producto.total = parseFloat(
-      this.editarDetalleProductoForm.get('totalIva')?.value
-    );
-    const detalleFacturaForm = this.facturaForm.get(
-      'detalleFactura'
-    ) as FormArray;
-    let productoForm = detalleFacturaForm.value.find(
-      (x: any) => x.idProducto === this.idDetalleProducto
-    );
-    productoForm.totalSinIva = parseFloat(
-      this.editarDetalleProductoForm.get('total')?.value
-    );
-    productoForm.cantidad = parseFloat(
-      this.editarDetalleProductoForm.get('cantidad')?.value
-    );
-    productoForm.porcentaje = parseFloat(
-      this.editarDetalleProductoForm.get('iva')?.value
-    );
-    productoForm.total = parseFloat(
-      this.editarDetalleProductoForm.get('totalIva')?.value
-    );
-    const selectDetalleIva: HTMLSelectElement =
-      this.el.nativeElement.querySelector('#detalleIva');
-    const ivaSeleccionado =
-      selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute(
-        'data-item-porcentaje'
-      ) ?? '';
-    const ivaSeleccionadoNombre =
-      selectDetalleIva.options[selectDetalleIva.selectedIndex].getAttribute(
-        'data-item-nombre'
-      ) ?? '';
-    productoForm.valorPorcentaje = parseFloat(ivaSeleccionado);
-    productoForm.nombrePorcentaje = ivaSeleccionadoNombre;
-    productoForm.idIva = this.editarDetalleProductoForm.get('idIva')?.value;
-    this.calcularDetalle();
-    $('#ModalEditarDetalle').modal('hide');
-  }
-
-  listarProductos() {
-    this.productosServices.listarFactura(this.idEmpresa).subscribe({
-      next: (res) => {
-        this.ProductosList = res;
-        this.facturaForm.get('idProducto')?.setValue('');
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar los Productos');
-      },
-    });
-  }
-
-  listarFormaPagos() {
-    this.formaPagosService.listar().subscribe({
-      next: (res) => {
-        this.FormaPagosList = res;
-        this.facturaForm
-          .get('idFormaPago')
-          ?.setValue(this.FormaPagosList[4]?.idFormaPago);
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar las Formas Pagos');
-      },
-    });
-  }
-
-  listarTiempoFormaPagos() {
-    this.tiempoFormaPagosService.listar().subscribe({
-      next: (res) => {
-        this.TiempoFormaPagosList = res;
-        this.facturaForm
-          .get('idTiempoFormaPago')
-          ?.setValue(this.TiempoFormaPagosList[0]?.idTiempoFormaPago);
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar las Formas Pagos');
-      },
-    });
-  }
-
-  listarDocumentosEmitir(codigo: number) {
-    this.documentosEmitirService.listar(codigo).subscribe({
-      next: (res) => {
-        this.DocumentosEmitirList = res;
-        this.facturaForm
-          .get('idDocumentoEmitir')
-          ?.setValue(this.DocumentosEmitirList[0].idDocumentoEmitir);
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Establecimiento');
-      },
-    });
-  }
-
-  listarEstablecimiento(idEmpresa: string) {
-    this.establecimientoService.listar(idEmpresa).subscribe({
-      next: (res) => {
-        this.EstablecimientosList = res;
-
-        this.facturaForm
-          .get('idEstablecimiento')
-          ?.setValue(this.EstablecimientosList[0].idEstablecimiento);
-        this.establecimiento = this.padLeft.convert(
-          this.EstablecimientosList[0].nombre,
-          3
-        );
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Establecimiento');
-      },
-    });
-  }
-
-  listarSecuenciales(idEmpresa: string) {
-    this.secuencialesService.listar(idEmpresa).subscribe({
-      next: (res) => {
-        this.SecuencialesList = res;
-        this.secuencial = this.padLeft.convert(
-          this.SecuencialesList[0].nombre,
-          9
-        );
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Establecimiento');
-      },
-    });
-  }
-
-  listarPuntoEmision(idEmpresa: string) {
-    this.puntoEmisionService.listar(idEmpresa).subscribe({
-      next: (res) => {
-        this.PuntoEmisionList = res;
-        this.facturaForm
-          .get('idPuntoEmision')
-          ?.setValue(this.PuntoEmisionList[0].idPuntoEmision);
-        this.puntoEmision = this.padLeft.convert(
-          this.PuntoEmisionList[0].nombre,
-          3
-        );
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Punto Emision');
-      },
-    });
-  }
-
-  emitirCedulaComponente(identificacion: string | null) {
-    this.cedulaService.disparadorCedula.emit({
-      cedula: identificacion,
-    });
-  }
-
-  cargarContribuyente(evento: any) {
-    this.spinnerIdentificacion = true;
-
-    this.clientesServices.cargarPorIdentificacion(evento.value).subscribe({
-      next: (res) => {
-        this.spinnerIdentificacion = false;
-        if (res == null) {
-          $('#ModalNuevoCliente').modal('show');
-          return;
-        }
-
-        this.facturaForm.get('razonSocial')?.setValue(res?.razonSocial ?? '');
-        this.facturaForm.get('telefono')?.setValue(res.telefono ?? '');
-        this.facturaForm.get('email')?.setValue(res.email ?? '');
-        this.facturaForm.get('direccion')?.setValue(res.direccion ?? '');
-        this.facturaForm.get('idCliente')?.setValue(res.idCliente ?? '');
-        this.facturaForm.get('idCiudad')?.setValue(res.idCiudad ?? '');
-        this.facturaForm
-          .get('idTipoIdentificacion')
-          ?.setValue(res.idTipoIdentificacion ?? '');
-        this.facturaForm
-          .get('codigoTipoIdentificacion')
-          ?.setValue(res.idTipoIdentificacionNavigation?.codigo ?? '');
-      },
-      error: (err) => {
-        this.spinnerIdentificacion = false;
-        this.toast.show_error('Error', 'Al Cargar el Cliente');
-      },
-    });
-  }
-
-  limpiarDatosContribuyentes(evento: any) {
-    if (evento.value == '') {
-      this.facturaForm.get('razonSocial')?.setValue('');
-      this.facturaForm.get('telefono')?.setValue('');
-      this.facturaForm.get('email')?.setValue('');
-      this.facturaForm.get('direccion')?.setValue('');
-      this.facturaForm.get('idCliente')?.setValue('');
-
-      return;
+  handleDocumento(idTipoIdentificacion: any): void {
+    const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
+    if (tipo == 5) {
+      this.identificacion.setAttribute("data-validate", "cedula");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarCedula(this.identificacion);
+    } else if (tipo == 4) {
+      this.identificacion.setAttribute("data-validate", "ruc");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarRuc(this.identificacion);
+    } else {
+      this.identificacion.removeAttribute("data-validate");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.validarVacio(this.identificacion);
     }
   }
 
-  cerrarModalWarning() {
-    $('#ModalNuevoCliente').modal('hide');
-  }
-
-  abrirModalCliente() {
-    this.viewContainerRef.createComponent(ModalClientesComponent);
-    $('#ModalCliente').modal('show');
-    $('#ModalNuevoCliente').modal('hide');
-    let identificacion = this.facturaForm?.get('identificacion')?.value;
-    this.emitirCedulaComponente(`${identificacion}`);
-  }
-
-  destruirComponente() {
-    const component = this.viewContainerRef.createComponent(
-      ModalClientesComponent
-    );
-    if (component) {
-      component.destroy();
+  async editar(idCliente: string): Promise<void> {
+    try {
+      this.tituloModal = "Editar registro"
+      this.idCliente = "";
+      const url = `${this.baseUrl}Facturas/cargar/${idCliente}`;
+      const res = (await this.axios.get(url)).data;
+      res.idProvincia = res.idCiudadNavigation.idProvincia;
+      js.cargarFormulario(this.frmDatos.nativeElement, res);
+      this.idProvincia.select(this.idProvincia.itemsList.findItem(res.idProvincia));
+      setTimeout(() => this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)), 100);
+      this.idCliente = res.idCliente;
+      this.modal.show();
+    } catch (e) {
+      js.handleError(e);
     }
   }
+
+  async guardar(): Promise<void> {
+    try {
+      if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      js.loaderShow();
+      const url = `${this.baseUrl}Facturas/${!this.idCliente ? "insertar" : "actualizar"}`;
+      const data = new FormData(this.frmDatos.nativeElement);
+      if (!!this.idCliente) data.append("idCliente", this.idCliente);
+      data.append("idProvincia", this.idProvincia.selectedValues[0]);
+      data.append("idCiudad", this.idCiudad.selectedValues[0]);
+      if (!this.idCliente) await this.axios.postFormJson(url, data);
+      else await this.axios.putFormJson(url, data);
+      js.toastSuccess(`Registro ${!this.idCliente ? "guardado" : "editado"} exitosamente`);
+      this.modal.hide();
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
+    }
+  }
+
+  async eliminar(idCliente: string): Promise<void> {
+    try {
+      if (!await js.toastPreguntar(`
+      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
+      <p class='fs-md'>¿Está seguro que desea eliminar este cliente?</p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
+      </i>Esta acción no se puede deshacer ni revertir.</p>
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Facturas/eliminar/${idCliente}`;
+      await this.axios.delete(url);
+      js.toastSuccess("Cliente eliminado exitosamente");
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    }
+
+  }
+
+  getDate(date:string){
+    return js.getDate(date);
+  }
+  getHour(date:string){
+    return js.getHour(date);
+  }
+
 }
+
+

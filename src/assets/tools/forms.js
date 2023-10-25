@@ -1092,6 +1092,25 @@ function getDateOnly() {
     return _f;
 }
 
+function getDate(e){
+  try {
+    const f=e.split("T")[0].split("-");
+    return `${f[2]}-${f[1]}-${f[0]}`;
+  } catch (e) {
+    return e;
+  }
+}
+
+function getHour(e){
+  try {
+    const h=e.split("T")[1];
+    const t=h.substr(0,5);
+    return `${t}${parseInt(t.split(":")[0])>=12?"PM":"AM"}`;
+  } catch (e) {
+    return e;
+  }
+}
+
 function crearPasswordPreview() {
     document.querySelectorAll("[type='password']").forEach(item => {
         item.addEventListener("keyup", () => {

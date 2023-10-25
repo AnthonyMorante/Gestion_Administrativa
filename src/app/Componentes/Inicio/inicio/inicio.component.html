@@ -47,6 +47,14 @@
           <div class="menu-title">Productos</div>
         </a>
       </li>
+      <li class="home">
+        <a [routerLink]="['facturas']" [routerLinkActive]="['active']">
+          <div class="parent-icon">
+            <i class='bi-receipt-cutoff'></i>
+          </div>
+          <div class="menu-title">Facturación</div>
+        </a>
+      </li>
     </ul>
     <!--end navigation-->
   </div>
@@ -86,7 +94,7 @@
   <div class="page-wrapper show">
     <div class="page-content">
       <div class="card mb-0">
-        <div class="card-body card-body-full container mb-5 px-xl-5 px-lg-5">
+        <div class="card-body card-body-full container-fluid mb-5 px-xl-5 px-lg-5">
           <router-outlet></router-outlet>
         </div>
       </div>

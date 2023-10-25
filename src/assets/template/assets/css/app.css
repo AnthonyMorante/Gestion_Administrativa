@@ -1801,3 +1801,8 @@ th.w-switch
   margin-top:1px;
   margin-left: 1px;
 }
+
+
+table tbody tr td.text-email{
+  text-transform: lowercase !important;
+}
