@@ -25,7 +25,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
   modal: any;
-  tituloModal: string = "Nuevo registro";
+  tituloModal: string = "Nueva Factura";
   idCliente: string = "";
   identificacion: any;
   fechaRegistro: Date = new Date();
@@ -57,7 +57,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}Facturas/listar`;
-      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmsion,fechaAutorizacion";
+      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmsion,fechaAutorizacion,estadoSri";
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -145,22 +145,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async editar(idCliente: string): Promise<void> {
-    try {
-      this.tituloModal = "Editar registro"
-      this.idCliente = "";
-      const url = `${this.baseUrl}Facturas/cargar/${idCliente}`;
-      const res = (await this.axios.get(url)).data;
-      res.idProvincia = res.idCiudadNavigation.idProvincia;
-      js.cargarFormulario(this.frmDatos.nativeElement, res);
-      this.idProvincia.select(this.idProvincia.itemsList.findItem(res.idProvincia));
-      setTimeout(() => this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)), 100);
-      this.idCliente = res.idCliente;
-      this.modal.show();
-    } catch (e) {
-      js.handleError(e);
-    }
-  }
+
 
   async guardar(): Promise<void> {
     try {
@@ -183,29 +168,33 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async eliminar(idCliente: string): Promise<void> {
+  async xml(claveAcceso: string): Promise<void> {
     try {
-      if (!await js.toastPreguntar(`
-      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
-      <p class='fs-md'>¿Está seguro que desea eliminar este cliente?</p>
-      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
-      </i>Esta acción no se puede deshacer ni revertir.</p>
-      `, "Si, Eliminar")) return;
-      const url = `${this.baseUrl}Facturas/eliminar/${idCliente}`;
-      await this.axios.delete(url);
-      js.toastSuccess("Cliente eliminado exitosamente");
-      this.reloadDataTable();
+      const url = `${this.baseUrl}Facturas/xml/${claveAcceso}`;
+      const res = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async pdf(claveAcceso: string): Promise<void> {
+    try {
+      const url = `${this.baseUrl}Facturas/pdf/${claveAcceso}`;
+      const res = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
     }
 
   }
 
-  getDate(date:string){
+  getDate(date: string) {
     return js.getDate(date);
   }
-  getHour(date:string){
+  getHour(date: string) {
     return js.getHour(date);
+  }
+  getColor(estado:number){
+    return `background-color:${global.estados[estado]}`
   }
 
 }

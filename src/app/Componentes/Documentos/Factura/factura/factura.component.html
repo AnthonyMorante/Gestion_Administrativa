@@ -9,11 +9,12 @@
         <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
             <thead>
                 <tr>
-                    <th class="text-center w-gear"><i class="bi-gear"></i></th>
+                    <th class="text-center w-gear"><i class="bi-files"></i></th>
                     <th class="text-center">FECHA EMISIÓN</th>
                     <th>DOCUMENTO</th>
                     <th>CLIENTE</th>
                     <th>CLAVE ACCESO</th>
+                    <th class="text-center">ESTADO</th>
                     <th class="text-center">FECHA AUTORIZACIÓN</th>
                     <th class="text-end">TELÉFONO</th>
                     <th>EMAIL</th>
@@ -23,23 +24,28 @@
             <tbody *ngIf="lista?.length>0" class="">
                 <tr *ngFor="let item of lista">
                     <td class="text-center">
-                        <button (click)="editar(item.idFactura)" type="button" class="btn btn-primary text-white btn-sm"
-                        style="padding:2px 0 2px 6px"><i class="bi-pencil-square" style="font-size:12px"></i></button>
-                        <button (click)="eliminar(item.idFactura)" type="button" class="btn btn-danger text-white btn-sm"
-                        style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
+                        <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button" class="btn text-primary btn-sm btn-file-td"
+                            style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
+                                style="font-size:12px"></i></button>
+                        <button (click)="pdf(item.claveAcceso)" title="Descargar PDF"  type="button"
+                            class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
+                                style="font-size:12px"></i></button>
                     </td>
                     <td width="5%" class="text-center">{{getDate(item.fechaEmision)}}</td>
-                    <td>{{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}</td>
+                    <td>{{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
+                    </td>
                     <td width="25%">{{item.cliente}}</td>
                     <td width="30%">{{item.claveAcceso}}</td>
-                    <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}} <b>{{getHour(item.fechaAutorizacion)}}</b></td>
+                    <td width="5%" class="text-center"><span class="badge fw-500" [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
+                    <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}}
+                        <b>{{getHour(item.fechaAutorizacion)}}</b></td>
                     <td class="text-end">{{item.telefonoCliente}}</td>
                     <td width="10%" class="text-email">{{item.emailCliente}}</td>
                 </tr>
             </tbody>
             <tbody *ngIf="lista?.length==0">
                 <tr>
-                    <td colspan="5" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+                    <td colspan="10" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
                 </tr>
             </tbody>
         </table>
@@ -49,7 +55,7 @@
 
 <div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-xl"  role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
         <div class="modal-content bg-primary">
             <div class="modal-header py-2">
                 <label class="modal-title text-white" id="modalDatosLabel">{{tituloModal}}</label>
@@ -58,85 +64,22 @@
                 </button>
             </div>
             <div class="modal-body bg-white">
-                <form #frmDatos class="row">
-                    <div class="col-sm-6">
-                        <label class="form-label">Tipo Documento</label>
-                        <select class="form-select form-select-sm" id="idTipoIdentificacion" name="idTipoIdentificacion"
-                            (change)="handleDocumento($event.target)">
-                            <option *ngFor="let item of listaTipoIdentificaciones"
-                                value="{{item.idTipoIdentificacion}}">
-                                {{item.nombre}}</option>
-                        </select>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label">Identificacion</label>
-                        <input type="text" class="form-control form-control-sm" id="identificacion" name="identificacion" maxlength="30" />
-                        <div class="invalid-feedback">
-                            *Campo Requerido
-                        </div>
-                    </div>
+                <form #frmDatos class="row p-1">
+                  <div class="col-sm-12">
 
-                    <div class="col-sm-12">
-                        <label class="form-label">Razón Social</label>
-                        <input type="text" class="form-control form-control-sm" id="razonSocial" name="razonSocial"
-                            maxlength="500" />
-                        <div class="invalid-feedback">
-                            *Campo Requerido
-                        </div>
-                    </div>
+                  </div>
+                  <div class="card col-sm-6 card-custom">
+                    <h5 class="card-title">Cliente</h5>
+                      <div class="card-body">
 
-                    <div class="col-sm-4">
-                        <label class="form-label">Teléfono</label>
-                        <input type="text" class="form-control form-control-sm text-end" id="telefono" name="telefono"
-                            data-validate="numeros" maxLength="500" maxlength="500" />
-                        <div class="invalid-feedback">
-                            *Campo Requerido
-                        </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <label class="form-label">Email</label>
-                        <input type="text" class="form-control form-control-sm" id="email" name="email"
-                            data-validate="email" maxLength="500" />
-                        <div class="invalid-feedback">
-                            *Campo Requerido
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label">Provincia</label>
-                        <ng-select #idProvincia id="idProvincia" [clearable]="true" placeholder="Seleccione"
-                            (change)="comboCiudades($event)" notFoundText="Sin resultados">
-                            <ng-option *ngFor="let item of listaProvincias"
-                                [value]="item.idProvincia">{{item.nombre}}</ng-option>
-                        </ng-select>
-                        <div class="invalid-feedback">
-                            * Campo Requerido
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <label class="form-label">Ciudad</label>
-                        <ng-select #idCiudad id="idCiudad" [clearable]="true"
-                            placeholder="{{!idProvincia.selectedValues[0] ?'Seleccione una provincia':'Seleccione'}}"
-                            notFoundText="Sin resultados">
-                            <ng-option *ngFor="let item of listaCiudades"
-                                [value]="item.idCiudad">{{item.nombre}}</ng-option>
-                        </ng-select>
-                        <div class="invalid-feedback">
-                            * Campo Requerido
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <label class="form-label">Dirección</label>
-                        <textarea type="text" class="form-control form-control-sm" id="direccion" name="direccion"
-                            maxLength="500"></textarea>
-                        <div class="invalid-feedback">
-                            *Campo Requerido
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <label class="form-label">Observaciones</label>
-                        <textarea type="text" class="form-control form-control-sm" id="observacion"
-                            name="observacion" data-validate="no-validate" maxLength="500"></textarea>
-                    </div>
+                      </div>
+                  </div>
+                  <div class="card col-sm-6 card-custom">
+                    <h5 class="card-title">Emisor</h5>
+                      <div class="card-body">
+
+                      </div>
+                  </div>
                 </form>
             </div>
             <div class="modal-footer bg-light py-2">
