@@ -8,6 +8,7 @@ import { ProductosComponent } from './Componentes/Administracion/Productos/produ
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
 import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 import { LoginComponent } from './Componentes/login/login.component';
+import { userGuard } from './Guards/user.guard';
 
 
 
@@ -18,29 +19,36 @@ const routes: Routes = [
 
   {
     path: 'login',
-    component: LoginComponent
+    component: LoginComponent,
+    canActivate: [userGuard]
   },
   {
-    path: 'Inicio', component: InicioComponent, children: [
+    path: 'Inicio', component: InicioComponent, canActivate: [userGuard],
+    children: [
       {
         path: 'clientes',
-        component: ClientesComponent
+        component: ClientesComponent,
+        canActivate: [userGuard]
       },
       {
         path: 'empleados',
-        component: EmpleadosComponent
+        component: EmpleadosComponent,
+        canActivate: [userGuard]
       },
       {
         path: 'productos',
-        component: ProductosComponent
+        component: ProductosComponent,
+        canActivate: [userGuard]
       },
       {
         path: 'proveedores',
-        component: ProveedoresComponent
+        component: ProveedoresComponent,
+        canActivate: [userGuard]
       },
       {
         path: 'facturas',
-        component: FacturaComponent
+        component: FacturaComponent,
+        canActivate: [userGuard]
       },
     ],
   },

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios from 'axios';
 import { global } from '../../main';
+import { Token } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
@@ -144,6 +145,27 @@ export class AxiosService {
     });
   }
 
-
+  public async validateToken():Promise<Boolean>{
+    const token=localStorage.getItem(global.token.user);
+      const url=`${global.BASE_API_URL}api/Security/validateToken`;
+      return axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(
+            global.token.user
+          )}`,
+          'Content-Type': `application/json`,
+        },
+      }).then(()=>true).catch((error)=>{
+        console.clear();
+        try {
+          if(token==null) return false;
+          const url=`${global.BASE_API_URL}connect/revoque?id_token_hint=${token}`;
+          axios.get(url).then().catch(e=>console.warn(e));
+        } finally{
+          localStorage.removeItem(global.token.user);
+          return false;
+        } 
+      });
+  }
 
 }

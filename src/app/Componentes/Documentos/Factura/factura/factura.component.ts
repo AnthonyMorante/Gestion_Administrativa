@@ -23,19 +23,24 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   mensajeDataTable: string = js.loaderDataTable();
   //Modal
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
-  @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  // @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
   modal: any;
   tituloModal: string = "Nueva Factura";
   idCliente: string = "";
   identificacion: any;
   fechaRegistro: Date = new Date();
   //Combos
-  @ViewChild('idProvincia', { static: true }) idProvincia: NgSelectComponent = {} as NgSelectComponent;
-  @ViewChild('idCiudad', { static: true }) idCiudad: NgSelectComponent = {} as NgSelectComponent;
+  @ViewChild('idProducto', { static: true }) idProducto: NgSelectComponent = {} as NgSelectComponent;
   listaTipoIdentificaciones: any = [];
-  listaProvincias: any = [];
-  listaCiudades: any = [];
-  constructor(private axios: AxiosService) { }
+  listaProductos: any = [];
+  listaDetalleFactura: any = [];
+  listaTiposDocumentos: any = [];
+  listaEstablecimientos: any = [];
+  listaPuntosEmisiones: any = [];
+  establecimiento: string = "001";
+  puntoEmision: string = "001";
+  listaPreciosProductos:any=[];
+  constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
     this.identificacion = document.querySelector("#identificacion");
@@ -43,10 +48,13 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       keyboard: false,
       backdrop: 'static',
     });
-    js.activarValidadores(this.frmDatos.nativeElement);
+    // js.activarValidadores(this.frmDatos.nativeElement);
     this.listarFacturas();
     this.comboTipoIdentificaciones();
-    this.comboProvincia();
+    this.comboTiposDocumentos();
+    this.comboEstablecimientos();
+    this.comboPuntosEmisiones();
+    this.comboProductos();
   }
   ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
@@ -54,6 +62,44 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
+  async comboTiposDocumentos() {
+    try {
+      const url = `${this.baseUrl}Facturas/tiposDocumentos`;
+      this.listaTiposDocumentos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+  async comboEstablecimientos() {
+    try {
+      const url = `${this.baseUrl}Facturas/establecimientos`;
+      this.listaEstablecimientos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async comboPuntosEmisiones() {
+    try {
+      const url = `${this.baseUrl}Facturas/puntosEmisiones`;
+      this.listaPuntosEmisiones = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async comboProductos() {
+    try {
+      let url = `${this.baseUrl}Facturas/listaProductos`;
+      this.listaProductos = (await this.axios.get(url)).data;
+      url = `${this.baseUrl}Facturas/listaPreciosProductos`;
+      this.listaPreciosProductos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}Facturas/listar`;
@@ -100,33 +146,10 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       js.handleError(e);
     }
   }
-
-  async comboProvincia(): Promise<void> {
-    this.idProvincia.handleClearClick();
-    this.idCiudad.handleClearClick();
-    this.idProvincia.handleClearClick();
-    const url = `${this.baseUrl}Provincias/listar`;
-    this.listaProvincias = (await this.axios.get(url)).data;
-  }
-  async comboCiudades(idProvincia: any): Promise<void> {
-    this.listaCiudades = [];
-    if (!idProvincia) {
-      this.idCiudad.handleClearClick();
-      return;
-    }
-    this.idCiudad.handleClearClick();
-    const url = `${this.baseUrl}Ciudades/listar?idProvincia=${idProvincia}`;
-    this.listaCiudades = (await this.axios.get(url)).data;
-  }
-
-
   nuevo() {
-    this.tituloModal = "Nuevo registro";
+    this.tituloModal = "Nueva factura";
     this.idCliente = "";
-    this.idCiudad.handleClearClick();
-    this.idProvincia.handleClearClick();
-    this.listaCiudades = [];
-    js.limpiarForm(this.frmDatos.nativeElement, 100);
+    // js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
   handleDocumento(idTipoIdentificacion: any): void {
     const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
@@ -149,16 +172,16 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async guardar(): Promise<void> {
     try {
-      if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
-      js.loaderShow();
-      const url = `${this.baseUrl}Facturas/${!this.idCliente ? "insertar" : "actualizar"}`;
-      const data = new FormData(this.frmDatos.nativeElement);
-      if (!!this.idCliente) data.append("idCliente", this.idCliente);
-      data.append("idProvincia", this.idProvincia.selectedValues[0]);
-      data.append("idCiudad", this.idCiudad.selectedValues[0]);
-      if (!this.idCliente) await this.axios.postFormJson(url, data);
-      else await this.axios.putFormJson(url, data);
-      js.toastSuccess(`Registro ${!this.idCliente ? "guardado" : "editado"} exitosamente`);
+      // if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      // js.loaderShow();
+      // const url = `${this.baseUrl}Facturas/${!this.idCliente ? "insertar" : "actualizar"}`;
+      // const data = new FormData(this.frmDatos.nativeElement);
+      // if (!!this.idCliente) data.append("idCliente", this.idCliente);
+      // data.append("idProvincia", this.idProvincia.selectedValues[0]);
+      // data.append("idCiudad", this.idCiudad.selectedValues[0]);
+      // if (!this.idCliente) await this.axios.postFormJson(url, data);
+      // else await this.axios.putFormJson(url, data);
+      // js.toastSuccess(`Registro ${!this.idCliente ? "guardado" : "editado"} exitosamente`);
       this.modal.hide();
       this.reloadDataTable();
     } catch (e) {
@@ -193,10 +216,21 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   getHour(date: string) {
     return js.getHour(date);
   }
-  getColor(estado:number){
+  getColor(estado: number) {
     return `background-color:${global.estados[estado]}`
   }
+  handleNumeroFactura(): void {
+    const establecimiento = this.el.nativeElement.querySelector("#idEstablecimiento").value;
+    const puntoEmision = this.el.nativeElement.querySelector("#idPuntoEmision").value;
+    console.log(this.listaEstablecimientos);
+    this.establecimiento = (this.listaEstablecimientos.find((x: any) => x.idEstablecimiento == establecimiento).nombre).toString().padStart(3, '0');
+    this.puntoEmision = (this.listaPuntosEmisiones.find((x: any) => x.idPuntoEmision == puntoEmision).nombre).toString().padStart(3, '0');
+  }
 
+  handleProducto(idProducto:any):void{
+    const producto=this.listaProductos.find((x:any)=>x.idProducto==idProducto);
+    this.el.nativeElement.querySelector("#precio").value=!!producto?producto.precio.toString().replace(".",","):"";
+  }
 }
 
 

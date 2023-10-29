@@ -1825,12 +1825,80 @@ td .btn.btn-file-td:hover i{
 .card-custom .card-title{
   font-size: 13px;
   text-transform: uppercase;
-  padding-top: 5px;
-  color:#CCC;
-  border-bottom: 1px solid #CCC;
+  padding-bottom: 3px;
+  color:#5c636a;
+  font-weight: 600;
+  border-bottom: 1px solid #5c636a;
+  margin-left: 1vw;
+  margin-right: 1vw;
+  margin-bottom: 5px;
 }
 
 .card-custom{
   box-shadow: none;
   border:1px solid   #CCC;
+  padding:5px;
+  margin-bottom:7px !important;
+}
+.mt-agregar{
+  margin-top: 7px;
+}
+
+.mt-agregar button i{
+  position: absolute;
+  font-size: 13px;
+  margin-top: -2px;
+  margin-right: -2px;
+
+}
+.mt-agregar button{
+  padding-right: 17px;
+}
+
+@media (max-width:700px){
+  .mt-agregar button{
+    width: 100% !important;
+  }
+  .mt-agregar{
+    margin-top: 0px !important;
+  }
+  
+}
+
+.table-detalle-factura{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-responsive:has(.table-detalle-factura){
+  margin-top: 28px !important;
+}
+
+.table-detalle-factura thead tr th{
+  background-color: rgba(0,0,0,0.05);
+  font-size: 10px;
+  text-transform: uppercase;
+  color:#5c636a;
+  border:1px solid #5c636a;
+  padding-left: 5px;
+  padding-right: 5px;
+} 
+
+
+.table-detalle-factura tbody tr td{
+  font-size: 10px;
+  text-transform: uppercase;
+  color:black;
+  border:1px solid #5c636a;
+  padding-left: 5px;
+  padding-right: 5px;
+} 
+
+tr td[colspan] i{
+  position: absolute;
+  margin-left: -15px;
+}
+
+.form-select.text-end{
+  padding-right: 30.7px !important;
 }

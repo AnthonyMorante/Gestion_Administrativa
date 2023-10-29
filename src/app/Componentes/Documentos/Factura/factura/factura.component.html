@@ -24,21 +24,23 @@
             <tbody *ngIf="lista?.length>0" class="">
                 <tr *ngFor="let item of lista">
                     <td class="text-center">
-                        <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button" class="btn text-primary btn-sm btn-file-td"
-                            style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
-                                style="font-size:12px"></i></button>
-                        <button (click)="pdf(item.claveAcceso)" title="Descargar PDF"  type="button"
-                            class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
-                                style="font-size:12px"></i></button>
+                        <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
+                            class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i
+                                class="bi-filetype-xml" style="font-size:12px"></i></button>
+                        <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
+                            class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i
+                                class="bi-filetype-pdf" style="font-size:12px"></i></button>
                     </td>
                     <td width="5%" class="text-center">{{getDate(item.fechaEmision)}}</td>
                     <td>{{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
                     </td>
                     <td width="25%">{{item.cliente}}</td>
                     <td width="30%">{{item.claveAcceso}}</td>
-                    <td width="5%" class="text-center"><span class="badge fw-500" [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
+                    <td width="5%" class="text-center"><span class="badge fw-500"
+                            [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
                     <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}}
-                        <b>{{getHour(item.fechaAutorizacion)}}</b></td>
+                        <b>{{getHour(item.fechaAutorizacion)}}</b>
+                    </td>
                     <td class="text-end">{{item.telefonoCliente}}</td>
                     <td width="10%" class="text-email">{{item.emailCliente}}</td>
                 </tr>
@@ -55,32 +57,189 @@
 
 <div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-xl" role="document">
-        <div class="modal-content bg-primary">
-            <div class="modal-header py-2">
-                <label class="modal-title text-white" id="modalDatosLabel">{{tituloModal}}</label>
-                <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"
-                    (click)="modal.hide()">
+    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
+        <div class="modal-content bg-light">
+            <div class="modal-header pt-1 pb-0 text-end">
+                <label class="modal-title" id="modalDatosLabel">
+                    <h6>FACTURA N° <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-00000582</b></h6>
+                </label>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
                 </button>
             </div>
             <div class="modal-body bg-white">
-                <form #frmDatos class="row p-1">
-                  <div class="col-sm-12">
+                <div class="row gx-2 mt-1">
+                    <div class="col-sm-7">
+                        <div class="card card-custom px-2">
+                            <h5 class="card-title">Cliente</h5>
+                            <div class="card-body pt-0">
+                                <form class="row" #frmCliente>
+                                    <div class="col-sm-3">
+                                        <label class="form-label">Tipo Documento</label>
+                                        <select class="form-select form-select-sm" id="idTipoIdentificacion"
+                                            name="idTipoIdentificacion" (change)="handleDocumento($event.target)">
+                                            <option *ngFor="let item of listaTipoIdentificaciones"
+                                                value="{{item.idTipoIdentificacion}}">
+                                                {{item.nombre}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="form-label">Identificacion</label>
+                                        <input type="text" class="form-control form-control-sm" id="identificacion"
+                                            name="identificacion" maxlength="30" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
 
-                  </div>
-                  <div class="card col-sm-6 card-custom">
-                    <h5 class="card-title">Cliente</h5>
-                      <div class="card-body">
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Razón Social</label>
+                                        <input type="text" class="form-control form-control-sm" id="razonSocial"
+                                            name="razonSocial" maxlength="500" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
 
-                      </div>
-                  </div>
-                  <div class="card col-sm-6 card-custom">
-                    <h5 class="card-title">Emisor</h5>
-                      <div class="card-body">
-
-                      </div>
-                  </div>
-                </form>
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Teléfono</label>
+                                        <input type="text" class="form-control form-control-sm text-end" id="telefono"
+                                            name="telefono" data-validate="numeros" maxLength="500" maxlength="500" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Email</label>
+                                        <input type="text" class="form-control form-control-sm" id="email" name="email"
+                                            data-validate="email" maxLength="500" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label">Dirección</label>
+                                        <input type="text" class="form-control form-control-sm" id="direccion"
+                                            name="direccion" maxLength="500" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="card card-custom">
+                            <h5 class="card-title">Emisor</h5>
+                            <div class="card-body pt-0">
+                                <form #frmEmisor class="row">
+                                    <div class="col-sm-12">
+                                        <label class="form-label">Documento a emitir</label>
+                                        <select class="form-select form-select-sm" id="idTipoDocumento"
+                                            name="idTipoDocumento">
+                                            <option *ngFor="let item of listaTiposDocumentos" value="{{item.codigo}}">{{item.nombre}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Fecha Emisión</label>
+                                        <input type="date" class="form-control form-control-sm" id="fechaEmision"
+                                            name="fechaEmision" />
+                                        <div class="invalid-feedback">
+                                            *Campo Requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Establecimiento</label>
+                                        <select class="form-select form-select-sm text-end" id="idEstablecimiento"
+                                            name="idEstablecimiento" (change)="handleNumeroFactura()">
+                                            <option *ngFor="let item of listaEstablecimientos" value="{{item.idEstablecimiento}}">{{item.nombre.toString().padStart(3,'0')}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Punto Emisión</label>
+                                        <select class="form-select form-select-sm text-end" id="idPuntoEmision"
+                                            name="idPuntoEmision" (change)="handleNumeroFactura()">
+                                            <option *ngFor="let item of listaPuntosEmisiones" value="{{item.idPuntoEmision}}">{{item.nombre.toString().padStart(3,'0')}}</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 mt-0">
+                        <div class="card card-custom">
+                            <h5 class="card-title">Venta</h5>
+                            <div class="card-body pt-0">
+                                <form #frmProducto class="row">
+                                    <div class="col-sm-4">
+                                        <label class="form-label">Productos/Servicios</label>
+                                        <ng-select #idProducto id="idProducto" 
+                                            [clearable]="true"
+                                            [virtualScroll]="true"
+                                            (change)="handleProducto($event)"
+                                            placeholder="Busque y seleccione un producto o servicio"
+                                            notFoundText="Sin resultados">
+                                            <ng-option *ngFor="let item of listaProductos"
+                                                [value]="item.idProducto">{{item.nombre}}</ng-option>
+                                        </ng-select>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Precio</label>
+                                        <input type="text" class="form-control form-control-sm text-end"
+                                            data-validate="decimal" maxlength="9" id="precio" name="precio">
+                                        <div class="invalid-feedback">
+                                            *Campo requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Cantidad</label>
+                                        <input type="text" class="form-control form-control-sm text-end"
+                                            data-validate="numeros" maxlength="9" id="cantidad" name="cantidad">
+                                        <div class="invalid-feedback">
+                                            *Campo requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <label class="form-label">Total</label>
+                                        <input type="text" class="form-control form-control-sm text-end"
+                                            data-validate="decimal" maxlength="9" readonly>
+                                        <div class="invalid-feedback">
+                                            *Campo requerido
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-auto mt-agregar">
+                                        <br>
+                                        <button class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
+                                    </div>
+                                </form>
+                                <div class="table-responsive">
+                                    <table class="table-detalle-factura">
+                                        <thead>
+                                            <tr>
+                                            <th width="2%" class="text-end">#</th>
+                                            <th width="4%" class="text-end">Cantidad</th>
+                                            <th width="7%">Código</th>
+                                            <th width="57%">Producto/Servicio</th>
+                                            <th width="10%" class="text-center">Base</th>
+                                            <th width="4%" class="text-end">Precio</th>
+                                            <th width="4%" class="text-end">Subtotal</th>
+                                            <th width="4%" class="text-end">Iva</th>
+                                            <th width="4%" class="text-end">Descuento</th>
+                                            <th width="4%" class="text-end">Total</th>
+                                            <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>     
+                                        </tr>             
+                                        </thead>
+                                        <tbody>
+                                            <tr *ngIf="listaDetalleFactura.length==0">
+                                                <td colspan="11" class="text-center"><i class="bi-exclamation-triangle me-1"></i>Ningún producto/servicio agregado</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer bg-light py-2">
                 <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Guardar</button>
