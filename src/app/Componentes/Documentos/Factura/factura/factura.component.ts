@@ -23,7 +23,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   mensajeDataTable: string = js.loaderDataTable();
   //Modal
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
-  // @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmCliente', { static: true }) frmCliente: ElementRef = {} as ElementRef;
+  @ViewChild('frmProducto', { static: true }) frmProducto: ElementRef = {} as ElementRef;
   modal: any;
   tituloModal: string = "Nueva Factura";
   idCliente: string = "";
@@ -48,7 +49,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       keyboard: false,
       backdrop: 'static',
     });
-    // js.activarValidadores(this.frmDatos.nativeElement);
+    js.activarValidadores(this.frmCliente.nativeElement);
+    js.activarValidadores(this.frmProducto.nativeElement);
     this.listarFacturas();
     this.comboTipoIdentificaciones();
     this.comboTiposDocumentos();
@@ -147,7 +149,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   nuevo() {
-    this.tituloModal = "Nueva factura";
+
     this.idCliente = "";
     // js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
@@ -222,14 +224,34 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   handleNumeroFactura(): void {
     const establecimiento = this.el.nativeElement.querySelector("#idEstablecimiento").value;
     const puntoEmision = this.el.nativeElement.querySelector("#idPuntoEmision").value;
-    console.log(this.listaEstablecimientos);
     this.establecimiento = (this.listaEstablecimientos.find((x: any) => x.idEstablecimiento == establecimiento).nombre).toString().padStart(3, '0');
     this.puntoEmision = (this.listaPuntosEmisiones.find((x: any) => x.idPuntoEmision == puntoEmision).nombre).toString().padStart(3, '0');
   }
 
   handleProducto(idProducto:any):void{
+    js.limpiarValidadores(this.frmCliente.nativeElement);
     const producto=this.listaProductos.find((x:any)=>x.idProducto==idProducto);
     this.el.nativeElement.querySelector("#precio").value=!!producto?producto.precio.toString().replace(".",","):"";
+  }
+
+  async buscarCliente(identificacion:any):Promise<void>{
+    try {
+      this.idCliente="";
+      const url=`${this.baseUrl}Facturas/buscarCliente/${identificacion.value}`;
+      const res=(await this.axios.get(url)).data;
+      js.limpiarForm(this.frmCliente.nativeElement);
+      if(!res){
+
+        return;
+      }
+      js.llenarFormulario(this.frmCliente.nativeElement,res);
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  handleTotalAgregar(){
+
   }
 }
 

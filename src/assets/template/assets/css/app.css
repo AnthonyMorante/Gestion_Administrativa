@@ -1841,7 +1841,7 @@ td .btn.btn-file-td:hover i{
   margin-bottom:7px !important;
 }
 .mt-agregar{
-  margin-top: 7px;
+  margin-top: 6px;
 }
 
 .mt-agregar button i{
@@ -1862,7 +1862,7 @@ td .btn.btn-file-td:hover i{
   .mt-agregar{
     margin-top: 0px !important;
   }
-  
+
 }
 
 .table-detalle-factura{
@@ -1882,7 +1882,7 @@ td .btn.btn-file-td:hover i{
   border:1px solid #5c636a;
   padding-left: 5px;
   padding-right: 5px;
-} 
+}
 
 
 .table-detalle-factura tbody tr td{
@@ -1892,13 +1892,30 @@ td .btn.btn-file-td:hover i{
   border:1px solid #5c636a;
   padding-left: 5px;
   padding-right: 5px;
-} 
+}
 
 tr td[colspan] i{
-  position: absolute;
-  margin-left: -15px;
+  font-size: 15px;
+  margin-top: 2px;
 }
 
 .form-select.text-end{
   padding-right: 30.7px !important;
+}
+
+@media(min-width:700px){
+  .form-number{
+    max-width: 100px;
+  }
+}
+
+
+.readonly{
+  pointer-events: none;
+  cursor: not-allowed;
+  background-color: #EEE;
+}
+
+.is-invalid.text-end{
+  padding-right: 28px !important;
 }

@@ -75,7 +75,7 @@
                                 <form class="row" #frmCliente>
                                     <div class="col-sm-3">
                                         <label class="form-label">Tipo Documento</label>
-                                        <select class="form-select form-select-sm" id="idTipoIdentificacion"
+                                        <select class="form-select form-select-sm readonly" id="idTipoIdentificacion"
                                             name="idTipoIdentificacion" (change)="handleDocumento($event.target)">
                                             <option *ngFor="let item of listaTipoIdentificaciones"
                                                 value="{{item.idTipoIdentificacion}}">
@@ -85,7 +85,7 @@
                                     <div class="col-sm-3">
                                         <label class="form-label">Identificacion</label>
                                         <input type="text" class="form-control form-control-sm" id="identificacion"
-                                            name="identificacion" maxlength="30" />
+                                            name="identificacion" maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)" data-clean="false"/>
                                         <div class="invalid-feedback">
                                             *Campo Requerido
                                         </div>
@@ -173,7 +173,7 @@
                                 <form #frmProducto class="row">
                                     <div class="col-sm-4">
                                         <label class="form-label">Productos/Servicios</label>
-                                        <ng-select #idProducto id="idProducto" 
+                                        <ng-select #idProducto id="idProducto"
                                             [clearable]="true"
                                             [virtualScroll]="true"
                                             (change)="handleProducto($event)"
@@ -183,26 +183,26 @@
                                                 [value]="item.idProducto">{{item.nombre}}</ng-option>
                                         </ng-select>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-auto">
                                         <label class="form-label">Precio</label>
-                                        <input type="text" class="form-control form-control-sm text-end"
-                                            data-validate="decimal" maxlength="9" id="precio" name="precio">
+                                        <input type="text" class="form-control form-control-sm text-end form-number"
+                                            data-validate="decimal" maxlength="9" id="precio" name="precio" (input)="handleTotalAgregar()">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-auto">
                                         <label class="form-label">Cantidad</label>
-                                        <input type="text" class="form-control form-control-sm text-end"
-                                            data-validate="numeros" maxlength="9" id="cantidad" name="cantidad">
+                                        <input type="text" class="form-control form-control-sm text-end form-number"
+                                            data-validate="numeros-no-cero" maxlength="9" id="cantidad" name="cantidad" (input)="handleTotalAgregar()">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div class="col-sm-auto">
                                         <label class="form-label">Total</label>
-                                        <input type="text" class="form-control form-control-sm text-end"
-                                            data-validate="decimal" maxlength="9" readonly>
+                                        <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                                            data-validate="decimal" maxlength="9">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
@@ -226,12 +226,12 @@
                                             <th width="4%" class="text-end">Iva</th>
                                             <th width="4%" class="text-end">Descuento</th>
                                             <th width="4%" class="text-end">Total</th>
-                                            <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>     
-                                        </tr>             
+                                            <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
+                                        </tr>
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="listaDetalleFactura.length==0">
-                                                <td colspan="11" class="text-center"><i class="bi-exclamation-triangle me-1"></i>Ningún producto/servicio agregado</td>
+                                                <td colspan="11" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningún producto/servicio agregado</td>
                                             </tr>
                                         </tbody>
                                     </table>

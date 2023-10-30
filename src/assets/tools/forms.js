@@ -326,6 +326,7 @@ function parseToDecimal(e) {
         (e.value = e.value.replaceAll("d", "")),
         (e.value = e.value.replaceAll("D", "")),
         (e.value = e.value.replaceAll(".", ",")),
+        (e.value = e.value.replaceAll("-", "")),
         e.value.split(",").length > 2 && (e.value = e.value.substring(0, e.value.length - 1));
 };
 async function validarCedula(e) {
