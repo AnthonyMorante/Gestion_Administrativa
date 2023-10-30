@@ -1886,12 +1886,33 @@ td .btn.btn-file-td:hover i{
 
 
 .table-detalle-factura tbody tr td{
-  font-size: 10px;
+  font-size: 11px;
   text-transform: uppercase;
   color:black;
   border:1px solid #5c636a;
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.table-detalle-factura tbody tr td input.form-control.form-control-sm
+{
+  min-height: auto !important;
+  padding: 0 5px;
+  font-size: 11px;
+  text-align: right;
+}
+
+.table-detalle-factura tbody tr td select.text-end{
+  padding-right: 30.7;
+}
+
+.table-detalle-factura tbody tr td .btn-quitar{
+  padding:1px 0 1px 4px !important;
+}
+
+.table-detalle-factura tbody tr td .btn-quitar i{
+  font-size: 12px;
+  padding: 0;
 }
 
 tr td[colspan] i{
@@ -1918,4 +1939,7 @@ tr td[colspan] i{
 
 .is-invalid.text-end{
   padding-right: 28px !important;
+}
+.ad-cliente{
+  max-width: 700px;
 }

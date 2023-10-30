@@ -70,12 +70,16 @@
                 <div class="row gx-2 mt-1">
                     <div class="col-sm-7">
                         <div class="card card-custom px-2">
-                            <h5 class="card-title">Cliente</h5>
+                            <h5 class="card-title">Cliente
+                              <p class="fs-sm my-0 text-uppercase d-inline px-2 py-1 text-success fw-500 ad-cliente"
+                              *ngIf="!idCliente && nuevoCliente"><i class="bi-exclamation-circle-fill me-1"></i>No se encontró el cliente puede llenar los datos y el cliente se agregará automáticamente</p>
+                            </h5>
+
                             <div class="card-body pt-0">
                                 <form class="row" #frmCliente>
                                     <div class="col-sm-3">
                                         <label class="form-label">Tipo Documento</label>
-                                        <select class="form-select form-select-sm readonly" id="idTipoIdentificacion"
+                                        <select class="form-select form-select-sm" [class]="(!idCliente && nuevoCliente)?'':'readonly'" id="idTipoIdentificacion"
                                             name="idTipoIdentificacion" (change)="handleDocumento($event.target)">
                                             <option *ngFor="let item of listaTipoIdentificaciones"
                                                 value="{{item.idTipoIdentificacion}}">
@@ -185,53 +189,79 @@
                                     </div>
                                     <div class="col-sm-auto">
                                         <label class="form-label">Precio</label>
-                                        <input type="text" class="form-control form-control-sm text-end form-number"
-                                            data-validate="decimal" maxlength="9" id="precio" name="precio" (input)="handleTotalAgregar()">
+                                        <input type="text" class="form-control form-control-sm text-end form-number" [class]="productoSeleccionado?'':'readonly'"
+                                            data-validate="decimal" maxlength="9" id="precio" name="precio" (keyup)="handleTotalAgregar()">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
                                     </div>
                                     <div class="col-sm-auto">
                                         <label class="form-label">Cantidad</label>
-                                        <input type="text" class="form-control form-control-sm text-end form-number"
-                                            data-validate="numeros-no-cero" maxlength="9" id="cantidad" name="cantidad" (input)="handleTotalAgregar()">
+                                        <input type="text" class="form-control form-control-sm text-end form-number" [class]="productoSeleccionado?'':'readonly'"
+                                            data-validate="numeros-no-cero" maxlength="9" id="cantidad" name="cantidad" (keyup)="handleTotalAgregar()">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
                                     </div>
                                     <div class="col-sm-auto">
+                                      <label class="form-label">Iva {{valorIva}}</label>
+                                      <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                                          data-validate="decimal" maxlength="9" id="iva" name="iva" (keyup)="handleTotalAgregar()">
+                                      <div class="invalid-feedback">
+                                          *Campo requerido
+                                      </div>
+                                  </div>
+                                    <div class="col-sm-auto">
                                         <label class="form-label">Total</label>
                                         <input type="text" class="form-control form-control-sm text-end form-number readonly"
-                                            data-validate="decimal" maxlength="9">
+                                            data-validate="decimal" maxlength="9" id="totalProducto" name="totalProducto">
                                         <div class="invalid-feedback">
                                             *Campo requerido
                                         </div>
                                     </div>
                                     <div class="col-sm-auto mt-agregar">
                                         <br>
-                                        <button class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
+                                        <button class="btn btn-sm btn-success d-sm-block" (click)="agregar()">Agregar<i class="bi-plus"></i></button>
                                     </div>
                                 </form>
                                 <div class="table-responsive">
                                     <table class="table-detalle-factura">
                                         <thead>
                                             <tr>
-                                            <th width="2%" class="text-end">#</th>
-                                            <th width="4%" class="text-end">Cantidad</th>
+                                            <!-- <th width="2%" class="text-end">#</th> -->
                                             <th width="7%">Código</th>
                                             <th width="57%">Producto/Servicio</th>
                                             <th width="10%" class="text-center">Base</th>
+                                            <th width="4%" class="text-end">Cantidad</th>
                                             <th width="4%" class="text-end">Precio</th>
-                                            <th width="4%" class="text-end">Subtotal</th>
+                                            <th width="5%" class="text-end">Subtotal</th>
                                             <th width="4%" class="text-end">Iva</th>
                                             <th width="4%" class="text-end">Descuento</th>
-                                            <th width="4%" class="text-end">Total</th>
+                                            <th width="5%" class="text-end">Total</th>
                                             <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
                                         </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody id="frmDetalleFactura">
                                             <tr *ngIf="listaDetalleFactura.length==0">
-                                                <td colspan="11" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningún producto/servicio agregado</td>
+                                                <td colspan="10" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningún producto/servicio agregado</td>
+                                            </tr>
+                                            <tr *ngFor="let item of listaDetalleFactura;let i=index">
+                                                <td data-ref="codigo">{{item.codigo}}</td>
+                                                <td data-ref="producto">{{item.producto}}</td>
+                                                <td>
+                                                  <select class="form-select form-select-sm text-end" (change)="handleRow(i)">
+                                                    <option *ngFor="let precio of precios(item.idProducto)"
+                                                    value="{{precio.idDetallePrecioProducto}}"
+                                                    [selected]="item.idDetallePrecioProducto==precio.idDetallePrecioProducto">({{precio.nombreIva}}) {{precio.precio.toFixed(2).toString().replaceAll(".",",")}}</option>
+                                                  </select>
+                                                </td>
+                                                <td data-ref="cantidad"><input data-validate="numeros-no-cero" class="form-control form-control-sm text-end" value="{{item.cantidad}}" (keyup)="handleRow(i)"/></td>
+                                                <td class="text-end" data-ref="precio"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.precio.toFixed(2).toString().replaceAll('.',',')}}" (keyup)="handleRow(i)"/></td>
+                                                <td class="text-end" data-ref="subtotal">{{item.subtotal.toFixed(2).toString().replaceAll(".",",")}}</td>
+                                                <td class="text-end" data-ref="porcentaje">{{item.porcentaje.toFixed(2).toString().replaceAll(".",",")}}</td>
+                                                <td class="text-end" data-ref="descuento"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (keyup)="handleRow(i,true)"/></td>
+                                                <td class="text-end" data-ref="total">{{item.total.toFixed(2).toString().replaceAll(".",",")}}</td>
+                                                <td class="text-end" class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetalleFactura.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
