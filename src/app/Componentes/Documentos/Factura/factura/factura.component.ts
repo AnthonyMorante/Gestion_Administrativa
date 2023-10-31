@@ -109,7 +109,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}Facturas/listar`;
-      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmsion,fechaAutorizacion,estadoSri";
+      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
       //DataTables
       this.dtOptions = {
         destroy: true,
