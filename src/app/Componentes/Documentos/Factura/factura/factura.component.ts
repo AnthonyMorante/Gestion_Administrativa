@@ -364,7 +364,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.subtotal = detalle.precio * detalle.cantidad;
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
-    detalle.porcentaje = detalle.subtotal>0? (detalle.subtotal - detalle.descuento) * precioActual.iva:0;
+    detalle.porcentaje = detalle.subtotal>0? detalle.subtotal * precioActual.iva:0;
     detalle.total = (detalle.subtotal + detalle.porcentaje);
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
     this.listaDetalleFactura[index] = detalle;
