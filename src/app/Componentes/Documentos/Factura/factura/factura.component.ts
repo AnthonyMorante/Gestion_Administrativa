@@ -43,7 +43,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaPreciosProductos: any = [];
   nuevoCliente: boolean = false;
   productoSeleccionado: boolean = false;
-  valorIva:string="";
+  valorIva: string = "";
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -240,11 +240,11 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     cantidad.value = "";
     precio.value = "";
     totalProducto.value = "";
-    iva.value="";
+    iva.value = "";
     this.productoSeleccionado = !!idProducto
-    if(!idProducto) return;
+    if (!idProducto) return;
     const producto = this.listaProductos.find((x: any) => x.idProducto == idProducto);
-    this.valorIva=producto.nombreIva;
+    this.valorIva = producto.nombreIva;
     this.el.nativeElement.querySelector("#precio").value = !!producto ? producto.precio.toString().replace(".", ",") : "";
 
   }
@@ -265,99 +265,106 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  handleTotalAgregar():void {
+  handleTotalAgregar(): void {
     let cantidad = this.el.nativeElement.querySelector("#cantidad");
     let precio = this.el.nativeElement.querySelector("#precio");
     const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
     let iva = this.el.nativeElement.querySelector("#iva");
     const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
     totalProducto.value = "0";
-    iva.value="0";
+    iva.value = "0";
     if (!cantidad.value || !precio.value) return;
     cantidad = parseFloat(cantidad.value.replaceAll(",", "."));
     precio = parseFloat(precio.value.replaceAll(",", "."));
-    const valorIva=(precio*cantidad)*producto.iva;
-    iva.value=valorIva.toFixed(2).replaceAll(".",",");
-    totalProducto.value = ((cantidad * precio)+valorIva).toFixed(2).replaceAll(".", ",");
+    const valorIva = (precio * cantidad) * producto.iva;
+    iva.value = valorIva.toFixed(2).replaceAll(".", ",");
+    totalProducto.value = ((cantidad * precio) + valorIva).toFixed(2).replaceAll(".", ",");
     js.validarTodo(this.frmProducto.nativeElement);
   }
 
-  async agregar():Promise<void>{
+  async agregar(): Promise<void> {
     try {
-      if(!await js.validarTodo(this.frmProducto.nativeElement)) throw new Error("Verifique los campos requeridos");
+      if (!await js.validarTodo(this.frmProducto.nativeElement)) throw new Error("Verifique los campos requeridos");
       const cantidad = this.el.nativeElement.querySelector("#cantidad");
       const precio = this.el.nativeElement.querySelector("#precio");
       const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
       const iva = this.el.nativeElement.querySelector("#iva");
-      const producto= this.listaProductos.find((x:any)=>x.idProducto==this.idProducto.selectedValues[0]);
-      let descuento=0;
-      const valorTotal=parseFloat(totalProducto.value.replaceAll(",","."));
-      const valorCantidad=parseFloat(cantidad.value);
-      const valorIva=parseFloat(iva.value.replaceAll(",","."));
-      const subtotal=valorTotal-valorIva;
-      const precioSugerido=(producto.precio*valorCantidad)+((producto.precio*valorCantidad)*producto.iva);
-      if(valorTotal<precioSugerido) descuento=precioSugerido-valorTotal;
+      const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
+      let descuento = 0;
+      const valorTotal = parseFloat(totalProducto.value.replaceAll(",", "."));
+      const valorCantidad = parseFloat(cantidad.value);
+      const valorIva = parseFloat(iva.value.replaceAll(",", "."));
+      const subtotal = valorTotal - valorIva;
+      const precioSugerido = (producto.precio * valorCantidad) + ((producto.precio * valorCantidad) * producto.iva);
+      if (valorTotal < precioSugerido) descuento = precioSugerido - valorTotal;
       this.listaDetalleFactura.push({
-        cantidad:valorCantidad,
+        cantidad: valorCantidad,
         descuento,
-        subtotal:subtotal,
-        valorPorcentaje:producto.iva,
-        nombreIva:producto.nombreIva,
-        idIva:producto.idIva,
-        precio:parseFloat(precio.value.replaceAll(",",".")),
-        porcentaje:valorIva,
-        total:valorTotal,
-        idProducto:producto.idProducto,
-        idDetallePrecioProducto:producto.idProducto,
-        codigo:producto.codigo,
-        producto:producto.nombre
+        subtotal: subtotal,
+        valorPorcentaje: producto.iva,
+        nombreIva: producto.nombreIva,
+        idIva: producto.idIva,
+        precio: parseFloat(precio.value.replaceAll(",", ".")),
+        porcentaje: valorIva,
+        total: valorTotal,
+        idProducto: producto.idProducto,
+        idDetallePrecioProducto: producto.idProducto,
+        codigo: producto.codigo,
+        producto: producto.nombre
       });
       this.idProducto.handleClearClick();
-      js.limpiarForm(this.frmProducto.nativeElement,10);
-      this.valorIva="";
-      setTimeout(()=>js.activarValidadores(this.el.nativeElement.querySelector("#frmDetalleFactura")),100);
+      js.limpiarForm(this.frmProducto.nativeElement, 10);
+      this.valorIva = "";
+      setTimeout(() => js.activarValidadores(this.el.nativeElement.querySelector("#frmDetalleFactura")), 100);
     } catch (e) {
       js.handleError(e);
     }
   }
-  precios(idProducto:any):any{
-    return this.listaPreciosProductos.filter((x:any)=>x.idProducto==idProducto);
+  precios(idProducto: any): any {
+    return this.listaPreciosProductos.filter((x: any) => x.idProducto == idProducto);
   }
 
-  handleRow(index:number,esDescuento?:boolean|false):void{
-    let detalle=this.listaDetalleFactura[index];
-    const row=this.el.nativeElement.querySelector("#frmDetalleFactura").querySelectorAll("tr")[index];
-    let precioActual=this.listaPreciosProductos.find((x:any)=>x.idDetallePrecioProducto==row.querySelector("select").value);
-    const subtotal=row.querySelector("[data-ref='subtotal']");
-    const valorSubtotal=parseFloat(subtotal.innerText.replaceAll(",","."));
-    const porcentaje=row.querySelector("[data-ref='porcentaje']");
-    const valorPorcentaje=parseFloat(porcentaje.innerText.replaceAll(",","."));
-    const total=row.querySelector("[data-ref='total']");
-    const valorTotal=parseFloat(total.innerText.replaceAll(",","."));
-    const descuento=row.querySelector("[data-ref='descuento']").querySelector("input");
-    const valorDescuento=parseFloat(descuento.value.replaceAll(',','.'));
-    const precio=row.querySelector("[data-ref='precio']").querySelector("input");
-    const valorPrecio=parseFloat(precio.value.replaceAll(",","."));
-    const cantidad=row.querySelector("[data-ref='cantidad']").querySelector("input");
-    detalle.cantidad=parseInt(cantidad.value);
-    if(valorDescuento>precioActual.precio){
-      detalle.descuento=precioActual.precio;
-      js.toastWarning("El valor del descuento no puede ser mayor al valor individual del producto");
+  handleRow(index: number, factor?: number | undefined): void {
+    let detalle = this.listaDetalleFactura[index];
+    const row = this.el.nativeElement.querySelector("#frmDetalleFactura").querySelectorAll("tr")[index];
+    let precioActual = this.listaPreciosProductos.find((x: any) => x.idDetallePrecioProducto == row.querySelector("select").value);
+    const descuento = row.querySelector("[data-ref='descuento']").querySelector("input");
+    let valorDescuento = parseFloat(descuento.value.replaceAll(',', '.'));
+    const precio = row.querySelector("[data-ref='precio']").querySelector("input");
+    let valorPrecio = parseFloat(precio.value.replaceAll(",", "."));
+    const cantidad = row.querySelector("[data-ref='cantidad']").querySelector("input");
+    detalle.cantidad = parseInt(cantidad.value);
+    if (valorDescuento > (precioActual.precio * detalle.cantidad)) {
+      detalle.descuento = precioActual.precio;
+      js.toastWarning("El valor del descuento no puede ser mayor al valor del subtotal");
     }
-    if(!esDescuento){
-      detalle.descuento=precioActual.precio>valorPrecio?detalle.descuento=(precioActual.precio-valorPrecio)*detalle.cantidad:0;
-      detalle.precio=valorPrecio-detalle.descuento;
-    }else{
-        detalle.precio=precioActual.precio;
-        detalle.precio=detalle.precio-valorDescuento;
+    detalle.precio = precioActual.precio;
+    switch (factor) {
+      case 0: {
+        detalle.precio = precioActual.precio;
+        detalle.descuento = 0;
+        break;
+      }
+      case 1: {
+        detalle.descuento = valorDescuento;
+        detalle.precio = detalle.precio - (detalle.descuento / detalle.cantidad);
+        break;
+      } default: {
+        detalle.precio = valorPrecio;
+        if (valorPrecio < precioActual.precio) {
+          detalle.descuento = (precioActual.precio - detalle.precio) * detalle.cantidad;
+        } else {
+          detalle.descuento = 0;
+        }
+      }
     }
-    detalle.subtotal=detalle.precio*detalle.cantidad;
-    detalle.nombreIva=precioActual.nombreIva;
-    detalle.idIva=precioActual.idIva;
-    detalle.porcentaje=(detalle.subtotal-detalle.descuento)*precioActual.iva;
-    detalle.total=(detalle.subtotal+detalle.porcentaje)-detalle.descuento;
-    detalle.idDetallePrecioProducto=precioActual.idDetallePrecioProducto;
-    this.listaDetalleFactura[index]=detalle;
+    detalle.subtotal = detalle.precio * detalle.cantidad;
+    detalle.nombreIva = precioActual.nombreIva;
+    detalle.idIva = precioActual.idIva;
+    detalle.porcentaje = detalle.subtotal>0? (detalle.subtotal - detalle.descuento) * precioActual.iva:0;
+    detalle.total = (detalle.subtotal + detalle.porcentaje);
+    detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
+    this.listaDetalleFactura[index] = detalle;
   }
 }
 

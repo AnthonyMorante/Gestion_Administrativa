@@ -249,17 +249,17 @@
                                                 <td data-ref="codigo">{{item.codigo}}</td>
                                                 <td data-ref="producto">{{item.producto}}</td>
                                                 <td>
-                                                  <select class="form-select form-select-sm text-end" (change)="handleRow(i)">
+                                                  <select class="form-select form-select-sm text-end" (change)="handleRow(i,0)">
                                                     <option *ngFor="let precio of precios(item.idProducto)"
                                                     value="{{precio.idDetallePrecioProducto}}"
                                                     [selected]="item.idDetallePrecioProducto==precio.idDetallePrecioProducto">({{precio.nombreIva}}) {{precio.precio.toFixed(2).toString().replaceAll(".",",")}}</option>
                                                   </select>
                                                 </td>
-                                                <td data-ref="cantidad"><input data-validate="numeros-no-cero" class="form-control form-control-sm text-end" value="{{item.cantidad}}" (keyup)="handleRow(i)"/></td>
-                                                <td class="text-end" data-ref="precio"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.precio.toFixed(2).toString().replaceAll('.',',')}}" (keyup)="handleRow(i)"/></td>
+                                                <td data-ref="cantidad"><input data-validate="numeros-no-cero" class="form-control form-control-sm text-end" value="{{item.cantidad}}" (focusout)="handleRow(i)"/></td>
+                                                <td class="text-end" data-ref="precio"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.precio.toFixed(2).toString().replaceAll('.',',')}}" (focusout)="handleRow(i)"/></td>
                                                 <td class="text-end" data-ref="subtotal">{{item.subtotal.toFixed(2).toString().replaceAll(".",",")}}</td>
                                                 <td class="text-end" data-ref="porcentaje">{{item.porcentaje.toFixed(2).toString().replaceAll(".",",")}}</td>
-                                                <td class="text-end" data-ref="descuento"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (keyup)="handleRow(i,true)"/></td>
+                                                <td class="text-end" data-ref="descuento"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (focusout)="handleRow(i,1)"/></td>
                                                 <td class="text-end" data-ref="total">{{item.total.toFixed(2).toString().replaceAll(".",",")}}</td>
                                                 <td class="text-end" class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetalleFactura.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
                                             </tr>
