@@ -74,7 +74,6 @@
                               <p class="fs-sm my-0 text-uppercase d-inline px-2 py-1 text-success fw-500 ad-cliente"
                               *ngIf="!idCliente && nuevoCliente"><i class="bi-exclamation-circle-fill me-1"></i>No se encontró el cliente puede llenar los datos y el cliente se agregará automáticamente</p>
                             </h5>
-
                             <div class="card-body pt-0">
                                 <form class="row" #frmCliente>
                                     <div class="col-sm-3">
@@ -88,7 +87,7 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <label class="form-label">Identificacion</label>
-                                        <input type="text" class="form-control form-control-sm" id="identificacion"  [class]="(idCliente && !nuevoCliente)?'':'readonly'"
+                                        <input type="text" class="form-control form-control-sm" id="identificacion"
                                             name="identificacion" maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)" data-clean="false"/>
                                         <div class="invalid-feedback">
                                             *Campo Requerido

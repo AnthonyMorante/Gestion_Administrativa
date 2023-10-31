@@ -154,6 +154,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevo() {
 
     this.idCliente = "";
+    this.nuevoCliente=false;
     // js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
   handleDocumento(idTipoIdentificacion: any): void {
@@ -259,6 +260,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nuevoCliente = true;
         return;
       }
+      this.nuevoCliente=false;
+      this.idCliente=res.idCliente;
       js.cargarFormulario(this.frmCliente.nativeElement, res);
     } catch (e) {
       js.handleError(e);
