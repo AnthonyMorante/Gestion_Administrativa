@@ -257,6 +257,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async buscarCliente(identificacion: any,limpiar?:boolean|false): Promise<void> {
     try {
+      if(identificacion=="") return;
       if(limpiar && (this.identifiacion!=identificacion) && !this.nuevoCliente){
         js.limpiarForm(this.frmCliente.nativeElement);
         this.idCliente = "";
