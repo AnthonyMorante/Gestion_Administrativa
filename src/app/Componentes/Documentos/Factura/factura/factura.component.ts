@@ -44,6 +44,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevoCliente: boolean = false;
   productoSeleccionado: boolean = false;
   valorIva: string = "";
+  identifiacion:string="";
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -154,8 +155,12 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevo() {
 
     this.idCliente = "";
+    this.identifiacion="";
     this.nuevoCliente=false;
-    // js.limpiarForm(this.frmDatos.nativeElement, 100);
+    this.idProducto.handleClearClick();
+    this.listaDetalleFactura=[];
+    js.limpiarForm(this.frmProducto.nativeElement, 100);
+
   }
   handleDocumento(idTipoIdentificacion: any): void {
     const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
@@ -250,18 +255,25 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  async buscarCliente(identificacion: any): Promise<void> {
+  async buscarCliente(identificacion: any,limpiar?:boolean|false): Promise<void> {
     try {
+      if(limpiar && (this.identifiacion!=identificacion) && !this.nuevoCliente){
+        js.limpiarForm(this.frmCliente.nativeElement);
+        this.idCliente = "";
+        this.identifiacion="";
+        return;
+      }
       this.idCliente = "";
+      this.identifiacion="";
       const url = `${this.baseUrl}Facturas/buscarCliente/${identificacion.value}`;
       const res = (await this.axios.get(url)).data;
-      js.limpiarForm(this.frmCliente.nativeElement);
       if (!res) {
         this.nuevoCliente = true;
         return;
       }
       this.nuevoCliente=false;
       this.idCliente=res.idCliente;
+      this.identifiacion=res.identificacion;
       js.cargarFormulario(this.frmCliente.nativeElement, res);
     } catch (e) {
       js.handleError(e);

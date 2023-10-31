@@ -88,7 +88,7 @@
                                     <div class="col-sm-3">
                                         <label class="form-label">Identificacion</label>
                                         <input type="text" class="form-control form-control-sm" id="identificacion"
-                                            name="identificacion" maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)" data-clean="false"/>
+                                            name="identificacion" maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)" (keyup.enter)="buscarCliente($event.target)" (keyup)="buscarCliente($event.target,true)" data-clean="false"/>
                                         <div class="invalid-feedback">
                                             *Campo Requerido
                                         </div>
