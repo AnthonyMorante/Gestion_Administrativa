@@ -25,8 +25,10 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
   @ViewChild('frmCliente', { static: true }) frmCliente: ElementRef = {} as ElementRef;
   @ViewChild('frmProducto', { static: true }) frmProducto: ElementRef = {} as ElementRef;
+  @ViewChild('frmEmisor', { static: true }) frmEmisor: ElementRef = {} as ElementRef;
+  @ViewChild('frmDetalleFormaPagos', { static: true }) frmDetalleFormaPagos: ElementRef = {} as ElementRef;
+  @ViewChild('frmInformacionAdicional', { static: true }) frmInformacionAdicional: ElementRef = {} as ElementRef;
   modal: any;
-  tituloModal: string = "Nueva Factura";
   idCliente: string = "";
   identificacion: any;
   fechaRegistro: Date = new Date();
@@ -35,7 +37,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaTipoIdentificaciones: any = [];
   listaProductos: any = [];
   listaDetalleFactura: any = [];
-  listaDetallePagos:any=[];
+  listaDetallePagos: any = [];
+  listaAdicionales: any = [];
   listaTiposDocumentos: any = [];
   listaEstablecimientos: any = [];
   listaPuntosEmisiones: any = [];
@@ -43,6 +46,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaTiempoFormaPagos: any = [];
   establecimiento: string = "001";
   puntoEmision: string = "001";
+  secuencial:number=0;
   listaPreciosProductos: any = [];
   nuevoCliente: boolean = false;
   productoSeleccionado: boolean = false;
@@ -56,7 +60,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     totalFactura: 0,
     totDescuento: 0
   }
-  formaPagoDefault:boolean=true;
+  formaPagoDefault: boolean = true;
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -189,9 +193,36 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nuevoCliente = false;
     this.idProducto.handleClearClick();
     this.listaDetalleFactura = [];
+    this.listaDetallePagos = [];
+    this.listaAdicionales = [];
+    this.formaPagoDefault = true;
+    this.factura= {
+      subtotal12: 0,
+      subtotal0: 0,
+      subtotal: 0,
+      iva12: 0,
+      totalFactura: 0,
+      totDescuento: 0
+    }
     js.limpiarForm(this.frmProducto.nativeElement, 100);
+    js.limpiarForm(this.frmEmisor.nativeElement, 100);
+    js.limpiarForm(this.frmDetalleFormaPagos.nativeElement, 100);
+    js.limpiarForm(this.frmInformacionAdicional.nativeElement, 100);
+    setTimeout(()=>this.handleSecuencial(),200);
+    this.calcularTotales();
 
   }
+
+  async handleSecuencial():Promise<void>{
+    try {
+      const url=`${this.baseUrl}Facturas/secuenciales`;
+      const secuenciales=(await this.axios.get(url)).data;
+      this.secuencial=secuenciales.find((x:any)=>x.idTipoDocumento==this.el.nativeElement.querySelector("#idTipoDocumento").value).nombre;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
   handleDocumento(idTipoIdentificacion: any): void {
     const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
     if (tipo == 5) {
@@ -362,6 +393,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       js.limpiarForm(this.frmProducto.nativeElement, 10);
       this.valorIva = "";
       setTimeout(() => js.activarValidadores(this.el.nativeElement.querySelector("#frmDetalleFactura")), 100);
+      this.calcularTotales();
     } catch (e) {
       js.handleError(e);
     }
@@ -411,10 +443,30 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.total = (detalle.subtotal + detalle.porcentaje);
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
     this.listaDetalleFactura[index] = detalle;
+    this.calcularTotales();
   }
 
-  handleDefaultFormaPago(defaultFormaPago:any){
-    this.formaPagoDefault=defaultFormaPago.checked;
+  calcularTotales(): void {
+    try {
+      this.factura.subtotal = this.listaDetalleFactura.map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.subtotal12=this.listaDetalleFactura.filter((x:any)=>x.valorPorcentaje>0).map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.subtotal0=this.listaDetalleFactura.filter((x:any)=>x.valorPorcentaje==0).map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.iva12=this.listaDetalleFactura.map((x:any)=>{return x.porcentaje}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.totDescuento=this.listaDetalleFactura.map((x:any)=>{return x.descuento}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.totalFactura=this.listaDetalleFactura.map((x:any)=>{return x.total}).reduce((pre:number, value:number) => pre + value, 0);
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  handleDefaultFormaPago(defaultFormaPago: any): void {
+    this.formaPagoDefault = defaultFormaPago.checked;
+  }
+  agregarPago(): void {
+
+  }
+  agregarAdicional(): void {
+
   }
 }
 
