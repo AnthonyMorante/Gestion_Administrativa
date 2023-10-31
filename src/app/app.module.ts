@@ -16,10 +16,10 @@ import { ClientesComponent } from './Componentes/Administracion/Clientes/cliente
 import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
 import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
-import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 import { LoginComponent } from './Componentes/login/login.component';
 import { ModalClientesComponent } from './Componentes/Compartidos/modal-clientes/modal-clientes.component';
 import { ClienteComponent } from './Componentes/Shared/cliente/cliente.component';
+import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 @NgModule({
   declarations: [
 

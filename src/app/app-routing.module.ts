@@ -6,9 +6,9 @@ import { ClientesComponent } from './Componentes/Administracion/Clientes/cliente
 import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
 import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
-import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 import { LoginComponent } from './Componentes/login/login.component';
 import { userGuard } from './Guards/user.guard';
+import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 
 
 

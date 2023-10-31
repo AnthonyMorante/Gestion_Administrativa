@@ -35,16 +35,28 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaTipoIdentificaciones: any = [];
   listaProductos: any = [];
   listaDetalleFactura: any = [];
+  listaDetallePagos:any=[];
   listaTiposDocumentos: any = [];
   listaEstablecimientos: any = [];
   listaPuntosEmisiones: any = [];
+  listaFormaPagos: any = [];
+  listaTiempoFormaPagos: any = [];
   establecimiento: string = "001";
   puntoEmision: string = "001";
   listaPreciosProductos: any = [];
   nuevoCliente: boolean = false;
   productoSeleccionado: boolean = false;
   valorIva: string = "";
-  identifiacion:string="";
+  identifiacion: string = "";
+  factura: any = {
+    subtotal12: 0,
+    subtotal0: 0,
+    subtotal: 0,
+    iva12: 0,
+    totalFactura: 0,
+    totDescuento: 0
+  }
+  formaPagoDefault:boolean=true;
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -61,6 +73,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.comboEstablecimientos();
     this.comboPuntosEmisiones();
     this.comboProductos();
+    this.comboFormaPagos();
+    this.comboTiempoFormaPagos();
   }
   ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
@@ -85,6 +99,22 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  async comboFormaPagos() {
+    try {
+      const url = `${this.baseUrl}Facturas/formaPagos`;
+      this.listaFormaPagos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+  async comboTiempoFormaPagos() {
+    try {
+      const url = `${this.baseUrl}Facturas/tiempoFormaPagos`;
+      this.listaTiempoFormaPagos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
   async comboPuntosEmisiones() {
     try {
       const url = `${this.baseUrl}Facturas/puntosEmisiones`;
@@ -155,10 +185,10 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   nuevo() {
 
     this.idCliente = "";
-    this.identifiacion="";
-    this.nuevoCliente=false;
+    this.identifiacion = "";
+    this.nuevoCliente = false;
     this.idProducto.handleClearClick();
-    this.listaDetalleFactura=[];
+    this.listaDetalleFactura = [];
     js.limpiarForm(this.frmProducto.nativeElement, 100);
 
   }
@@ -255,26 +285,26 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  async buscarCliente(identificacion: any,limpiar?:boolean|false): Promise<void> {
+  async buscarCliente(identificacion: any, limpiar?: boolean | false): Promise<void> {
     try {
-      if(identificacion=="") return;
-      if(limpiar && (this.identifiacion!=identificacion) && !this.nuevoCliente){
+      if (identificacion == "") return;
+      if (limpiar && (this.identifiacion != identificacion) && !this.nuevoCliente) {
         js.limpiarForm(this.frmCliente.nativeElement);
         this.idCliente = "";
-        this.identifiacion="";
+        this.identifiacion = "";
         return;
       }
       this.idCliente = "";
-      this.identifiacion="";
+      this.identifiacion = "";
       const url = `${this.baseUrl}Facturas/buscarCliente/${identificacion.value}`;
       const res = (await this.axios.get(url)).data;
       if (!res) {
         this.nuevoCliente = true;
         return;
       }
-      this.nuevoCliente=false;
-      this.idCliente=res.idCliente;
-      this.identifiacion=res.identificacion;
+      this.nuevoCliente = false;
+      this.idCliente = res.idCliente;
+      this.identifiacion = res.identificacion;
       js.cargarFormulario(this.frmCliente.nativeElement, res);
     } catch (e) {
       js.handleError(e);
@@ -377,10 +407,14 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.subtotal = detalle.precio * detalle.cantidad;
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
-    detalle.porcentaje = detalle.subtotal>0? detalle.subtotal * precioActual.iva:0;
+    detalle.porcentaje = detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0;
     detalle.total = (detalle.subtotal + detalle.porcentaje);
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
     this.listaDetalleFactura[index] = detalle;
+  }
+
+  handleDefaultFormaPago(defaultFormaPago:any){
+    this.formaPagoDefault=defaultFormaPago.checked;
   }
 }
 
