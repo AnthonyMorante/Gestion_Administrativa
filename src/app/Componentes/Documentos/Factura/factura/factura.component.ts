@@ -46,7 +46,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaTiempoFormaPagos: any = [];
   establecimiento: string = "001";
   puntoEmision: string = "001";
-  secuencial:number=0;
+  secuencial: number = 0;
   listaPreciosProductos: any = [];
   nuevoCliente: boolean = false;
   productoSeleccionado: boolean = false;
@@ -196,7 +196,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.listaDetallePagos = [];
     this.listaAdicionales = [];
     this.formaPagoDefault = true;
-    this.factura= {
+    this.factura = {
       subtotal12: 0,
       subtotal0: 0,
       subtotal: 0,
@@ -208,16 +208,16 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     js.limpiarForm(this.frmEmisor.nativeElement, 100);
     js.limpiarForm(this.frmDetalleFormaPagos.nativeElement, 100);
     js.limpiarForm(this.frmInformacionAdicional.nativeElement, 100);
-    setTimeout(()=>this.handleSecuencial(),200);
+    setTimeout(() => this.handleSecuencial(), 200);
     this.calcularTotales();
 
   }
 
-  async handleSecuencial():Promise<void>{
+  async handleSecuencial(): Promise<void> {
     try {
-      const url=`${this.baseUrl}Facturas/secuenciales`;
-      const secuenciales=(await this.axios.get(url)).data;
-      this.secuencial=secuenciales.find((x:any)=>x.idTipoDocumento==this.el.nativeElement.querySelector("#idTipoDocumento").value).nombre;
+      const url = `${this.baseUrl}Facturas/secuenciales`;
+      const secuenciales = (await this.axios.get(url)).data;
+      this.secuencial = secuenciales.find((x: any) => x.idTipoDocumento == this.el.nativeElement.querySelector("#idTipoDocumento").value).nombre;
     } catch (e) {
       js.handleError(e);
     }
@@ -448,12 +448,12 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   calcularTotales(): void {
     try {
-      this.factura.subtotal = this.listaDetalleFactura.map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
-      this.factura.subtotal12=this.listaDetalleFactura.filter((x:any)=>x.valorPorcentaje>0).map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
-      this.factura.subtotal0=this.listaDetalleFactura.filter((x:any)=>x.valorPorcentaje==0).map((x:any)=>{return x.subtotal}).reduce((pre:number, value:number) => pre + value, 0);
-      this.factura.iva12=this.listaDetalleFactura.map((x:any)=>{return x.porcentaje}).reduce((pre:number, value:number) => pre + value, 0);
-      this.factura.totDescuento=this.listaDetalleFactura.map((x:any)=>{return x.descuento}).reduce((pre:number, value:number) => pre + value, 0);
-      this.factura.totalFactura=this.listaDetalleFactura.map((x:any)=>{return x.total}).reduce((pre:number, value:number) => pre + value, 0);
+      this.factura.subtotal = this.listaDetalleFactura.map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.subtotal12 = this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje > 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.subtotal0 = this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje == 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.iva12 = this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.totDescuento = this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.totalFactura = this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0);
     } catch (e) {
       js.handleError(e);
     }
