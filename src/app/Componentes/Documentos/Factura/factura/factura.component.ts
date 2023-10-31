@@ -259,7 +259,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nuevoCliente = true;
         return;
       }
-      js.llenarFormulario(this.frmCliente.nativeElement, res);
+      js.cargarFormulario(this.frmCliente.nativeElement, res);
     } catch (e) {
       js.handleError(e);
     }
