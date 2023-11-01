@@ -1,446 +1,490 @@
 <div class="row page-title"><i class='bi-receipt-cutoff'></i>Facturación</div>
 <div class="component-content">
-    <div class=" my-2">
-        <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
-            Nueva Factura <i class="bi-plus"></i>
-        </button>
-    </div>
-    <div class="table-responsive p-1">
-        <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
-            <thead>
-                <tr>
-                    <th class="text-center w-gear"><i class="bi-files"></i></th>
-                    <th class="text-center">FECHA EMISIÓN</th>
-                    <th>DOCUMENTO</th>
-                    <th>CLIENTE</th>
-                    <th>CLAVE ACCESO</th>
-                    <th class="text-center">ESTADO</th>
-                    <th class="text-center">FECHA AUTORIZACIÓN</th>
-                    <th class="text-end">TELÉFONO</th>
-                    <th>EMAIL</th>
+  <div class=" my-2">
+    <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+      Nueva Factura <i class="bi-plus"></i>
+    </button>
+  </div>
+  <div class="table-responsive p-1">
+    <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
+      <thead>
+        <tr>
+          <th class="text-center w-gear"><i class="bi-files"></i></th>
+          <th class="text-center">FECHA EMISIÓN</th>
+          <th>DOCUMENTO</th>
+          <th>CLIENTE</th>
+          <th>CLAVE ACCESO</th>
+          <th class="text-center">ESTADO</th>
+          <th class="text-center">FECHA AUTORIZACIÓN</th>
+          <th class="text-end">TELÉFONO</th>
+          <th>EMAIL</th>
 
-                </tr>
-            </thead>
-            <tbody *ngIf="lista?.length>0" class="">
-                <tr *ngFor="let item of lista">
-                    <td class="text-center">
-                        <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
-                            class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i
-                                class="bi-filetype-xml" style="font-size:12px"></i></button>
-                        <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
-                            class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i
-                                class="bi-filetype-pdf" style="font-size:12px"></i></button>
-                    </td>
-                    <td width="5%" class="text-center">{{getDate(item.fechaEmision)}}</td>
-                    <td>{{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
-                    </td>
-                    <td width="25%">{{item.cliente}}</td>
-                    <td width="30%">{{item.claveAcceso}}</td>
-                    <td width="5%" class="text-center"><span class="badge fw-500"
-                            [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
-                    <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}}
-                        <b>{{getHour(item.fechaAutorizacion)}}</b>
-                    </td>
-                    <td class="text-end">{{item.telefonoCliente}}</td>
-                    <td width="10%" class="text-email">{{item.emailCliente}}</td>
-                </tr>
-            </tbody>
-            <tbody *ngIf="lista?.length==0">
-                <tr>
-                    <td colspan="10" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
-                </tr>
-            </tbody>
-        </table>
+        </tr>
+      </thead>
+      <tbody *ngIf="lista?.length>0" class="">
+        <tr *ngFor="let item of lista">
+          <td class="text-center">
+            <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
+              class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
+                style="font-size:12px"></i></button>
+            <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
+              class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
+                style="font-size:12px"></i></button>
+          </td>
+          <td width="5%" class="text-center">{{getDate(item.fechaEmision)}}</td>
+          <td>
+            {{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
+          </td>
+          <td width="25%">{{item.cliente}}</td>
+          <td width="30%">{{item.claveAcceso}}</td>
+          <td width="5%" class="text-center"><span class="badge fw-500"
+              [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
+          <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}}
+            <b>{{getHour(item.fechaAutorizacion)}}</b>
+          </td>
+          <td class="text-end">{{item.telefonoCliente}}</td>
+          <td width="10%" class="text-email">{{item.emailCliente}}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="lista?.length==0">
+        <tr>
+          <td colspan="10" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+        </tr>
+      </tbody>
+    </table>
 
-    </div>
+  </div>
 </div>
 
 <div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
-        <div class="modal-content bg-modal-factura">
-            <div class="modal-header pt-1 pb-1 text-end">
-                <label class="modal-title" id="modalDatosLabel">
-                    <h6>{{tipoDocumento}} N° <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{secuencial.toString().padStart(9,'0')}}</b></h6>
-                </label>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
-                </button>
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
+    <div class="modal-content bg-modal-factura">
+      <div class="modal-header pt-1 pb-1 text-end">
+        <label class="modal-title" id="modalDatosLabel">
+          <h6>{{tipoDocumento}} N° <b
+              class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{secuencial.toString().padStart(9,'0')}}</b>
+          </h6>
+        </label>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
+        </button>
+      </div>
+      <div class="modal-body bg-white">
+        <div class="row gx-2 mt-1">
+          <div class="col-sm-7">
+            <div class="card card-custom px-2">
+              <h5 class="card-title">Cliente
+                <p class="fs-sm my-0 text-uppercase d-inline px-2 py-1 text-success fw-500 ad-cliente"
+                  *ngIf="!idCliente && nuevoCliente"><i class="bi-exclamation-circle-fill me-1"></i>No se encontró el
+                  cliente puede llenar los datos y el cliente se agregará automáticamente</p>
+              </h5>
+              <div class="card-body pt-0">
+                <form class="row" #frmCliente>
+                  <div class="col-sm-3">
+                    <label class="form-label">Tipo Documento</label>
+                    <select class="form-select form-select-sm" [class]="(!idCliente && nuevoCliente)?'':'readonly'"
+                      id="idTipoIdenticacion" name="idTipoIdenticacion" (change)="handleDocumento($event.target)">
+                      <option *ngFor="let item of listaTipoIdentificaciones" value="{{item.idTipoIdentificacion}}">
+                        {{item.nombre}}</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-3">
+                    <label class="form-label">Identificacion</label>
+                    <input type="text" class="form-control form-control-sm" id="identificacion" name="identificacion"
+                      maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)"
+                      (keyup.enter)="buscarCliente($event.target)" (keyup)="buscarCliente($event.target,true)"
+                      data-clean="false" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
+                    </div>
+                  </div>
+
+                  <div class="col-sm-6">
+                    <label class="form-label">Razón Social</label>
+                    <input type="text" class="form-control form-control-sm" id="razonSocial" name="razonSocial"
+                      maxlength="500" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
+                    </div>
+                  </div>
+
+                  <div class="col-sm-2">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" class="form-control form-control-sm text-end" id="telefono" name="telefono"
+                      data-validate="numeros" data-telefono="true" maxLength="500" maxlength="500" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control form-control-sm" id="email" name="email"
+                      data-validate="email" maxLength="500" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-control form-control-sm" id="direccion" name="direccion"
+                      maxLength="500" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
-            <div class="modal-body bg-white">
-                <div class="row gx-2 mt-1">
-                    <div class="col-sm-7">
-                        <div class="card card-custom px-2">
-                            <h5 class="card-title">Cliente
-                              <p class="fs-sm my-0 text-uppercase d-inline px-2 py-1 text-success fw-500 ad-cliente"
-                              *ngIf="!idCliente && nuevoCliente"><i class="bi-exclamation-circle-fill me-1"></i>No se encontró el cliente puede llenar los datos y el cliente se agregará automáticamente</p>
-                            </h5>
-                            <div class="card-body pt-0">
-                                <form class="row" #frmCliente>
-                                    <div class="col-sm-3">
-                                        <label class="form-label">Tipo Documento</label>
-                                        <select class="form-select form-select-sm" [class]="(!idCliente && nuevoCliente)?'':'readonly'" id="idTipoIdentificacion"
-                                            name="idTipoIdentificacion" (change)="handleDocumento($event.target)">
-                                            <option *ngFor="let item of listaTipoIdentificaciones"
-                                                value="{{item.idTipoIdentificacion}}">
-                                                {{item.nombre}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <label class="form-label">Identificacion</label>
-                                        <input type="text" class="form-control form-control-sm" id="identificacion"
-                                            name="identificacion" maxlength="30" (focusout)="buscarCliente($event.target)" (paste)="buscarCliente($event.target)" (keyup.enter)="buscarCliente($event.target)" (keyup)="buscarCliente($event.target,true)" data-clean="false"/>
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-6">
-                                        <label class="form-label">Razón Social</label>
-                                        <input type="text" class="form-control form-control-sm" id="razonSocial"
-                                            name="razonSocial" maxlength="500" />
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-2">
-                                        <label class="form-label">Teléfono</label>
-                                        <input type="text" class="form-control form-control-sm text-end" id="telefono"
-                                            name="telefono" data-validate="numeros" maxLength="500" maxlength="500" />
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Email</label>
-                                        <input type="text" class="form-control form-control-sm" id="email" name="email"
-                                            data-validate="email" maxLength="500" />
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label class="form-label">Dirección</label>
-                                        <input type="text" class="form-control form-control-sm" id="direccion"
-                                            name="direccion" maxLength="500" />
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+          </div>
+          <div class="col-sm-5">
+            <div class="card card-custom">
+              <h5 class="card-title">Emisor</h5>
+              <div class="card-body pt-0">
+                <form #frmEmisor class="row">
+                  <div class="col-sm-12">
+                    <label class="form-label">Documento a emitir</label>
+                    <select class="form-select form-select-sm" id="idTipoDocumento" name="idTipoDocumento"
+                      (change)="handleSecuencial()">
+                      <option *ngFor="let item of listaTiposDocumentos" value="{{item.idTipoDocumento}}">{{item.nombre}}
+                      </option>
+                    </select>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label">Fecha Emisión</label>
+                    <input type="date" class="form-control form-control-sm" id="fechaEmision" name="fechaEmision" />
+                    <div class="invalid-feedback">
+                      *Campo Requerido
                     </div>
-                    <div class="col-sm-5">
-                        <div class="card card-custom">
-                            <h5 class="card-title">Emisor</h5>
-                            <div class="card-body pt-0">
-                                <form #frmEmisor class="row">
-                                    <div class="col-sm-12">
-                                        <label class="form-label">Documento a emitir</label>
-                                        <select class="form-select form-select-sm" id="idTipoDocumento"
-                                            name="idTipoDocumento" (change)="handleSecuencial()">
-                                            <option *ngFor="let item of listaTiposDocumentos" value="{{item.idTipoDocumento}}">{{item.nombre}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Fecha Emisión</label>
-                                        <input type="date" class="form-control form-control-sm" id="fechaEmision"
-                                            name="fechaEmision" />
-                                        <div class="invalid-feedback">
-                                            *Campo Requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Establecimiento</label>
-                                        <select class="form-select form-select-sm text-end" id="idEstablecimiento"
-                                            name="idEstablecimiento" (change)="handleNumeroFactura()">
-                                            <option *ngFor="let item of listaEstablecimientos" value="{{item.idEstablecimiento}}">{{item.nombre.toString().padStart(3,'0')}}</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Punto Emisión</label>
-                                        <select class="form-select form-select-sm text-end" id="idPuntoEmision"
-                                            name="idPuntoEmision" (change)="handleNumeroFactura()">
-                                            <option *ngFor="let item of listaPuntosEmisiones" value="{{item.idPuntoEmision}}">{{item.nombre.toString().padStart(3,'0')}}</option>
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label">Establecimiento</label>
+                    <select class="form-select form-select-sm text-end" id="idEstablecimiento" name="idEstablecimiento"
+                      (change)="handleNumeroFactura()">
+                      <option *ngFor="let item of listaEstablecimientos" value="{{item.idEstablecimiento}}">
+                        {{item.nombre.toString().padStart(3,'0')}}</option>
+                    </select>
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label">Punto Emisión</label>
+                    <select class="form-select form-select-sm text-end" id="idPuntoEmision" name="idPuntoEmision"
+                      (change)="handleNumeroFactura()">
+                      <option *ngFor="let item of listaPuntosEmisiones" value="{{item.idPuntoEmision}}">
+                        {{item.nombre.toString().padStart(3,'0')}}</option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-12 mt-0">
+            <div class="card card-custom">
+              <h5 class="card-title">Venta</h5>
+              <div class="card-body pt-0">
+                <form #frmProducto class="row">
+                  <div class="col-sm-4">
+                    <label class="form-label">Productos/Servicios</label>
+                    <ng-select #idProducto id="idProducto" [clearable]="true" [virtualScroll]="true"
+                      (change)="handleProducto($event)" placeholder="Busque y seleccione un producto o servicio"
+                      notFoundText="Sin resultados">
+                      <ng-option *ngFor="let item of listaProductos"
+                        [value]="item.idProducto">{{item.nombre}}</ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-sm-auto">
+                    <label class="form-label">Precio</label>
+                    <input type="text" class="form-control form-control-sm text-end form-number"
+                      [class]="productoSeleccionado?'':'readonly'" data-validate="decimal" maxlength="9" id="precio"
+                      name="precio" (keyup)="handleTotalAgregar()">
+                    <div class="invalid-feedback">
+                      *Campo requerido
                     </div>
-                    <div class="col-sm-12 mt-0">
-                        <div class="card card-custom">
-                            <h5 class="card-title">Venta</h5>
-                            <div class="card-body pt-0">
-                                <form #frmProducto class="row">
-                                    <div class="col-sm-4">
-                                        <label class="form-label">Productos/Servicios</label>
-                                        <ng-select #idProducto id="idProducto"
-                                            [clearable]="true"
-                                            [virtualScroll]="true"
-                                            (change)="handleProducto($event)"
-                                            placeholder="Busque y seleccione un producto o servicio"
-                                            notFoundText="Sin resultados">
-                                            <ng-option *ngFor="let item of listaProductos"
-                                                [value]="item.idProducto">{{item.nombre}}</ng-option>
-                                        </ng-select>
-                                    </div>
-                                    <div class="col-sm-auto">
-                                        <label class="form-label">Precio</label>
-                                        <input type="text" class="form-control form-control-sm text-end form-number" [class]="productoSeleccionado?'':'readonly'"
-                                            data-validate="decimal" maxlength="9" id="precio" name="precio" (keyup)="handleTotalAgregar()">
-                                        <div class="invalid-feedback">
-                                            *Campo requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-auto">
-                                        <label class="form-label">Cantidad</label>
-                                        <input type="text" class="form-control form-control-sm text-end form-number" [class]="productoSeleccionado?'':'readonly'"
-                                            data-validate="numeros-no-cero" maxlength="9" id="cantidad" name="cantidad" (keyup)="handleTotalAgregar()">
-                                        <div class="invalid-feedback">
-                                            *Campo requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-auto">
-                                      <label class="form-label">Iva {{valorIva}}</label>
-                                      <input type="text" class="form-control form-control-sm text-end form-number readonly"
-                                          data-validate="decimal" maxlength="9" id="iva" name="iva" (keyup)="handleTotalAgregar()">
-                                      <div class="invalid-feedback">
-                                          *Campo requerido
-                                      </div>
-                                  </div>
-                                    <div class="col-sm-auto">
-                                        <label class="form-label">Total</label>
-                                        <input type="text" class="form-control form-control-sm text-end form-number readonly"
-                                            data-validate="decimal" maxlength="9" id="totalProducto" name="totalProducto">
-                                        <div class="invalid-feedback">
-                                            *Campo requerido
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-auto mt-agregar">
-                                        <br>
-                                        <button class="btn btn-sm btn-success d-sm-block" (click)="agregar()">Agregar<i class="bi-plus"></i></button>
-                                    </div>
-                                </form>
-                                <div class="table-responsive">
-                                    <table class="table-detalle-factura">
-                                        <thead>
-                                            <tr>
-                                            <!-- <th width="2%" class="text-end">#</th> -->
-                                            <th width="7%">Código</th>
-                                            <th width="57%">Producto/Servicio</th>
-                                            <th width="10%" class="text-center">Base</th>
-                                            <th width="4%" class="text-end">Cantidad</th>
-                                            <th width="4%" class="text-end">Precio</th>
-                                            <th width="5%" class="text-end">Subtotal</th>
-                                            <th width="4%" class="text-end">Iva</th>
-                                            <th width="4%" class="text-end">Descuento</th>
-                                            <th width="5%" class="text-end">Total</th>
-                                            <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody id="frmDetalleFactura">
-                                            <tr *ngIf="listaDetalleFactura.length==0">
-                                                <td colspan="10" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningún producto/servicio agregado</td>
-                                            </tr>
-                                            <tr *ngFor="let item of listaDetalleFactura;let i=index">
-                                                <td data-ref="codigo">{{item.codigo}}</td>
-                                                <td data-ref="producto">{{item.producto}}</td>
-                                                <td>
-                                                  <select class="form-select form-select-sm text-end" (change)="handleRow(i,0)">
-                                                    <option *ngFor="let precio of precios(item.idProducto)"
-                                                    value="{{precio.idDetallePrecioProducto}}"
-                                                    [selected]="item.idDetallePrecioProducto==precio.idDetallePrecioProducto">({{precio.nombreIva}}) {{precio.precio.toFixed(2).toString().replaceAll(".",",")}}</option>
-                                                  </select>
-                                                </td>
-                                                <td data-ref="cantidad"><input data-validate="numeros-no-cero" class="form-control form-control-sm text-end" value="{{item.cantidad}}" (focusout)="handleRow(i)" (keyup.enter)="handleRow(i)" /></td>
-                                                <td class="text-end" data-ref="precio"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.precio.toFixed(2).toString().replaceAll('.',',')}}" (focusout)="handleRow(i)" (keyup.enter)="handleRow(i)"/></td>
-                                                <td class="text-end" data-ref="subtotal">{{item.subtotal.toFixed(2).toString().replaceAll(".",",")}}</td>
-                                                <td class="text-end" data-ref="porcentaje">{{item.porcentaje.toFixed(2).toString().replaceAll(".",",")}}</td>
-                                                <td class="text-end" data-ref="descuento"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (focusout)="handleRow(i,1)" (keyup.enter)="handleRow(i)"/></td>
-                                                <td class="text-end" data-ref="total">{{item.total.toFixed(2).toString().replaceAll(".",",")}}</td>
-                                                <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetalleFactura.splice(i,1);calcularTotales()"><i class="bi-trash-fill"></i></button></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
+                  </div>
+                  <div class="col-sm-auto">
+                    <label class="form-label">Cantidad</label>
+                    <input type="text" class="form-control form-control-sm text-end form-number"
+                      [class]="productoSeleccionado?'':'readonly'" data-validate="numeros-no-cero" maxlength="9"
+                      id="cantidad" name="cantidad" (keyup)="handleTotalAgregar()">
+                    <div class="invalid-feedback">
+                      *Campo requerido
                     </div>
+                  </div>
+                  <div class="col-sm-auto">
+                    <label class="form-label">Iva {{valorIva}}</label>
+                    <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                      data-validate="decimal" maxlength="9" id="iva" name="iva" (keyup)="handleTotalAgregar()">
+                    <div class="invalid-feedback">
+                      *Campo requerido
+                    </div>
+                  </div>
+                  <div class="col-sm-auto">
+                    <label class="form-label">Total</label>
+                    <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                      data-validate="decimal" maxlength="9" id="totalProducto" name="totalProducto">
+                    <div class="invalid-feedback">
+                      *Campo requerido
+                    </div>
+                  </div>
+                  <div class="col-sm-auto mt-agregar">
+                    <br>
+                    <button class="btn btn-sm btn-success d-sm-block" (click)="agregar()">Agregar<i
+                        class="bi-plus"></i></button>
+                  </div>
+                </form>
+                <div class="table-responsive">
+                  <table class="table-detalle-factura">
+                    <thead>
+                      <tr>
+                        <!-- <th width="2%" class="text-end">#</th> -->
+                        <th width="7%">Código</th>
+                        <th width="57%">Producto/Servicio</th>
+                        <th width="10%" class="text-center">Base</th>
+                        <th width="4%" class="text-end">Cantidad</th>
+                        <th width="4%" class="text-end">Precio</th>
+                        <th width="5%" class="text-end">Subtotal</th>
+                        <th width="4%" class="text-end">Iva</th>
+                        <th width="4%" class="text-end">Descuento</th>
+                        <th width="5%" class="text-end">Total</th>
+                        <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
+                      </tr>
+                    </thead>
+                    <tbody id="frmDetalleFactura">
+                      <tr *ngIf="listaDetalleFactura.length==0">
+                        <td colspan="10" class="text-center"><i
+                            class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningún producto/servicio agregado
+                        </td>
+                      </tr>
+                      <tr *ngFor="let item of listaDetalleFactura;let i=index">
+                        <td data-ref="codigo">{{item.codigo}}</td>
+                        <td data-ref="producto">{{item.producto}}</td>
+                        <td>
+                          <select class="form-select form-select-sm text-end" (change)="handleRow(i,0)">
+                            <option *ngFor="let precio of precios(item.idProducto)"
+                              value="{{precio.idDetallePrecioProducto}}"
+                              [selected]="item.idDetallePrecioProducto==precio.idDetallePrecioProducto">
+                              ({{precio.nombreIva}}) {{precio.precio.toFixed(2).toString().replaceAll(".",",")}}
+                            </option>
+                          </select>
+                        </td>
+                        <td data-ref="cantidad"><input data-validate="numeros-no-cero"
+                            class="form-control form-control-sm text-end" value="{{item.cantidad}}"
+                            (focusout)="handleRow(i)" (keyup.enter)="handleRow(i)" /></td>
+                        <td class="text-end" data-ref="precio"><input data-validate="decimal"
+                            class="form-control form-control-sm text-end"
+                            value="{{item.precio.toFixed(2).toString().replaceAll('.',',')}}" (focusout)="handleRow(i)"
+                            (keyup.enter)="handleRow(i)" /></td>
+                        <td class="text-end" data-ref="subtotal">
+                          {{item.subtotal.toFixed(2).toString().replaceAll(".",",")}}</td>
+                        <td class="text-end" data-ref="porcentaje">
+                          {{item.porcentaje.toFixed(2).toString().replaceAll(".",",")}}</td>
+                        <td class="text-end" data-ref="descuento"><input data-validate="decimal"
+                            class="form-control form-control-sm text-end"
+                            value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (focusout)="handleRow(i,1)"
+                            (keyup.enter)="handleRow(i)" /></td>
+                        <td class="text-end" data-ref="total">{{item.total.toFixed(2).toString().replaceAll(".",",")}}
+                        </td>
+                        <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar"
+                            (click)="listaDetalleFactura.splice(i,1);calcularTotales()"><i
+                              class="bi-trash-fill"></i></button></td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div class="row gx-2">
-                  <div class="col-sm-7">
-                    <div class="card card-custom no-border">
-                        <div class="card-body pt-0 px-0">
-                          <nav>
-                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                              <button class="nav-link active" id="nav-pago-tab" data-bs-toggle="tab" data-bs-target="#nav-pago" type="button" role="tab" aria-controls="nav-home" aria-selected="true">FORMA DE PAGO</button>
-                              <button class="nav-link" id="nav-adicional-tab" data-bs-toggle="tab" data-bs-target="#nav-adicional" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">INFORMACIÓN ADICIONAL</button>
-                            </div>
-                          </nav>
-                          <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-pago" role="tabpanel" aria-labelledby="nav-pago-tab">
-                              <form #frmDetalleFormaPagos class="row mt-2">
-                                <div class="col-sm-12">
-                                  <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" data-clean="false" id="defaultFormaPago" name="defaultFormaPago" (change)="handleDefaultFormaPago($event.target)" [checked]="formaPagoDefault" />
-                                    <label class="form-check-label fs-sm text-uppercase" for="defaultFormaPago">
-                                      Utilizar forma de pago por defecto <b>(SIN UTILIZACIÓN DEL SISTEMA FINANCIERO)</b>
-                                    </label>
-                                  </div>
-                                </div>
-                                <div class="row" [class]="formaPagoDefault?'no-display':''">
-                                  <div class="col-sm-12">
-                                    <label class="form-label">Forma de pago</label>
-                                    <select class="form-select form-select-sm" id="idFormaPago" name="idFormaPago">
-                                      <option *ngFor="let item of listaFormaPagos" value="{{item.idFormaPago}}">{{item.nombre}}</option>
-                                    </select>
-                                  </div>
-                                  <div class="col-sm-3">
-                                    <label class="form-label">Tiempo</label>
-                                    <select class="form-select form-select-sm" id="idTiempoFormaPago" name="idTiempoFormaPago">
-                                      <option *ngFor="let item of listaTiempoFormaPagos" value="{{item.idTiempoFormaPago}}">{{item.nombre}}</option>
-                                    </select>
-                                  </div>
-                                  <div class="col-sm-3">
-                                    <label class="form-label">Plazo</label>
-                                    <input class="form-control form-control-sm text-end" id="plazo" name="plazo" data-validate="numeros-no-validate" maxlength="10"/>
-                                  </div>
-                                  <div class="col-sm-3">
-                                    <label class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm text-end" id="valor" name="valor" data-validate="decimal" maxlength="10"/>
-                                    <div class="invalid-feedback">
-                                      * Campo requerido
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-auto mt-agregar">
-                                    <br>
-                                    <button class="btn btn-sm btn-success d-sm-block" (click)="agregarPago()">Agregar<i class="bi-plus"></i></button>
-                                  </div>
-                                  <div class="col-sm-12">
-                                    <div class="table-responsive pt-0">
-                                      <table class="table-detalle-factura">
-                                          <thead>
-                                              <tr>
-                                              <!-- <th width="2%" class="text-end">#</th> -->
-                                              <th width="75%">Forma de pago</th>
-                                              <th width="15%" class="text-end">Tiempo</th>
-                                              <th width="5%" class="text-end">Plazo</th>
-                                              <th width="15%" class="text-end">Valor</th>
-                                              <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
-                                          </tr>
-                                          </thead>
-                                          <tbody>
-                                              <tr *ngIf="listaDetallePagos.length==0">
-                                                  <td colspan="5" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna forma de pago agregada</td>
-                                              </tr>
-                                              <tr *ngFor="let item of listaDetallePagos; let i=index;">
-                                                  <td>{{item.formaPago}}</td>
-                                                  <td>{{item.tiempo}}</td>
-                                                  <td class="text-end">{{item.plazo}}</td>
-                                                  <td class="text-end">{{item.valor.toFixed(2).replaceAll(".",",")}}</td>
-                                                  <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetallePagos.splice(i,1);calcularTotales()"><i class="bi-trash-fill"></i></button></td>
-                                              </tr>
-                                          </tbody>
-                                      </table>
-                                  </div>
-                                  </div>
-                                </div>
-
-                              </form>
-                            </div>
-                            <div class="tab-pane fade" id="nav-adicional" role="tabpanel" aria-labelledby="nav-adicional-tab">
-                              <form #frmInformacionAdicional class="row mt-2">
-                                <div class="row">
-                                  <div class="col-sm-5">
-                                    <label class="form-label">Nombre</label>
-                                    <input class="form-control form-control-sm" id="nombreAdicional" name="nombreAdicional"  maxlength="500"/>
-                                    <div class="invalid-feedback">
-                                      * Campo requerido
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-5">
-                                    <label class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm" id="valorAdicional" name="valorAdicional" maxlength="500"/>
-                                    <div class="invalid-feedback">
-                                      * Campo requerido
-                                    </div>
-                                  </div>
-                                  <div class="col-sm-auto mt-agregar">
-                                    <br>
-                                    <button class="btn btn-sm btn-success d-sm-block" (click)="agregarAdicional()">Agregar<i class="bi-plus"></i></button>
-                                  </div>
-                                  <div class="col-sm-12">
-                                    <div class="table-responsive pt-0">
-                                      <table class="table-detalle-factura">
-                                          <thead>
-                                              <tr>
-                                              <!-- <th width="2%" class="text-end">#</th> -->
-                                              <th width="48%">Nombre</th>
-                                              <th width="48%">Valor</th>
-                                              <th width="2%" class="text-center"><i class="bi-gear-fill"></i></th>
-                                          </tr>
-                                          </thead>
-                                          <tbody>
-                                              <tr *ngIf="listaAdicionales.length==0">
-                                                  <td colspan="3" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna información adicional agregada</td>
-                                              </tr>
-                                              <tr *ngFor="let item of listaAdicionales; let i=index;">
-                                                <td>{{item.nombre}}</td>
-                                                <td>{{item.valor}}</td>
-                                                <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaAdicionales.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
-                                            </tr>
-                                          </tbody>
-                                      </table>
-                                  </div>
-                                  </div>
-                                </div>
-
-                              </form>
-                            </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row gx-2">
+          <div class="col-sm-7">
+            <div class="card card-custom no-border">
+              <div class="card-body pt-0 px-0">
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-pago-tab" data-bs-toggle="tab" data-bs-target="#nav-pago"
+                      type="button" role="tab" aria-controls="nav-home" aria-selected="true">FORMA DE PAGO</button>
+                    <button class="nav-link" id="nav-adicional-tab" data-bs-toggle="tab" data-bs-target="#nav-adicional"
+                      type="button" role="tab" aria-controls="nav-profile" aria-selected="false">INFORMACIÓN
+                      ADICIONAL</button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-pago" role="tabpanel" aria-labelledby="nav-pago-tab">
+                    <form #frmDetalleFormaPagos class="row mt-2">
+                      <div class="col-sm-12">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" data-clean="false" id="defaultFormaPago"
+                            name="defaultFormaPago" (change)="handleDefaultFormaPago($event.target)"
+                            [checked]="formaPagoDefault" />
+                          <label class="form-check-label fs-sm text-uppercase" for="defaultFormaPago">
+                            Utilizar forma de pago por defecto <b>(SIN UTILIZACIÓN DEL SISTEMA FINANCIERO)</b>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row" [class]="formaPagoDefault?'no-display':''">
+                        <div class="col-sm-12">
+                          <label class="form-label">Forma de pago</label>
+                          <select class="form-select form-select-sm" id="idFormaPago" name="idFormaPago">
+                            <option *ngFor="let item of listaFormaPagos" value="{{item.idFormaPago}}">{{item.nombre}}
+                            </option>
+                          </select>
+                        </div>
+                        <div class="col-sm-3">
+                          <label class="form-label">Tiempo</label>
+                          <select class="form-select form-select-sm" id="idTiempoFormaPago" name="idTiempoFormaPago">
+                            <option *ngFor="let item of listaTiempoFormaPagos" value="{{item.idTiempoFormaPago}}">
+                              {{item.nombre}}</option>
+                          </select>
+                        </div>
+                        <div class="col-sm-3">
+                          <label class="form-label">Plazo</label>
+                          <input class="form-control form-control-sm text-end" id="plazo" name="plazo"
+                            data-validate="numeros-no-validate" maxlength="10" />
+                        </div>
+                        <div class="col-sm-3">
+                          <label class="form-label">Valor</label>
+                          <input class="form-control form-control-sm text-end" id="valor" name="valor"
+                            data-validate="decimal" maxlength="10" />
+                          <div class="invalid-feedback">
+                            * Campo requerido
                           </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-sm-5">
-                  <div class="card card-custom no-border">
-                      <div class="card-body pt-0 px-0">
-                          <table class="table-totales">
-                            <tr>
-                              <td>Subtotal</td>
-                              <td>{{factura.subtotal.toFixed(2).replaceAll(".",",")}}</td>
-                            </tr>
-                            <tr>
-                              <td>Subtotal 12%</td>
-                              <td>{{factura.subtotal12.toFixed(2).replaceAll(".",",")}}</td>
-                            </tr>
-                            <tr>
-                              <td>Subtotal 0%</td>
-                              <td>{{factura.subtotal0.toFixed(2).replaceAll(".",",")}}</td>
-                            </tr>
-                            <tr>
-                              <td>IVA 12%</td>
-                              <td>{{factura.iva12.toFixed(2).replaceAll(".",",")}}</td>
-                            </tr>
-                            <tr>
-                              <td>Descuento</td>
-                              <td>{{factura.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
-                            </tr>
-                            <tr>
-                              <td><b>Total</b></td>
-                              <td><b>{{factura.totalFactura.toFixed(2).replaceAll(".",",")}}</b></td>
-                            </tr>
-                          </table>
+                        <div class="col-sm-auto mt-agregar">
+                          <br>
+                          <button class="btn btn-sm btn-success d-sm-block" (click)="agregarPago()">Agregar<i
+                              class="bi-plus"></i></button>
+                        </div>
+                        <div class="col-sm-12">
+                          <div class="table-responsive pt-0">
+                            <table class="table-detalle-factura">
+                              <thead>
+                                <tr>
+                                  <!-- <th width="2%" class="text-end">#</th> -->
+                                  <th width="75%">Forma de pago</th>
+                                  <th width="15%" class="text-end">Tiempo</th>
+                                  <th width="5%" class="text-end">Plazo</th>
+                                  <th width="15%" class="text-end">Valor</th>
+                                  <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngIf="listaDetallePagos.length==0">
+                                  <td colspan="5" class="text-center"><i
+                                      class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna forma de pago
+                                    agregada</td>
+                                </tr>
+                                <tr *ngFor="let item of listaDetallePagos; let i=index;">
+                                  <td>{{item.formaPago}}</td>
+                                  <td>{{item.tiempo}}</td>
+                                  <td class="text-end">{{item.plazo}}</td>
+                                  <td class="text-end">{{item.valor.toFixed(2).replaceAll(".",",")}}</td>
+                                  <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar"
+                                      (click)="listaDetallePagos.splice(i,1);calcularTotales()"><i
+                                        class="bi-trash-fill"></i></button></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                       </div>
+
+                    </form>
                   </div>
-              </div>
+                  <div class="tab-pane fade" id="nav-adicional" role="tabpanel" aria-labelledby="nav-adicional-tab">
+                    <form #frmInformacionAdicional class="row mt-2">
+                      <div class="row">
+                        <div class="col-sm-5">
+                          <label class="form-label">Nombre</label>
+                          <input class="form-control form-control-sm" id="nombreAdicional" name="nombreAdicional"
+                            maxlength="500" />
+                          <div class="invalid-feedback">
+                            * Campo requerido
+                          </div>
+                        </div>
+                        <div class="col-sm-5">
+                          <label class="form-label">Valor</label>
+                          <input class="form-control form-control-sm" id="valorAdicional" name="valorAdicional"
+                            maxlength="500" />
+                          <div class="invalid-feedback">
+                            * Campo requerido
+                          </div>
+                        </div>
+                        <div class="col-sm-auto mt-agregar">
+                          <br>
+                          <button class="btn btn-sm btn-success d-sm-block" (click)="agregarAdicional()">Agregar<i
+                              class="bi-plus"></i></button>
+                        </div>
+                        <div class="col-sm-12">
+                          <div class="table-responsive pt-0">
+                            <table class="table-detalle-factura">
+                              <thead>
+                                <tr>
+                                  <!-- <th width="2%" class="text-end">#</th> -->
+                                  <th width="48%">Nombre</th>
+                                  <th width="48%">Valor</th>
+                                  <th width="2%" class="text-center"><i class="bi-gear-fill"></i></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr *ngIf="listaAdicionales.length==0">
+                                  <td colspan="3" class="text-center"><i
+                                      class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna información
+                                    adicional agregada</td>
+                                </tr>
+                                <tr *ngFor="let item of listaAdicionales; let i=index;">
+                                  <td>{{item.nombre}}</td>
+                                  <td>{{item.valor}}</td>
+                                  <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar"
+                                      (click)="listaAdicionales.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+
+                    </form>
+                  </div>
                 </div>
+              </div>
             </div>
-            <div class="modal-footer bg-light py-2">
-                <button type="button" class="btn btn-success btn-sm" (click)="guardar()">Firmar y enviar</button>
-                <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+          </div>
+          <div class="col-sm-5">
+            <div class="card card-custom no-border">
+              <div class="card-body pt-0 px-0">
+                <table class="table-totales">
+                  <tr>
+                    <td>Subtotal</td>
+                    <td>{{factura.subtotal.toFixed(2).replaceAll(".",",")}}</td>
+                  </tr>
+                  <tr>
+                    <td>Subtotal 12%</td>
+                    <td>{{factura.subtotal12.toFixed(2).replaceAll(".",",")}}</td>
+                  </tr>
+                  <tr>
+                    <td>Subtotal 0%</td>
+                    <td>{{factura.subtotal0.toFixed(2).replaceAll(".",",")}}</td>
+                  </tr>
+                  <tr>
+                    <td>IVA 12%</td>
+                    <td>{{factura.iva12.toFixed(2).replaceAll(".",",")}}</td>
+                  </tr>
+                  <tr>
+                    <td>Descuento</td>
+                    <td>{{factura.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
+                  </tr>
+                  <tr>
+                    <td><b>Total</b></td>
+                    <td><b>{{factura.totalFactura.toFixed(2).replaceAll(".",",")}}</b></td>
+                  </tr>
+                </table>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-success btn-sm" (click)="guardar()">Firmar y enviar</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+      </div>
     </div>
+  </div>
 </div>

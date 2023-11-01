@@ -247,30 +247,6 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       js.validarVacio(this.identificacion);
     }
   }
-
-
-
-  async guardar(): Promise<void> {
-    try {
-      // if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
-      // js.loaderShow();
-      // const url = `${this.baseUrl}Facturas/${!this.idCliente ? "insertar" : "actualizar"}`;
-      // const data = new FormData(this.frmDatos.nativeElement);
-      // if (!!this.idCliente) data.append("idCliente", this.idCliente);
-      // data.append("idProvincia", this.idProvincia.selectedValues[0]);
-      // data.append("idCiudad", this.idCiudad.selectedValues[0]);
-      // if (!this.idCliente) await this.axios.postFormJson(url, data);
-      // else await this.axios.putFormJson(url, data);
-      // js.toastSuccess(`Registro ${!this.idCliente ? "guardado" : "editado"} exitosamente`);
-      this.modal.hide();
-      this.reloadDataTable();
-    } catch (e) {
-      js.handleError(e);
-    } finally {
-      js.loaderHide();
-    }
-  }
-
   async xml(claveAcceso: string): Promise<void> {
     try {
       const url = `${this.baseUrl}Facturas/xml/${claveAcceso}`;
@@ -519,6 +495,35 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       js.limpiarForm(this.frmInformacionAdicional.nativeElement);
     } catch (e) {
       js.handleError(e);
+    }
+  }
+  async guardar(): Promise<void> {
+    try {
+      if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
+      if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
+      if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
+      if (this.formaPagoDefault) {
+        const pago: any = await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);
+        pago.valor = this.factura.totalFactura;
+        this.listaDetallePagos.push(pago)
+      }
+      if (this.listaDetallePagos.length == 0) throw new Error("Debe agregar el pago o dejar el pago por defecto");
+      const emisor: any = await this.axios.formToJsonTypes(this.frmEmisor.nativeElement);
+      const cliente: any = await this.axios.formToJsonTypes(this.frmCliente.nativeElement);
+      const factura = { ...this.factura, ...emisor,...cliente };
+      factura.formaPago = this.listaDetallePagos;
+      factura.informacionAdicional = this.listaAdicionales;
+      factura.detalleFactura = this.listaDetalleFactura;
+      js.loaderShow();
+      const url = `${this.baseUrl}Facturas/insertar`;
+      await this.axios.postJson(url, factura);
+      js.toastSuccess(`Registro de ${this.tipoDocumento} exitoso`);
+      this.modal.hide();
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
     }
   }
 }

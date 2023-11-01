@@ -122,7 +122,7 @@ export class AxiosService {
             try {
               const element = form[index];
               const validate = element?.dataset?.validate;
-              if (!!validate) {
+              if (!!validate && !element?.dataset?.telefono) {
                 if (!!referencias.find((x: string) => x == validate)) numericos.push(index);
               }
             } catch (e) {
