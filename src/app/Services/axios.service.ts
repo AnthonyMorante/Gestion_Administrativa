@@ -115,7 +115,7 @@ export class AxiosService {
     return new Promise(async (resolve: any) => {
       let obj: any = {};
       try {
-        const referencias = ["numeros", "decimal"];
+        const referencias = ["numeros", "decimal","numeros-no-cero","numeros-no-validate"];
         let numeros: any = await new Promise((res: any) => {
           let numericos: any = [];
           for (let index = 0; index < form.length; index++) {
@@ -164,7 +164,7 @@ export class AxiosService {
         } finally{
           localStorage.removeItem(global.token.user);
           return false;
-        } 
+        }
       });
   }
 

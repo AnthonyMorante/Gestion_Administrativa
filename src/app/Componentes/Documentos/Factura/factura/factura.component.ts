@@ -46,6 +46,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
   listaTiempoFormaPagos: any = [];
   establecimiento: string = "001";
   puntoEmision: string = "001";
+  tipoDocumento:string="FACTURA";
   secuencial: number = 0;
   listaPreciosProductos: any = [];
   nuevoCliente: boolean = false;
@@ -71,6 +72,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     js.activarValidadores(this.frmCliente.nativeElement);
     js.activarValidadores(this.frmProducto.nativeElement);
+    js.activarValidadores(this.frmDetalleFormaPagos.nativeElement);
+    js.activarValidadores(this.frmInformacionAdicional.nativeElement);
     this.listarFacturas();
     this.comboTipoIdentificaciones();
     this.comboTiposDocumentos();
@@ -208,7 +211,10 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     js.limpiarForm(this.frmEmisor.nativeElement, 100);
     js.limpiarForm(this.frmDetalleFormaPagos.nativeElement, 100);
     js.limpiarForm(this.frmInformacionAdicional.nativeElement, 100);
-    setTimeout(() => this.handleSecuencial(), 200);
+    setTimeout(() => {
+      this.el.nativeElement.querySelector("#fechaEmision").value=js.todayDate();
+      this.handleSecuencial()
+    }, 200);
     this.calcularTotales();
 
   }
@@ -217,7 +223,9 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       const url = `${this.baseUrl}Facturas/secuenciales`;
       const secuenciales = (await this.axios.get(url)).data;
-      this.secuencial = secuenciales.find((x: any) => x.idTipoDocumento == this.el.nativeElement.querySelector("#idTipoDocumento").value).nombre;
+      const idTipoDocumento=this.el.nativeElement.querySelector("#idTipoDocumento");
+      this.tipoDocumento=idTipoDocumento.options[idTipoDocumento.selectedIndex].text;
+      this.secuencial = secuenciales.find((x: any) => x.idTipoDocumento == idTipoDocumento.value).nombre;
     } catch (e) {
       js.handleError(e);
     }
@@ -454,6 +462,14 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       this.factura.iva12 = this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0);
       this.factura.totDescuento = this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0);
       this.factura.totalFactura = this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0);
+      if(this.listaDetallePagos.length==0){
+        this.el.nativeElement.querySelector("#valor").value=this.factura.totalFactura.toFixed(2).replaceAll(".",",");
+      }else{
+        let totalDetallePagos=this.listaDetallePagos.map((x:any)=>{return x.valor}).reduce((pre: number, value: number) => pre + value, 0);
+        if(parseFloat(totalDetallePagos.toFixed(2))<parseFloat(this.factura.totalFactura)){
+          this.el.nativeElement.querySelector("#valor").value=(this.factura.totalFactura-totalDetallePagos).toFixed(2).replaceAll(".",",");
+        }
+      }
     } catch (e) {
       js.handleError(e);
     }
@@ -461,9 +477,31 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleDefaultFormaPago(defaultFormaPago: any): void {
     this.formaPagoDefault = defaultFormaPago.checked;
+    this.el.nativeElement.querySelector("#valor").value=this.factura.totalFactura.toFixed(2).replaceAll(".",",");
   }
-  agregarPago(): void {
-
+  async agregarPago(): Promise<void> {
+    try {
+      if(this.listaDetalleFactura.length==0) throw new Error("Aún no se ha agregado ningún producto a la factura");
+      if(!await js.validarTodo(this.frmDetalleFormaPagos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      const pago:any=await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);
+      pago.plazo=pago.plazo==""? 0:pago.plazo;
+      if(pago.valor>this.factura.totalFactura || pago.valor==0) throw new Error("El valor del pago no puede 0 o mayor al valor de la factura");
+      const sumatoriaPagos = this.listaDetallePagos.map((x: any) => { return x.valor }).reduce((pre: number, value: number) => pre + value, 0);
+      if((sumatoriaPagos+pago.valor)>this.factura.totalFactura){
+        const valorRecomendado=parseFloat((this.factura.totalFactura-sumatoriaPagos).toFixed(2));
+        const textoValorRecomendado=valorRecomendado.toFixed(2).replaceAll(".",",");
+        js.toastWarning(`El valor máximo que puede agregar es ${textoValorRecomendado}`);
+        this.calcularTotales();
+        return;
+      }
+      this.listaDetallePagos.push(pago);
+      pago.formaPago=this.listaFormaPagos.find((x:any)=>x.idFormaPago==pago.idFormaPago).nombre;
+      pago.tiempo=this.listaTiempoFormaPagos.find((x:any)=>x.idTiempoFormaPago==pago.idTiempoFormaPago).nombre;
+      js.limpiarForm(this.frmDetalleFormaPagos.nativeElement);
+      this.calcularTotales();
+    } catch (e) {
+      js.handleError(e);
+    }
   }
   agregarAdicional(): void {
 

@@ -22,13 +22,13 @@ a {
 }
 
 .form-check-input:checked {
-  background-color: #15ca20;
-  border-color: #15ca20
+  background-color: #1C86EA;
+  border-color: #1C86EA
 }
 
 .form-check-input[type=checkbox]:indeterminate {
-  background-color: #15ca20;
-  border-color: #15ca20;
+  background-color: #1C86EA;
+  border-color: #1C86EA;
 }
 
 .valid-feedback {

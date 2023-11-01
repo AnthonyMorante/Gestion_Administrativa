@@ -58,10 +58,10 @@
 <div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
-        <div class="modal-content bg-light">
-            <div class="modal-header pt-1 pb-0 text-end">
+        <div class="modal-content bg-modal-factura">
+            <div class="modal-header pt-1 pb-1 text-end">
                 <label class="modal-title" id="modalDatosLabel">
-                    <h6>FACTURA N° <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{secuencial.toString().padStart(9,'0')}}</b></h6>
+                    <h6>{{tipoDocumento}} N° <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{secuencial.toString().padStart(9,'0')}}</b></h6>
                 </label>
                 <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
                 </button>
@@ -260,7 +260,7 @@
                                                 <td class="text-end" data-ref="porcentaje">{{item.porcentaje.toFixed(2).toString().replaceAll(".",",")}}</td>
                                                 <td class="text-end" data-ref="descuento"><input data-validate="decimal" class="form-control form-control-sm text-end" value="{{item.descuento.toFixed(2).replaceAll('.',',')}}" (focusout)="handleRow(i,1)"/></td>
                                                 <td class="text-end" data-ref="total">{{item.total.toFixed(2).toString().replaceAll(".",",")}}</td>
-                                                <td class="text-end" class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetalleFactura.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
+                                                <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetalleFactura.splice(i,1);calcularTotales()"><i class="bi-trash-fill"></i></button></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -290,7 +290,7 @@
                                     </label>
                                   </div>
                                 </div>
-                                <div class="row" *ngIf="!formaPagoDefault">
+                                <div class="row" [class]="formaPagoDefault?'no-display':''">
                                   <div class="col-sm-12">
                                     <label class="form-label">Forma de pago</label>
                                     <select class="form-select form-select-sm" id="idFormaPago" name="idFormaPago">
@@ -305,14 +305,11 @@
                                   </div>
                                   <div class="col-sm-3">
                                     <label class="form-label">Plazo</label>
-                                    <input class="form-control form-control-sm text-end" id="plazo" name="plazo" data-validate="numeros-no-cero" maxlength="4"/>
-                                    <div class="invalid-feedback">
-                                      * Campo requerido
-                                    </div>
+                                    <input class="form-control form-control-sm text-end" id="plazo" name="plazo" data-validate="numeros-no-validate" maxlength="10"/>
                                   </div>
                                   <div class="col-sm-3">
                                     <label class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm text-end" id="valor" name="valor" data-validate="decimal" maxlength="4"/>
+                                    <input class="form-control form-control-sm text-end" id="valor" name="valor" data-validate="decimal" maxlength="10"/>
                                     <div class="invalid-feedback">
                                       * Campo requerido
                                     </div>
@@ -334,12 +331,16 @@
                                               <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
                                           </tr>
                                           </thead>
-                                          <tbody id="frmDetalleFactura">
+                                          <tbody>
                                               <tr *ngIf="listaDetallePagos.length==0">
                                                   <td colspan="5" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna forma de pago agregada</td>
                                               </tr>
-                                              <tr>
-
+                                              <tr *ngFor="let item of listaDetallePagos; let i=index;">
+                                                  <td>{{item.formaPago}}</td>
+                                                  <td>{{item.tiempo}}</td>
+                                                  <td class="text-end">{{item.plazo}}</td>
+                                                  <td class="text-end">{{item.valor.toFixed(2).replaceAll(".",",")}}</td>
+                                                  <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaDetallePagos.splice(i,1);calcularTotales()"><i class="bi-trash-fill"></i></button></td>
                                               </tr>
                                           </tbody>
                                       </table>
@@ -381,7 +382,7 @@
                                               <th width="2%" class="text-center"><i class="bi-gear-fill"></i></th>
                                           </tr>
                                           </thead>
-                                          <tbody id="frmDetalleFactura">
+                                          <tbody>
                                               <tr *ngIf="listaAdicionales.length==0">
                                                   <td colspan="3" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna información adicional agregada</td>
                                               </tr>
@@ -425,8 +426,8 @@
                               <td>{{factura.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
                             </tr>
                             <tr>
-                              <td>Total</td>
-                              <td>{{factura.totalFactura.toFixed(2).replaceAll(".",",")}}</td>
+                              <td><b>Total</b></td>
+                              <td><b>{{factura.totalFactura.toFixed(2).replaceAll(".",",")}}</b></td>
                             </tr>
                           </table>
                       </div>
