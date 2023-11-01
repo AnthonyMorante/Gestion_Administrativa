@@ -448,7 +448,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
     detalle.porcentaje = detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0;
-    detalle.total = parseFloat((detalle.subtotal + detalle.porcentaje).toFixed(2));
+    detalle.total = (detalle.subtotal + detalle.porcentaje);
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
     this.listaDetalleFactura[index] = detalle;
     this.calcularTotales();
@@ -461,7 +461,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       this.factura.subtotal0 = this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje == 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
       this.factura.iva12 = this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0);
       this.factura.totDescuento = this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0);
-      this.factura.totalFactura = this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.totalFactura = parseFloat((this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0)).toFixed(2));
       if (this.listaDetallePagos.length == 0) {
         this.el.nativeElement.querySelector("#valor").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
       } else {
