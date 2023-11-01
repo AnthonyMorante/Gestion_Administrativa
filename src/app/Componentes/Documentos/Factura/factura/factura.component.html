@@ -355,14 +355,14 @@
                                 <div class="row">
                                   <div class="col-sm-5">
                                     <label class="form-label">Nombre</label>
-                                    <input class="form-control form-control-sm text-end" id="nombreAdicional" name="nombreAdicional"  maxlength="500"/>
+                                    <input class="form-control form-control-sm" id="nombreAdicional" name="nombreAdicional"  maxlength="500"/>
                                     <div class="invalid-feedback">
                                       * Campo requerido
                                     </div>
                                   </div>
-                                  <div class="col-sm-3">
+                                  <div class="col-sm-5">
                                     <label class="form-label">Valor</label>
-                                    <input class="form-control form-control-sm text-end" id="valorAdicional" name="valorAdicional" maxlength="500"/>
+                                    <input class="form-control form-control-sm" id="valorAdicional" name="valorAdicional" maxlength="500"/>
                                     <div class="invalid-feedback">
                                       * Campo requerido
                                     </div>
@@ -386,9 +386,11 @@
                                               <tr *ngIf="listaAdicionales.length==0">
                                                   <td colspan="3" class="text-center"><i class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna información adicional agregada</td>
                                               </tr>
-                                              <tr>
-
-                                              </tr>
+                                              <tr *ngFor="let item of listaAdicionales; let i=index;">
+                                                <td>{{item.nombre}}</td>
+                                                <td>{{item.valor}}</td>
+                                                <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar" (click)="listaAdicionales.splice(i,1)"><i class="bi-trash-fill"></i></button></td>
+                                            </tr>
                                           </tbody>
                                       </table>
                                   </div>
