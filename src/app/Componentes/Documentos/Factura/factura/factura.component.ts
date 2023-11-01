@@ -492,6 +492,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
         const textoValorRecomendado=valorRecomendado.toFixed(2).replaceAll(".",",");
         js.toastWarning(`El valor máximo que puede agregar es ${textoValorRecomendado}`);
         this.calcularTotales();
+        js.limpiarValidadores(this.frmDetalleFormaPagos.nativeElement);
         return;
       }
       this.listaDetallePagos.push(pago);
