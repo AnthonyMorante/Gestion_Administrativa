@@ -448,7 +448,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
     detalle.porcentaje = detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0;
-    detalle.total = (detalle.subtotal + detalle.porcentaje);
+    detalle.total = parseFloat((detalle.subtotal + detalle.porcentaje).toFixed(2));
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
     this.listaDetalleFactura[index] = detalle;
     this.calcularTotales();
@@ -470,9 +470,9 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
           this.el.nativeElement.querySelector("#valor").value = (this.factura.totalFactura - totalDetallePagos).toFixed(2).replaceAll(".", ",");
         }
       }
-      if(this.listaDetalleFactura.length==0){
-        this.listaDetallePagos=[];
-        this.formaPagoDefault=true;
+      if (this.listaDetalleFactura.length == 0) {
+        this.listaDetallePagos = [];
+        this.formaPagoDefault = true;
       }
     } catch (e) {
       js.handleError(e);
