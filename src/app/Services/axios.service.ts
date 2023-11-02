@@ -1,14 +1,24 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import axios from 'axios';
-import { global } from '../../main';
-import { Token } from '@angular/compiler';
+import { global, js } from '../../main';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AxiosService {
-  constructor() { }
+export class AxiosService{
+  constructor(private router:Router) { }
+
+  private async redirect():Promise<void>{
+    if(!await this.validateToken()){
+      this.router.navigate(["/login"]);
+      js.removeError();
+      js.toastWarning("Su sesión ha caducado")
+      // setTimeout(()=>top?.location.reload(),3700);
+    };
+  }
   public async get(url: string): Promise<any> {
+    this.redirect();
     return await (axios.get(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -20,6 +30,7 @@ export class AxiosService {
   }
 
   public async postForm(url: string, formData: FormData): Promise<any> {
+    this.redirect();
     return await axios.post(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -30,6 +41,7 @@ export class AxiosService {
   }
 
   public async putForm(url: string, formData: FormData): Promise<any> {
+    await this.redirect();
     return await axios.put(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -40,6 +52,7 @@ export class AxiosService {
   }
 
   public async postFormJson(url: string, formData: FormData): Promise<any> {
+    await this.redirect();
     const obj = await this.formToJson(formData);
     console.log(obj);
     return await axios.post(url, JSON.stringify(obj), {
@@ -53,6 +66,7 @@ export class AxiosService {
   }
 
   public async putFormJson(url: string, formData: FormData): Promise<any> {
+    await this.redirect();
     const obj = await this.formToJson(formData);
     return await axios.put(url, JSON.stringify(obj), {
       headers: {
@@ -66,6 +80,7 @@ export class AxiosService {
 
 
   public async postJson(url: string, object: any): Promise<any> {
+    await this.redirect();
     return await axios.post(url, JSON.stringify(object), {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem(global.token.user)}`,
@@ -84,6 +99,7 @@ export class AxiosService {
   }
 
   public async delete(url: string): Promise<any> {
+    await this.redirect();
     return await (axios.delete(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -94,7 +110,8 @@ export class AxiosService {
     }));
   }
 
-  public formToJson(formData: any) {
+  public async formToJson(formData: any) {
+    await this.redirect();
     return new Promise((resolve: any) => {
       let obj: any = {};
       try {
@@ -111,11 +128,12 @@ export class AxiosService {
     });
   }
 
-  public formToJsonTypes(form: any) {
+  public async formToJsonTypes(form: any) {
+    await this.redirect();
     return new Promise(async (resolve: any) => {
       let obj: any = {};
       try {
-        const referencias = ["numeros", "decimal","numeros-no-cero","numeros-no-validate"];
+        const referencias = ["numeros", "decimal", "numeros-no-cero", "numeros-no-validate"];
         let numeros: any = await new Promise((res: any) => {
           let numericos: any = [];
           for (let index = 0; index < form.length; index++) {
@@ -145,27 +163,28 @@ export class AxiosService {
     });
   }
 
-  public async validateToken():Promise<Boolean>{
-    const token=localStorage.getItem(global.token.user);
-      const url=`${global.BASE_API_URL}api/Security/validateToken`;
-      return axios.get(url, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem(
-            global.token.user
-          )}`,
-          'Content-Type': `application/json`,
-        },
-      }).then(()=>true).catch((error)=>{
-        console.clear();
-        try {
-          if(token==null) return false;
-          const url=`${global.BASE_API_URL}connect/revoque?id_token_hint=${token}`;
-          axios.get(url).then().catch(e=>console.warn(e));
-        } finally{
-          localStorage.removeItem(global.token.user);
-          return false;
-        }
-      });
+  public async validateToken(): Promise<Boolean> {
+    const token = localStorage.getItem(global.token.user);
+    const url = `${global.BASE_API_URL}api/Security/validateToken`;
+    return axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem(
+          global.token.user
+        )}`,
+        'Content-Type': `application/json`,
+      },
+    }).then(() => true).catch((error) => {
+      console.clear();
+      try {
+        if (token == null) return false;
+        const url = `${global.BASE_API_URL}connect/revoque?id_token_hint=${token}`;
+        axios.get(url).then().catch(e => console.warn(e));
+      } finally {
+        localStorage.removeItem(global.token.user);
+        return false;
+      }
+    });
   }
+
 
 }

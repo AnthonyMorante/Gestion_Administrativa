@@ -1486,3 +1486,7 @@ function validarClaves(idClave, idConfir) {
         resolve(mensaje);
     });
 }
+
+function removeError(){
+    document.querySelector(".error")?.closest("div.iziToast-capsule")?.remove();
+}

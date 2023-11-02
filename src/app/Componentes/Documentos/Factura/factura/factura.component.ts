@@ -208,6 +208,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       totDescuento: 0
     }
     js.limpiarForm(this.frmProducto.nativeElement, 100);
+    js.limpiarForm(this.frmCliente.nativeElement, 100);
     js.limpiarForm(this.frmEmisor.nativeElement, 100);
     js.limpiarForm(this.frmDetalleFormaPagos.nativeElement, 100);
     js.limpiarForm(this.frmInformacionAdicional.nativeElement, 100);
@@ -302,7 +303,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async buscarCliente(identificacion: any, limpiar?: boolean | false): Promise<void> {
     try {
-      if (identificacion == "") return;
+      if (identificacion.value == "") return;
       if (limpiar && (this.identifiacion != identificacion) && !this.nuevoCliente) {
         js.limpiarForm(this.frmCliente.nativeElement);
         this.idCliente = "";
@@ -360,19 +361,26 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       if (valorTotal < precioSugerido) descuento = precioSugerido - valorTotal;
       this.listaDetalleFactura.push({
         cantidad: valorCantidad,
-        descuento,
-        subtotal: subtotal,
+        descuento:parseFloat(descuento.toFixed(2)),
+        subtotal: parseFloat(subtotal.toFixed(2)),
         valorPorcentaje: producto.iva,
         nombreIva: producto.nombreIva,
         idIva: producto.idIva,
-        precio: parseFloat(precio.value.replaceAll(",", ".")),
-        porcentaje: valorIva,
-        total: valorTotal,
+        precio: parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
+        porcentaje: parseFloat(valorIva.toFixed(2)),
+        total: parseFloat(valorTotal.toFixed(2)),
         idProducto: producto.idProducto,
         idDetallePrecioProducto: producto.idProducto,
         codigo: producto.codigo,
-        producto: producto.nombre
+        producto: producto.nombre,
+        nombrePorcentaje:producto.nombreIva,
+        nombre:producto.nombre,
+        totalSinIva:parseFloat(subtotal.toFixed(2)),
+        valorProductoSinIva:parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
+        valor:parseFloat(valorTotal.toFixed(2)),
+        tarifaPorcentaje:producto.tarifaPorcentaje
       });
+      console.log(producto);
       this.idProducto.handleClearClick();
       js.limpiarForm(this.frmProducto.nativeElement, 10);
       this.valorIva = "";
@@ -420,23 +428,29 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
-    detalle.subtotal = detalle.precio * detalle.cantidad;
+    detalle.subtotal = parseFloat((detalle.precio * detalle.cantidad).toFixed(2));
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
-    detalle.porcentaje = detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0;
-    detalle.total = (detalle.subtotal + detalle.porcentaje);
+    detalle.porcentaje =parseFloat((detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0).toFixed(2));
+    detalle.total = parseFloat((detalle.subtotal + detalle.porcentaje).toFixed(2));
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
+    detalle.nombrePorcentaje=precioActual.nombreIva;
+    detalle.valorProductoSinIva=parseFloat(precioActual.precio.toFixed(2));
+    detalle.totalSinIva=parseFloat(detalle.precio.toFixed(2));
+    detalle.valor=parseFloat(detalle.total.toFixed(2));
+    detalle.tarifaPorcentaje=precioActual.tarifaPorcentaje
     this.listaDetalleFactura[index] = detalle;
+    console.log(detalle);
     this.calcularTotales();
   }
 
   calcularTotales(): void {
     try {
-      this.factura.subtotal = this.listaDetalleFactura.map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
-      this.factura.subtotal12 = this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje > 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
-      this.factura.subtotal0 = this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje == 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0);
-      this.factura.iva12 = this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0);
-      this.factura.totDescuento = this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0);
+      this.factura.subtotal = parseFloat((this.listaDetalleFactura.map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0)).toFixed(2));
+      this.factura.subtotal12 = parseFloat(this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje > 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
+      this.factura.subtotal0 = parseFloat(this.listaDetalleFactura.filter((x: any) => x.valorPorcentaje == 0).map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
+      this.factura.iva12 = parseFloat(this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
+      this.factura.totDescuento = parseFloat(this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
       this.factura.totalFactura = parseFloat((this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0)).toFixed(2));
       if (this.listaDetallePagos.length == 0) {
         this.el.nativeElement.querySelector("#valor").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
@@ -502,7 +516,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
-      if (this.formaPagoDefault) {
+      if (this.formaPagoDefault && this.listaDetallePagos.length==0) {
         const pago: any = await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);
         pago.valor = this.factura.totalFactura;
         this.listaDetallePagos.push(pago)
