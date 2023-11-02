@@ -1488,5 +1488,10 @@ function validarClaves(idClave, idConfir) {
 }
 
 function removeError(){
-    document.querySelector(".error")?.closest("div.iziToast-capsule")?.remove();
+    setTimeout(()=>{
+        document.querySelector(".error")?.closest("div.iziToast-capsule")?.remove();
+        document.querySelector("body")?.classList.remove(".modal-open");
+        document.querySelector(".modal-backdrop")?.remove();
+    },190);
 }
+    
