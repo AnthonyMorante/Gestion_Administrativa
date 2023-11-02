@@ -12,9 +12,8 @@ export class AxiosService{
   private async redirect():Promise<void>{
     if(!await this.validateToken()){
       this.router.navigate(["/login"]);
+      js.toastWarning("Su sesión ha caducado");
       js.removeError();
-      js.toastWarning("Su sesión ha caducado")
-      // setTimeout(()=>top?.location.reload(),3700);
     };
   }
   public async get(url: string): Promise<any> {
