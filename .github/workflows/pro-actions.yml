@@ -21,7 +21,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
+    - name: Production
       run: dotnet test --no-build --verbosity normal    
     - name: ls dir
       run: ls ./Gestion_Administrativa_Api/bin
@@ -36,7 +36,7 @@ jobs:
     - uses: docker/build-push-action@v3.2.0
       if: ${{ github.event_name == 'push' }}
       env:
-        ASPNETCORE_ENVIRONMENT: Test
+        ASPNETCORE_ENVIRONMENT: Production
       with:
         context: ./Gestion_Administrativa_Api
         push: true
