@@ -343,6 +343,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     totalProducto.value = ((cantidad * precio) + valorIva).toFixed(2).replaceAll(".", ",");
     js.validarTodo(this.frmProducto.nativeElement);
   }
+  
 
   async agregar(): Promise<void> {
     try {
