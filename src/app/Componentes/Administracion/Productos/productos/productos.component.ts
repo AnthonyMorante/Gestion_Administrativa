@@ -221,7 +221,6 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
           x.totalIva = valorPrecio;
           return x;
         });
-        console.log(this.detallePrecios);
       } else {
         totalIva.value = "0";
       }

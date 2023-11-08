@@ -1494,5 +1494,3 @@ function removeError(){
         document.querySelector(".modal-backdrop")?.remove();
     },190);
 }
-
-console.log("hola");
