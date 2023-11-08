@@ -16,5 +16,5 @@ RUN npm run build
 
 # Stage 2
 FROM nginx:alpine
-COPY --from=node /usr/src/app/dist/cr_panyanukul_client /usr/share/nginx/html
+COPY --from=node /usr/src/app/dist/gestion-administrativa /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
