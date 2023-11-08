@@ -922,6 +922,14 @@ table.table-custom tbody:has(i[class^='bi-database']) {
 }
 
 @media (max-width:700px){
+  .dataTables_wrapper div:has(.dataTables_length){
+    margin-left: 10px;
+  }
+
+  .dataTables_filter{
+    margin-left: 10px;
+  }
+
   .dataTables_wrapper div:has(.dataTables_length),
   .dataTables_wrapper div:has(.dataTables_paginate){
     width: 100vw !important;
@@ -929,15 +937,18 @@ table.table-custom tbody:has(i[class^='bi-database']) {
   }
   .dataTables_length{
     text-align: left !important;
-    margin-bottom: 10px;
+    margin-bottom: 7px;
   }
   .dataTables_length select{
-    margin-left: 19px;
-    margin-right: 19px;
+    margin-left: 10px;
+    margin-right: 10px;
   }
   .dataTables_info{
     text-align: left !important;
-    padding-left: 19px;
-    margin-bottom: 10px;
+    padding-left: 10px;
+    margin-bottom: 7px;
+  }
+  .dataTables_paginate .pagination{
+    margin-left: -50px !important;
   }
 }
