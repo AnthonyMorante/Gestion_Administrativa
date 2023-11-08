@@ -2052,3 +2052,7 @@ hr {
   thead.bg-primary.text-white *{
     color:black !important;
   }
+
+  .modal-title *{
+    font-weight: 700 !important;
+  }
