@@ -22,21 +22,21 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Setup yarn
+    - name: Setup npm
       run: npm install -g yarn
     - name: Setup Nodejs with yarn caching
       uses: actions/setup-node@v2
       with:
         node-version: "18"
-        cache: yarn
+        cache: npm
 
     - name: Install dependencies
-      run: yarn install
+      run: npm install
     - name: build
       if: ${{ github.event_name == 'push' }}
       env:
          CI: false
-      run: yarn run build --mode=production
+      run: npm run build --mode=production
     - uses: docker/login-action@v2.1.0
       if: ${{ github.event_name == 'push' }}
       with:
