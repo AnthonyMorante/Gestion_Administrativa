@@ -920,3 +920,24 @@ table.table-custom tbody:has(i[class^='bi-database']) {
 .dataTables_filter * {
     text-transform: none !important;
 }
+
+@media (max-width:700px){
+  .dataTables_wrapper div:has(.dataTables_length),
+  .dataTables_wrapper div:has(.dataTables_paginate){
+    width: 100vw !important;
+
+  }
+  .dataTables_length{
+    text-align: left !important;
+    margin-bottom: 10px;
+  }
+  .dataTables_length select{
+    margin-left: 19px;
+    margin-right: 19px;
+  }
+  .dataTables_info{
+    text-align: left !important;
+    padding-left: 19px;
+    margin-bottom: 10px;
+  }
+}
