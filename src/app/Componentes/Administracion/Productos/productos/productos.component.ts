@@ -124,7 +124,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   async guardar(): Promise<void> {
     try {
       if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
-      if(this.detallePrecios.length==0) throw new Error("Debe agregar al menos 1 precio para poder guardar el producto");
+      if(this.detallePrecios.length==0) throw new Error("Debe agregar al menos 1 precio de venta para poder guardar el producto");
       js.loaderShow();
       const url = `${this.baseUrl}Productos/guardar`;
       let data: any = await this.axios.formToJsonTypes(this.frmDatos.nativeElement);
