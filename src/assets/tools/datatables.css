@@ -947,7 +947,7 @@ table.table-custom tbody:has(i[class^='bi-database']) {
     margin-bottom: 7px;
   }
   .dataTables_paginate .pagination{
-    margin-left: -75px !important;
+    margin-left: -16vw !important;
   }
 
   .dataTables_wrapper .row:has(.dataTables_filter){
