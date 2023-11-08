@@ -1,561 +1,281 @@
-import { Component, ElementRef } from '@angular/core';
-import {
-  FormArray,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
-import { NgSelectConfig } from '@ng-select/ng-select';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
-import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
-import { Validator } from 'src/app/Compartidos/Validaciones/validations';
-import { Ivas } from 'src/app/Interfaces/Ivas';
-import { Productos } from 'src/app/Interfaces/Productos';
-import { IvasService } from 'src/app/Servicios/ivas.service';
-import { ProductosService } from 'src/app/Servicios/productos.service';
-import { dosDigitos } from 'src/app/Compartidos/Validaciones/dosDigitos';
-import { dosDigitosHasta100 } from 'src/app/Compartidos/Validaciones/dosDigitosHasta100';
-import jwt_decode from "jwt-decode";
-declare var $: any;
+import { js, global } from '../../../../../main';
+import { AxiosService } from 'src/app/Services/axios.service';
 
 @Component({
   selector: 'app-productos',
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css'],
 })
-export class ProductosComponent {
+export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
+  baseUrl = `${global.BASE_API_URL}api/`;
+  componentTitle: string = "";
+  //Datatable
+  lista: any = [];
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
   dtOptions: DataTables.Settings = {};
-  dtTrigger: any = new Subject();
-  spinner: boolean = true;
-  spinnerCargar: boolean = true;
-  spinnerEditar: boolean = false;
-  spinnerGuardar: boolean = true;
-  spinnerEspere: boolean = false;
-  idProducto: string = '';
-  spinnerWarning: boolean = false;
-  ivasList: Ivas[] = [];
-  detalleAdicionalesList: any[] = [];
-  productoForm: FormGroup;
-  token:string | null="";
-  idEmpresa:string | null="";
+  dtTrigger: Subject<any> = new Subject<any>();
+  mensajeDataTable: string = js.loaderDataTable();
+  //Modal
+  @ViewChild('modalDatos', { static: true }) modalDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  @ViewChild('frmDetalle', { static: true }) frmDetalle: ElementRef = {} as ElementRef;
+  @ViewChild('totalIva', { static: true }) totalIva: ElementRef = {} as ElementRef;
+  modal: any;
+  tituloModal: string = "Nuevo registro";
+  idProducto: string = "";
+  detallePrecios: any = [];
+  identificacion: any;
+  fechaRegistro: Date = new Date();
+  //Combos
+  listaIvas: any = [];
+  constructor(private axios: AxiosService, private el: ElementRef) { }
 
-  constructor(
-    private toast: ToastComponent,
-    private el: ElementRef,
-    private validator: Validator,
-    private productosServices: ProductosService,
-    private ngSelectConfig: NgSelectConfig,
-    private ivasServices: IvasService,
-    private fb: FormBuilder
-  ) {
-    this.ngSelectConfig.notFoundText = 'No existen coincidencias';
-    this.productoForm = this.fb.group({
-      idProducto: new FormControl(),
-      codigo: new FormControl('', [Validators.required]),
-      nombre: new FormControl('', Validators.required),
-      descripcion: new FormControl('', Validators.required),
-      activo: new FormControl(),
-      precio: new FormControl(0, [Validators.required, dosDigitos()]),
-      idIva: new FormControl(),
-      precioIva: new FormControl([Validators.required]),
-      valorIva: new FormControl(),
-
-      totalIva: new FormControl(0, [Validators.required,dosDigitos()]),
-      porcentaje: new FormControl(1, [
-        Validators.required,
-        dosDigitosHasta100(),
-      ]),
-      utilidad: new FormControl(0),
-      detallePrecioProductos: this.fb.array([]),
+  public ngOnInit() {
+    this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
+      keyboard: false,
+      backdrop: 'static',
     });
+    js.activarValidadores(this.frmDatos.nativeElement);
+    js.activarValidadores(this.frmDetalle.nativeElement);
+    this.listarProductos();
+    this.comboIvas();
   }
-
-  ngOnInit() {
-
-
-    this.token = localStorage.getItem("token");
-    if(this.token != null){
-      const res = jwt_decode(this.token) as { idEmpresa: string };
-      this.idEmpresa = res.idEmpresa;
-      this.listarProductos(this.idEmpresa);
-      this.listarIvas();
-    }
-
-
-
-
+  public ngAfterViewInit(): void {
+    this.dtTrigger.next(this.dtOptions);
   }
-
-  ngAfterViewInit(): void {
- 
-        // if instance exist destroy
-        if ($.fn.DataTable.isDataTable('table')) {
-          $('table').DataTable().destroy();
-        }
-    
-        this.dtTrigger.next();
-        setTimeout(() => {
-          $('table').DataTable(this.dtOptions);
-        }, 0);
-
-  }
-
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
-
-  agregarDetallePrecio() {
-
-    if (this.productoForm.invalid) {
-      this.validator.validarTodo(this.productoForm, this.el);
-      return;
+  async listarProductos() {
+    try {
+      const url = `${this.baseUrl}Productos/listar`;
+      const columns = `idProducto,fechaRegistro,codigo,nombre,precio,totalIva,iva,activo,activoProducto`;
+      //DataTables
+      this.dtOptions = {
+        destroy: true,
+        serverSide: true,
+        pageLength: 10,
+        pagingType: 'full_numbers',
+        language: js.dataTableEs(),
+        ajax: async (_data: any, resolve) => {
+          try {
+            this.lista = [];
+            const res = (await this.axios.postJson(url, _data)).data;
+            this.lista = res.data;
+            (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
+            resolve({
+              recordsTotal: res.recordsTotal,
+              recordsFiltered: res.recordsFiltered,
+              data: [],
+            });
+          } catch (e) {
+            js.handleError(e);
+          }
+        },
+        columns: columns.split(",").map((x: string) => { return { data: x } }),
+        columnDefs: [{ targets: [0], searchable: false, orderable: false },
+        { targets: [1], visible: false }],
+        order: [[1, "desc"]]
+      };
+      //DataTables
+    } catch (e) {
+      js.handleError(e);
     }
-
-
-    if (this.detallePrecioProductos.length > 2) {
-      this.toast.show_error('Error', 'Registros Permitidos (3)');
-      return;
-    }
-
-    if (this.productoForm.get('')) {
-      this.toast.show_error('Error', 'Registros Permitidos (3)');
-      return;
-    }
-
-    (this.productoForm.get('detallePrecioProductos') as FormArray).push(
-      this.fb.group({
-        id: this.numerosAleatorios(),
-        totalIva: this.productoForm.get('totalIva')?.value,
-        porcentaje: this.productoForm.get('porcentaje')?.value,
-        utilidad: this.productoForm.get('utilidad')?.value,
-        idIva: this.productoForm.get('idIva')?.value,
-      })
-    );
-
-    this.productoForm.get('porcentaje')?.setValue(1);
-    this.productoForm.get('utilidad')?.setValue(0);
-    this.calcularUtilidad();
   }
-
-  cancelarDetallePrecio() {
-    this.productoForm.get('porcentaje')?.setValue(1);
-    this.productoForm.get('utilidad')?.setValue(0);
+  reloadDataTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
   }
-
-  get detallePrecioProductos(): any[] {
-    return (this.productoForm.get('detallePrecioProductos') as FormArray).value;
-  }
-
-  quitarDetallePrecioProducto(id: any) {
-    const detallePrecioProductos = this.productoForm.get(
-      'detallePrecioProductos'
-    ) as FormArray;
-    const index = detallePrecioProductos.value.findIndex(
-      (x: any) => x.id === id
-    );
-
-    if (index !== -1) {
-      detallePrecioProductos.removeAt(index);
+  async comboIvas(): Promise<void> {
+    try {
+      const url = `${this.baseUrl}Ivas/listar`;
+      this.listaIvas = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
     }
   }
 
-  numerosAleatorios() {
-    return Math.floor(100000000 + Math.random() * 900000000);
+
+  nuevo() {
+    this.tituloModal = "Nuevo registro";
+    this.idProducto = "";
+    js.limpiarForm(this.frmDatos.nativeElement, 100);
+    this.detallePrecios = [];
+    js.limpiarForm(this.frmDetalle.nativeElement, 100);
   }
 
-  asignarValor(evento: any) {
-    this.productoForm.get('porcentaje')?.setValue(1);
-    let valor = evento.value;
-    this.calcularTotalIva(valor);
-  }
-
-  calcularUtilidad() {
-
-
-
-    let precioIva = parseFloat(this.productoForm.get('precioIva')?.value).toFixed(2);
-    let porcentaje = parseFloat(
-      this.productoForm.get('porcentaje')?.value
-    ).toFixed(2);
-    let valorPorcentaje = ((parseFloat(precioIva) * parseFloat(porcentaje)) / 100).toFixed(2);
-    let utilidadValorTotal= (parseFloat (valorPorcentaje )+ parseFloat (precioIva)).toFixed(2)
-    this.productoForm.get('utilidad')?.setValue(valorPorcentaje);
-    if(isNaN(parseFloat (utilidadValorTotal))){
-      return
-    }
-
-    this.productoForm.get('totalIva')?.setValue(parseFloat (utilidadValorTotal));
-
-
-    
-  }
-
-  calcularPocentajeUtilidad(){
-
-   let totalIva =  parseFloat(this.productoForm.get('totalIva')?.value).toFixed(2);
-   let precioIva =  parseFloat(this.productoForm.get('precioIva')?.value).toFixed(2);
-   let ganancia = (parseFloat (totalIva) - parseFloat (precioIva)).toFixed(2);
-   let porcentajeGanacia = ((parseFloat(ganancia) /  parseFloat (precioIva)) *100).toFixed(2);
-   if(isNaN(parseFloat (porcentajeGanacia))){
-    return
-  }
-   this.productoForm.get('porcentaje')?.setValue(parseFloat(porcentajeGanacia));
-   this.calcularUtilidad();
-   
-  }
-
-  calcularTotalIva(valor: any) {
-    const valorSeleccionado = this.productoForm.get('idIva')?.value;
-    const buscarValor = this.ivasList.find(
-      (item) => item.idIva === valorSeleccionado
-    );
-
-    if (valor === '' || valor == undefined || valor == null) {
-      this.productoForm.get('precioIva')?.setValue('');
-      return;
-    }
-
-    if (buscarValor != undefined) {
-      this.calcularTotalMasIva(buscarValor.valor);
+  async editar(idProducto: string): Promise<void> {
+    try {
+      this.tituloModal = "Editar registro"
+      this.idProducto = "";
+      const url = `${this.baseUrl}Productos/cargar/${idProducto}`;
+      const res = (await this.axios.get(url)).data;
+      this.detallePrecios = res.detallePrecios;
+      js.cargarFormulario(this.frmDatos.nativeElement, res.producto);
+      this.idProducto = res.producto.idProducto;
+      this.modal.show();
+    } catch (e) {
+      js.handleError(e);
     }
   }
 
-  calcularTotalMasIva(valorIva: any) {
-    const precioControl = this.productoForm.get('precio');
-
-    if (
-      precioControl !== null &&
-      precioControl !== undefined &&
-      precioControl.value !== null
-    ) {
-
-
-      let iva = parseFloat(valorIva) * precioControl.value;
-      let totalIva = precioControl.value + iva;
-
-      
-      this.productoForm.get('precioIva')?.setValue(totalIva.toFixed(2));
-      this.productoForm.get('valorIva')?.setValue(iva.toFixed(2));
-      this.productoForm.get('totalIva')?.setValue(totalIva.toFixed(2));
+  async guardar(): Promise<void> {
+    try {
+      if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      js.loaderShow();
+      const url = `${this.baseUrl}Productos/guardar`;
+      let data: any = await this.axios.formToJsonTypes(this.frmDatos.nativeElement);
+      if (!!this.idProducto) data.idProducto = this.idProducto;
+      data.DetallePrecioProductos = [...this.detallePrecios].map((x: any) => {
+        if (!!this.idProducto) x.idProducto = this.idProducto;
+        delete x.idDetallePrecioProducto;
+        return x;
+      });
+      await this.axios.postJson(url, data);
+      js.toastSuccess(`Registro ${!this.idProducto ? "guardado" : "editado"} exitosamente`);
+      this.modal.hide();
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
     }
-    this.calcularUtilidad();
   }
 
-  listarIvas() {
-    this.ivasServices.listar().subscribe({
-      next: (res) => {
-        this.ivasList = res;
-        this.productoForm.get('idIva')?.setValue(this.ivasList[0].idIva);
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar los Ivas');
-      },
-    });
+
+  async visualizar(idProducto: string, input: any): Promise<void> {
+    try {
+      const url = `${this.baseUrl}Productos/visualizar/${idProducto}`;
+      await this.axios.get(url);
+      js.toastSuccess(`Producto ${input.checked ? 'visible' : 'oculto'} con éxito.`)
+    } catch (e) {
+      js.handleError(e);
+      input.checked = !input.checked;
+    }
   }
 
-  desactivar(idProducto: string, activo: boolean) {
-    this.productosServices.desactivar(idProducto, activo).subscribe({
-      next: (res) => {
-        let activoString = '';
-        res == true
-          ? (activoString = 'Activado')
-          : (activoString = 'Desactivado');
-        this.listarProductos(this.idEmpresa);
-        this.toast.show_success('Success', `Registro ${activoString}`);
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al desactivar el Registro');
-      },
-    });
+  async activar(idProducto: string, input: any): Promise<void> {
+    try {
+      const url = `${this.baseUrl}Productos/activar/${idProducto}`;
+      await this.axios.get(url);
+      js.toastSuccess(`Producto ${input.checked ? 'activado' : 'desactivado'} con éxito.`)
+    } catch (e) {
+      js.handleError(e);
+      input.checked = !input.checked;
+    }
   }
 
-  listarProductos(idEmpresa:string | null) {
-    this.dtOptions = {
-      lengthMenu: [10, 25, 50, 75, 100],
-      destroy: true,
-      scrollX: true,
-      columnDefs: [
-        {
-          targets: [0, 1, 2, 3, 4, 5, 6],
-          className: 'text-center dt-nowrap',
-          width: 'auto',
-        },
-        { targets: [5], orderable: false },
-        { targets: '_all', className: 'dt-nowrap' }
-
-        
-      ],
-      columns: [
-        {
-          title: 'Codigo',
-          data: 'codigo',
-        },
-        {
-          title: 'Nombre',
-          data: 'nombre',
-        },
-        {
-          title: 'Descripcion',
-          data: 'descripcion',
-        },
-        {
-          title: 'Precio',
-          data: 'precio',
-        },
-        {
-          title: 'IVA',
-          data: 'idIvaNavigation.nombre',
-        },
-        
-        {
-          title: 'Total',
-          data: 'totalIva',
-        },
-
-        {
-          title: 'Estado',
-          data: 'activoProducto',
-          render: (data: any, type: any, full: any, meta: any) => {
-            if (data) {
-              return `
-              <div style="cursor: pointer;" class="mb-4 ml-4 mt-3">
-              
-              <input type="checkbox" checked class="form-check-input" id="exampleCheck1">
-              <span class="badge badge-success">Activo</span>
-              
-              </div>`;
-            }
-
-            return `
-                      <div style="cursor: pointer;" class="mb-4 ml-4 mt-3">
-                      
-                      <input type="checkbox"  class="form-check-input" id="exampleCheck1">
-                      <span class="badge badge-danger">No Activo</span>
-                      
-                      </div>`;
-          },
-          createdCell: (
-            cell: any,
-            cellData: any,
-            rowData: any,
-            rowIndex: any,
-            colIndex: any
-          ) => {
-            $(cell)
-              .find('input')
-              .click(async () => {
-                await this.desactivar(rowData.idProducto, rowData.activoProducto);
-              });
-          },
-        },
-
-        {
-          title: 'Opciones',
-          data: 'idProducto',
-          render: (data: any, type: any, full: any, meta: any) => {
-            return `
-                      <div style="cursor: pointer;">
-                      
-                          <i id="edit-icon" data-toggle="tooltip" data-placement="bottom" title="Editar"  class="fas fa-edit mr-2"></i> <i data-toggle="tooltip" data-placement="bottom" title="Eliminar"  class="fas fa-trash-alt"></i>
-                      
-                      </div>`;
-          },
-          createdCell: (
-            cell: any,
-            cellData: any,
-            rowData: any,
-            rowIndex: any,
-            colIndex: any
-          ) => {
-            $(cell)
-              .find('.fa-edit')
-              .click(() => {
-                this.cargar(cellData, rowData.precio);
-              });
-            $(cell)
-              .find('.fa-trash-alt')
-              .click(() => {
-                this.eliminar(cellData);
-              });
-          },
-        },
-      ],
-    };
-
-    this.productosServices.listar(idEmpresa).subscribe({
-      next: (res) => {
-        this.dtOptions.data = res;
-        this.dtTrigger.next();
-        this.spinner = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar los Productos');
-      },
-    });
+  async eliminar(idProducto: string): Promise<void> {
+    try {
+      if (!await js.toastPreguntar(`
+      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
+      <p class='fs-md'>¿Está seguro que desea eliminar este Producto?</p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
+      </i>Esta acción no se puede deshacer ni revertir.</p>
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Productos/eliminar/${idProducto}`;
+      await this.axios.delete(url);
+      js.toastSuccess("Producto eliminado exitosamente");
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    }
   }
 
-  editar() {
-    this.spinnerEspere = true;
-    this.spinnerEditar = false;
-    let valor = this.productoForm.value;
-    this.productosServices.actualizar(valor).subscribe({
-      next: (res) => {
-        if (res === 'ok') {
-          this.toast.show_success('Productos', 'Editado con Éxito');
-          $('#exampleModal').modal('hide');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = false;
-          this.listarProductos(this.idEmpresa);
-          return;
-        }
-
-        if (res === 'repetido') {
-          this.toast.show_warning('Producto', 'Ya se encuentra registrado');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = false;
-          return;
-        }
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al actualizar el Producto');
-        this.spinner = false;
-        this.spinnerEspere = false;
-      },
-    });
+  async eliminarPrecio(precio: any): Promise<void> {
+    try {
+      if (!await js.toastPreguntar(`
+      <h3><i class='bi-exclamation-triangle-fill text-warning'></i></h3>
+      <p class='fs-md'>¿Está seguro que desea eliminar este precio?</p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-circle-fill me-2'>
+      </i>Esta acción no se puede deshacer ni revertir.</p>
+      `, "Si, Eliminar")) return;
+      const url = `${this.baseUrl}Productos/eliminarPrecio/${precio.idDetallePrecioProducto}`;
+      if (!precio.idDetallePrecioProducto.startsWith("_")) await this.axios.delete(url);
+      this.detallePrecios.splice(this.detallePrecios.indexOf(precio), 1);
+      js.toastSuccess("Producto eliminado exitosamente");
+      this.reloadDataTable();
+    } catch (e) {
+      js.handleError(e);
+    }
   }
 
-  cargar(idProducto: string, precio: number) {
-    this.productoForm.get('porcentaje')?.setValue(1);
-    $('#exampleModal').modal('show');
-    this.borrarObjeto();
-    this.spinnerCargar = true;
-    this.spinnerGuardar = false;
-    this.spinnerEditar = true;
-    this.productosServices.cargar(idProducto).subscribe({
-      next: (res) => {
-        this.productoForm.patchValue(Object.assign({}, res.productos));
-        this.spinnerCargar = false;
-        this.calcularTotalIva(precio);
-
-
-
-        res.detalleprecioProductos.forEach((detalle: any) => {
-
-
-              (this.productoForm.get('detallePrecioProductos') as FormArray).push(
-          this.fb.group({
-            idDetallePrecioProducto: detalle.idDetallePrecioProducto,
-            totalIva: detalle.totalIva,
-            porcentaje: detalle.porcentaje,
-            utilidad: detalle.porcentaje,
-          })
-        );
-         
-
+  handleIva() {
+    try {
+      const totalIva = this.el.nativeElement.querySelector("#totalIva");
+      const precio = this.el.nativeElement.querySelector("#precio");
+      const idIva = this.el.nativeElement.querySelector("#idIva");
+      if (!!precio.value) {
+        const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        const valorPrecio = parseFloat(precio.value.replaceAll(",", "."));
+        const valorIva = valorPrecio * parseFloat(iva);
+        totalIva.value = (valorPrecio + valorIva).toFixed(2).replaceAll(".", ",");
+        this.detallePrecios = [...this.detallePrecios].map((x: any) => {
+          const iva = this.listaIvas.find((i: any) => i.idIva == x.idIva)?.valor;
+          const valorIva = precio.value.replaceAll(",", ".") * parseFloat(iva);
+          const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
+          const valorPorcentaje = (parseFloat(precio.value.replaceAll(",", ".")) * x.porcentaje) / 100;
+          x.total = valorPorcentaje;
+          x.totalIva = valorPrecio;
+          return x;
         });
-        
-
-    
-
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al listar el Producto');
-      },
-    });
-  }
-
-  eliminar(idProducto: any) {
-    $('#ModalWarning').modal('show');
-    this.idProducto = idProducto;
-  }
-
-  confirmarEliminacion() {
-    this.spinnerWarning = true;
-    this.productosServices.eliminar(this.idProducto).subscribe({
-      next: (res) => {
-        this.listarProductos(this.idEmpresa);
-        this.toast.show_success('Productos', 'Eliminado con Éxito');
-        $('#ModalWarning').modal('hide');
-        this.spinnerWarning = false;
-      },
-      error: (err) => {
-        this.toast.show_error('Error', 'Al eliminar el Producto');
-      },
-    });
-  }
-
-  cerrarModalWarning() {
-    $('#ModalWarning').modal('hide');
-    this.idProducto = '';
-  }
-
-  abrirModal() {
-    this.productoForm
-    .get('idIva')
-    ?.setValue(this.ivasList[0].idIva);
-    this.borrarObjeto();
-    this.spinnerCargar = false;
-    this.spinnerEditar = false;
-    this.spinnerGuardar = true;
-    $('#exampleModal').modal('show');
-  }
-
-  borrarObjeto(){
-
-    const detallePrecioProductos = this.productoForm.get('detallePrecioProductos') as FormArray;
-    detallePrecioProductos.clear();
-
-  }
-
-  guardar(producto: Productos) {
-
-
-    
-    this.spinnerEspere = true;
-    this.spinnerGuardar = false;
-
-    if (this.productoForm.invalid) {
-      this.validator.validarTodo(this.productoForm, this.el);
-      this.spinnerEspere = false;
-      this.spinnerGuardar = true;
-      return;
+        console.log(this.detallePrecios);
+      } else {
+        totalIva.value = "0";
+      }
+      totalIva.classList.remove("is-invalid");
+    } catch (e) {
+      js.handleError(e);
     }
-
-
-    producto.idEmpresa = this.idEmpresa;
-
-    this.productosServices.insertar(producto).subscribe({
-      next: (res) => {
-        if (res == 'ok') {
-          this.listarProductos(this.idEmpresa);
-          this.toast.show_success('Productos', 'Producto Guardado Con Éxito');
-          this.limpiar();
-          this.borrarObjeto();
-          this.spinnerEspere = false;
-          this.spinnerGuardar = true;
-          return;
-        }
-
-        if (res == 'repetido') {
-          this.toast.show_warning('Productos', 'Ya se encuentra registrado');
-          this.spinnerEspere = false;
-          this.spinnerGuardar = true;
-          return;
-        }
-      },
-      error: (err) => {
-        this.spinnerEspere = false;
-        this.spinnerGuardar = true;
-        console.log(err);
-        this.toast.show_error('Productos', 'Error al guardar el Producto');
-      },
-    });
   }
 
-  limpiar() {
-    this.productoForm.reset();
-    $('#exampleModal').modal('hide');
-    this.spinnerEspere = false;
+  handleIvaGanancia() {
+    try {
+      const totalIva = this.el.nativeElement.querySelector("#totalIvaD");
+      const precio = this.el.nativeElement.querySelector("#precio");
+      const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
+      const idIva = this.el.nativeElement.querySelector("#idIvaD");
+      const total = this.el.nativeElement.querySelector("#total");
+      if (!!precio.value && !!porcentaje.value) {
+        const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
+        const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
+        const valorPorcentaje = (valorPrecio * parseInt(porcentaje.value)) / 100;
+        total.value = valorPorcentaje.toFixed(2).replaceAll(".", ",");
+        totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
+      } else {
+        totalIva.value = "0";
+      }
+      js.limpiarValidadores(this.frmDetalle.nativeElement);
+    } catch (e) {
+      js.handleError(e);
+    }
   }
+
+  async agregarPrecio(): Promise<void> {
+    try {
+      if (!this.totalIva.nativeElement.value) throw new Error("Primero debe generar un precio para el producto.");
+      if (!await js.validarTodo(this.frmDetalle.nativeElement)) throw new Error("Verifique los campos requeridos");
+      let obj: any = await this.axios.formToJsonTypes(this.frmDetalle.nativeElement);
+      let totalIva = parseFloat(obj.totalIvaD) - parseFloat(obj.total);
+      this.detallePrecios.push({
+        idDetallePrecioProducto: `_${(new Date()).getTime()}`,
+        totalIva: totalIva,
+        porcentaje: obj.porcentaje,
+        total: obj.total,
+        activo: true,
+        idIva: obj.idIvaD
+      });
+      js.limpiarForm(this.frmDetalle.nativeElement);
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  getIva(idIva: string): any {
+    return this.listaIvas.find((x: any) => x.idIva == idIva);
+  }
+
 }

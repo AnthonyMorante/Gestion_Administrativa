@@ -1,9 +1,7 @@
-import { Component, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ToastComponent } from 'src/app/Compartidos/Componentes/toast';
-import { LoginService } from 'src/app/Servicios/login.service';
-
+import { js, global } from '../../../main';
+import { AxiosService } from 'src/app/Services/axios.service';
 
 @Component({
   selector: 'app-login',
@@ -12,84 +10,38 @@ import { LoginService } from 'src/app/Servicios/login.service';
 })
 export class LoginComponent {
 
+  token: any;
 
-
-  btnLogin : boolean = false;
-
-  loginForm = new  FormGroup({
-
-    usuario: new FormControl('', Validators.required),
-    clave: new FormControl('', Validators.required)
-
-  });
-
-  ingresarTexto :string="Ingresar";
-
-  token:any;
-
+  constructor(private router: Router, private axios: AxiosService) {
+  }
+  @ViewChild('frmDatos', { static: true }) frmDatos: ElementRef = {} as ElementRef;
+  @ViewChild('usuario', { static: true }) usuario: ElementRef = {} as ElementRef;
+  @ViewChild('clave', { static: true }) clave: ElementRef = {} as ElementRef;
+  version:string=global.version;
+  private baseUrl: string = `${global.BASE_API_URL}connect/token`;
   ngOnInit() {
-
-      
-    $(function() {
-      'use strict';
-      $('.form-control').on('input', function() {
-        var $field = $(this).closest('.form-group');
-        if (this) {
-          $field.addClass('field--not-empty');
-        } else {
-          $field.removeClass('field--not-empty');
-        }
-      });
-
-    });
-  
-  
-  
+    js.activarValidadores(this.frmDatos.nativeElement);
+    js.crearPasswordPreview();
+  }
+  async login(event: any) {
+    event.preventDefault();
+    try {
+      if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
+      js.loaderShow();
+      const body = {
+        client_id: "Jwt",
+        client_secret: "My Client Secret",
+        grant_type: "password",
+        username: this.usuario.nativeElement.value,
+        password: this.clave.nativeElement.value
+      }
+      const res = (await this.axios.postXForm(this.baseUrl, body)).data;
+      localStorage.setItem(global.token.user, res.access_token);
+      this.router.navigate(["/Inicio"]);
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
     }
-
-
-    constructor(private toast: ToastComponent ,private loginService: LoginService, private router: Router, private el: ElementRef) {
-    }
-  
-    login(loginData:any){ 
-
-
-      this.btnLogin=true;
-      
-      this.loginService.login(loginData).subscribe({
-        next: (res) =>{ 
-          
-          if(res){
-            
-
-            localStorage.setItem("token",res.access_token);
-            this.router.navigate(['/Inicio']);
-            this.btnLogin=false;
-
-          }
-
-        
-        } ,
-        error:(err)=> {
-
-          console.log(err);
-          if(err.error.error_description ==="Contraseña Incorrecta"){
- 
-           this.toast.show_error("Login","Credenciales Incorrectas");
-           return;
-
-          } 
-          this.btnLogin=false;
-          this.toast.show_error("Error","Error Intente más Tarde");
-          
-        },
-        })
-
-    }
-  
-  
-
-
-  
-
+  }
 }

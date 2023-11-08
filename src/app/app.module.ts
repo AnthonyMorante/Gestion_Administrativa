@@ -7,7 +7,7 @@ import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InicioComponent } from './Componentes/Inicio/inicio/inicio.component';
-import { DatePipe, DecimalPipe } from '@angular/common'; 
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { APIInterceptor } from './Intercerptors/HttpInterceptor';
 import { ToastrModule } from 'ngx-toastr';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -16,17 +16,10 @@ import { ClientesComponent } from './Componentes/Administracion/Clientes/cliente
 import { ProductosComponent } from './Componentes/Administracion/Productos/productos/productos.component';
 import { ProveedoresComponent } from './Componentes/Administracion/Proveedores/proveedores/proveedores.component';
 import { EmpleadosComponent } from './Componentes/Administracion/Empleados/empleados/empleados.component';
-import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 import { LoginComponent } from './Componentes/login/login.component';
 import { ModalClientesComponent } from './Componentes/Compartidos/modal-clientes/modal-clientes.component';
-
-
-
-
-
-
-
-
+import { ClienteComponent } from './Componentes/Shared/cliente/cliente.component';
+import { FacturaComponent } from './Componentes/Documentos/Factura/factura/factura.component';
 @NgModule({
   declarations: [
 
@@ -38,13 +31,14 @@ import { ModalClientesComponent } from './Componentes/Compartidos/modal-clientes
     EmpleadosComponent,
     FacturaComponent,
     LoginComponent,
-    ModalClientesComponent
-    
+    ModalClientesComponent,
+    ClienteComponent
+
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgSelectModule, 
+    NgSelectModule,
     FormsModule,
     AppRoutingModule,
     ReactiveFormsModule,
@@ -53,9 +47,9 @@ import { ModalClientesComponent } from './Componentes/Compartidos/modal-clientes
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
     DataTablesModule
- 
+
   ],
-  providers: [DecimalPipe,DatePipe, { provide: HTTP_INTERCEPTORS, useClass: APIInterceptor ,multi: true },   ],
+  providers: [DecimalPipe,DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
