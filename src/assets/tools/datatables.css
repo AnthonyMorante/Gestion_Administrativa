@@ -1,3 +1,8 @@
+:root{
+    --empresa-primary:#FACE19;
+      --empresa-primary-hover:#CFAB10;
+      --empresa-primary-rgb: 224, 185, 16;
+  }
 table.dataTable td.dt-control {
     text-align: center;
     cursor: pointer
@@ -147,7 +152,7 @@ div.dataTables_processing>div:last-child>div {
     width: 13px;
     height: 13px;
     border-radius: 50%;
-    background: rgba(13, 110, 253, 0.9);
+    background: rgba(var(--empresa-primary-rgb), 0.9);
     animation-timing-function: cubic-bezier(0, 1, 1, 0)
 }
 
@@ -687,7 +692,7 @@ table.table-custom tbody tr:hover {
 
 .dataTables_wrapper .row:has(.dataTables_filter) select:focus,
 .dataTables_wrapper .row:has(.dataTables_filter) input:focus {
-    border-color: #1C86EA !important;
+    border-color: var(--empresa-primary) !important;
     box-shadow: none !important;
     outline: 0;
 }
@@ -729,14 +734,14 @@ table.table-custom tbody tr:hover {
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li.active {
-    background-color: #1C86EA;
+    background-color: var(--empresa-primary);
     box-shadow: 0px 3px 7px -3px rgba(0, 0, 0, 0.14) !important;
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li.active a {
-    background-color: #1C86EA !important;
+    background-color: var(--empresa-primary) !important;
     font-weight: 500;
-    color: white !important;
+    color: black !important;
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li {
@@ -747,18 +752,18 @@ table.table-custom tbody tr:hover {
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li.active {
-    border: 1px solid #1C86EA !important;
+    border: 1px solid var(--empresa-primary) !important;
     box-shadow: none !important;
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li:hover:not(.active):not(.disabled),
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li:not(.active):not(.disabled):hover {
-    background: #1C86EA !important;
+    background: var(--empresa-primary) !important;
     /* border-radius: 5px !important; */
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li:not(.active):not(.disabled):hover * {
-    color: white !important;
+    color: black !important;
 }
 
 .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) .dataTables_paginate li.disabled {

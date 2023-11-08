@@ -1,3 +1,8 @@
+:root{
+  --empresa-primary:#FACE19;
+	--empresa-primary-hover:#CFAB10;
+	--empresa-primary-rgb: 224, 185, 16;
+}
 .h1,
 .h2,
 .h3,
@@ -14,7 +19,7 @@ h6 {
 }
 
 a {
-  color: #095FAF;
+  color: var(--empresa-primary-hover);
 }
 
 .table-responsive {
@@ -22,13 +27,13 @@ a {
 }
 
 .form-check-input:checked {
-  background-color: #1C86EA;
-  border-color: #1C86EA
+  background-color: var(--empresa-primary);
+  border-color: var(--empresa-primary)
 }
 
 .form-check-input[type=checkbox]:indeterminate {
-  background-color: #1C86EA;
-  border-color: #1C86EA;
+  background-color: var(--empresa-primary);
+  border-color: var(--empresa-primary);
 }
 
 .valid-feedback {
@@ -114,22 +119,22 @@ a {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1C88EC;
-  border-color: #1C88EC;
+  color: black;
+  background-color: var(--empresa-primary);
+  border-color: var(--empresa-primary);
 }
 
 .btn-primary:hover {
-  color: #fff !important;
-  background-color: #095FAF;
-  border-color: #095FAF;
+  color: black !important;
+  background-color: var(--empresa-primary-hover);
+  border-color: var(--empresa-primary-hover);
 }
 
 .btn-check:focus+.btn-primary,
 .btn-primary:focus {
-  color: #fff;
-  background-color: #095FAF;
-  border-color: #095FAF;
+  color: black;
+  background-color: var(--empresa-primary-hover);
+  border-color: var(--empresa-primary-hover);
   box-shadow: 0 0 0 .25rem rgba(119, 122, 122, .19)
 }
 
@@ -139,8 +144,8 @@ a {
 .btn-primary:active,
 .show>.btn-primary.dropdown-toggle {
   color: #fff;
-  background-color: #1C353B;
-  border-color: #1C353B
+  background-color: var(--empresa-primary-hover);
+  border-color: var(--empresa-primary-hover)
 }
 
 .btn-check:active+.btn-primary:focus,
@@ -384,7 +389,7 @@ a {
 .dropdown-item:active {
   color: #fff;
   text-decoration: none;
-  background-color: #485E6C
+  background-color: var(--empresa-primary)
 }
 
 .dropdown-item.disabled,
@@ -428,7 +433,7 @@ a {
 }
 
 .text-primary {
-  color: #1C86EA !important
+  color: var(--empresa-primary) !important
 }
 
 .text-secondary {
@@ -480,7 +485,7 @@ a {
 }
 
 .bg-primary {
-  background-color: #1C86EA !important;
+  background-color: var(--empresa-primary) !important;
 }
 
 .bg-success {

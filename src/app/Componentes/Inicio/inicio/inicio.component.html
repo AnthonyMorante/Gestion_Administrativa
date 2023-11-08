@@ -3,9 +3,10 @@
   <!--sidebar wrapper -->
   <div class="sidebar-wrapper" data-simplebar="true">
     <div class="sidebar-header">
-      <div class="text-center w-100">
+      <div class="w-100 ms-5 ps-1">
         <a [routerLink]="['/Inicio']">
-          <img src="./assets/img/logo.png" width="127" alt="logo">
+          <img src="./assets/img/logo.png" width="91px" alt="logo">
+
         </a>
 
       </div>
@@ -47,14 +48,14 @@
           <div class="menu-title">Productos</div>
         </a>
       </li>
-      <li class="home">
+      <!-- <li class="home">
         <a [routerLink]="['facturas']" [routerLinkActive]="['active']">
           <div class="parent-icon">
             <i class='bi-receipt-cutoff'></i>
           </div>
           <div class="menu-title">Facturación</div>
         </a>
-      </li>
+      </li> -->
     </ul>
     <!--end navigation-->
   </div>
@@ -96,6 +97,9 @@
       <div class="card mb-0">
         <div class="card-body card-body-full container-fluid mb-5 px-xl-5 px-lg-5">
           <router-outlet></router-outlet>
+          <div class="bienvenida-sistema" *ngIf="inicio">
+            <img src="../../../../assets/img/sistem-logo.png" width="300px"/>
+          </div>
         </div>
       </div>
     </div>
