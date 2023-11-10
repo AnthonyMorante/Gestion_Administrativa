@@ -1,4 +1,4 @@
-<div class="row page-title"><i class='bi-person-vcard'></i>Clientes</div>
+<div class="row page-title"><i class='bi-boxes'></i>Productos</div>
 <div class="component-content">
   <div class=" my-2">
     <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
@@ -88,7 +88,7 @@
           </div>
           <div class="col-sm-12">
             <label class="form-label">Descripción</label>
-            <textarea type="text" class="form-control form-control-sm" id="descripcion" name="descripcion"
+            <textarea type="text" class="form-control form-control-sm" id="descripcion" name="descripcion" data-validate="no-validate"
               maxLength="500"></textarea>
             <div class="invalid-feedback">
               *Campo Requerido
@@ -127,7 +127,7 @@
           </div>
         </form>
         <div class="mt-4">
-          <span class="title-line">Precios adicionales</span>
+          <span class="title-line">Precios de venta</span>
         </div>
         <form #frmDetalle class="row mb-4">
           <div class="col-sm-2 ms-auto">
@@ -181,7 +181,7 @@
                 </thead>
                 <tbody>
                   <tr *ngIf="detallePrecios.length==0">
-                    <td class="text-center text-muted" colspan="4">Ningún precio adicional añadido</td>
+                    <td class="text-center text-muted" colspan="5">Ningún precio de venta añadido</td>
                   </tr>
                   <tr class="text-end" *ngFor="let item of detallePrecios">
                     <td class="text-center">

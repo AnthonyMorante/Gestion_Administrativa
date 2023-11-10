@@ -920,3 +920,46 @@ table.table-custom tbody:has(i[class^='bi-database']) {
 .dataTables_filter * {
     text-transform: none !important;
 }
+
+@media (max-width:700px){
+  .dataTables_wrapper div:has(.dataTables_length){
+    margin-left: 0px;
+  }
+
+  .dataTables_filter{
+    margin-left: 0px;
+  }
+
+  .dataTables_wrapper div:has(.dataTables_length),
+  .dataTables_wrapper div:has(.dataTables_paginate){
+    width: 100vw !important;
+  }
+  .dataTables_length{
+    text-align: left !important;
+    margin-bottom: 7px;
+  }
+  .dataTables_length select{
+    margin-left: 19px;
+    margin-right: 19px;
+  }
+  .dataTables_info{
+    text-align: left !important;
+    margin-bottom: 7px;
+  }
+  .dataTables_paginate .pagination{
+    margin-left: -16vw !important;
+  }
+
+  .dataTables_wrapper .row:has(.dataTables_filter){
+    box-shadow: none !important;
+    background-color: none !important;
+    background: none !important;
+    border: none !important;
+  }
+  .dataTables_wrapper .row:has(.dataTables_info):has(ul.pagination) {
+    box-shadow: none !important;
+    background-color: none !important;
+    background: none !important;
+    border: none !important;
+  }
+}
