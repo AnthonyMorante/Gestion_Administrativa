@@ -188,8 +188,8 @@
                       <button (click)="eliminarPrecio(item)" type="button" class="btn btn-danger text-white btn-sm"
                         style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
                     </td>
-                    <td>{{item.porcentaje.toFixed(2).replaceAll(".",",")}}%</td>
                     <td>{{getIva(item.idIva).nombre}}</td>
+                    <td>{{item.porcentaje.replaceAll(".",",")}}%</td>
                     <td><b>$</b>{{item.total.toFixed(2).replaceAll(".",",")}}</td>
                     <td><b>$</b>{{(item.totalIva+item.total).toFixed(2).replaceAll(".",",")}}</td>
                   </tr>

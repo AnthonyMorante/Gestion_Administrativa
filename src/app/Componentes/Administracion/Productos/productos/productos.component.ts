@@ -124,7 +124,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   async guardar(): Promise<void> {
     try {
       if (!await js.validarTodo(this.frmDatos.nativeElement)) throw new Error("Verifique los campos requeridos");
-      if(this.detallePrecios.length==0) throw new Error("Debe agregar al menos 1 precio de venta para poder guardar el producto");
+      if (this.detallePrecios.length == 0) throw new Error("Debe agregar al menos 1 precio de venta para poder guardar el producto");
       js.loaderShow();
       const url = `${this.baseUrl}Productos/guardar`;
       let data: any = await this.axios.formToJsonTypes(this.frmDatos.nativeElement);
@@ -242,7 +242,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
         const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
         const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
         const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
-        const valorPorcentaje = (valorPrecio * parseFloat(parseFloat(porcentaje.value).toFixed(2))) / 100;
+        const valorPorcentaje = (valorPrecio * parseFloat(parseFloat(porcentaje.value.replaceAll(",", ".")).toFixed(2))) / 100;
         total.value = valorPorcentaje.toFixed(2).replaceAll(".", ",");
         totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
       } else {
