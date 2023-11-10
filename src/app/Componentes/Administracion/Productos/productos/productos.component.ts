@@ -241,7 +241,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
         const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
         const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
         const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
-        const valorPorcentaje = (valorPrecio * parseInt(porcentaje.value)) / 100;
+        const valorPorcentaje = (valorPrecio * parseFloat(parseFloat(porcentaje.value).toFixed(2))) / 100;
         total.value = valorPorcentaje.toFixed(2).replaceAll(".", ",");
         totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
       } else {
