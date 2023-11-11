@@ -152,7 +152,7 @@ export class AxiosService{
         let list = Array.from(formData);
         for (let index = 0; index < list.length; index++) {
           const [key, value]: any = list[index];
-          obj[key] = (!!numeros.find((x: number) => x == index)) ? parseFloat(value.replaceAll(",", ".")) : value;
+          obj[key] = numeros.findIndex((x: number) => x == index)>=0 ? parseFloat(value.replaceAll(",", ".")) : value;
           if (index == list.length - 1) resolve(obj);
         }
       } catch (e) {
