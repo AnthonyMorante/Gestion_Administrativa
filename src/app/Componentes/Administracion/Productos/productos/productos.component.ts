@@ -102,6 +102,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tituloModal = "Nuevo registro";
     this.idProducto = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
+    js.limpiarForm(this.frmDetalle.nativeElement, 100);
     this.detallePrecios = [];
     js.limpiarForm(this.frmDetalle.nativeElement, 100);
   }
@@ -253,11 +254,34 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       js.handleError(e);
     }
   }
+  handlePorcentajePorPrecio() {
+    try {
+      const totalIva = this.el.nativeElement.querySelector("#totalIva");
+      const precioSinIva=this.el.nativeElement.querySelector("#precio");
+      const precio = this.el.nativeElement.querySelector("#totalIvaD");
+      const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
+      const idIva = this.el.nativeElement.querySelector("#idIvaD");
+      const total = this.el.nativeElement.querySelector("#total");
+      if (!!precio.value) {
+        const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        const valorPrecio = parseFloat(precio.value.replaceAll(",","."));
+        const porcentajeValor=parseFloat(((valorPrecio/(parseFloat(precioSinIva.value.replaceAll(",","."))+(precioSinIva.value.replaceAll(",",".")*iva))*100)).toFixed(2));
+        porcentaje.value=parseFloat((porcentajeValor-100).toFixed(2)).toFixed(2).replaceAll(".",",");
+        total.value = (valorPrecio-parseFloat(totalIva.value.replaceAll(",","."))).toFixed(2).replaceAll(".",",");
+      } else {
+        porcentaje.value = "0";
+      }
+      js.limpiarValidadores(this.frmDetalle.nativeElement);
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
 
   async agregarPrecio(): Promise<void> {
     try {
       if (!this.totalIva.nativeElement.value) throw new Error("Primero debe generar un precio para el producto.");
       if (!await js.validarTodo(this.frmDetalle.nativeElement)) throw new Error("Verifique los campos requeridos");
+      if(this.detallePrecios.length==3) throw new Error("Sólo se permiten 3 precios");
       let obj: any = await this.axios.formToJsonTypes(this.frmDetalle.nativeElement);
       let totalIva = parseFloat(obj.totalIvaD) - parseFloat(obj.total);
       this.detallePrecios.push({

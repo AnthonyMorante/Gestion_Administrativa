@@ -133,7 +133,7 @@
           <div class="col-sm-2 ms-auto">
             <label class="form-label">Porcentaje</label>
             <input type="text" class="form-control form-control-sm text-end" id="porcentaje" name="porcentaje"
-              (focusout)="handleIvaGanancia()" data-validate="decimal" />
+              (focusout)="handleIvaGanancia()"  (keyup.enter)="handleIvaGanancia()" data-validate="decimal" />
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
@@ -155,8 +155,9 @@
           </div>
           <div class="col-sm-2">
             <label class="form-label">PVP</label>
-            <input type="text" class="form-control form-control-sm text-end" id="totalIvaD" name="totalIvaD"
-              data-validate="decimal" readonly />
+            <input type="text" class="form-control form-control-sm text-end" id="totalIvaD" name="totalIvaD" 
+              (focusout)="handlePorcentajePorPrecio()" (keyup.enter)="handlePorcentajePorPrecio()"
+              data-validate="decimal" />
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
