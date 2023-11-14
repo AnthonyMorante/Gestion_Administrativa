@@ -105,7 +105,7 @@
           <div class="col-sm-3">
             <label class="form-label">Precio <small class="fw-bold fs-xs">SIN IVA</small></label>
             <input type="text" class="form-control form-control-sm text-end" id="precio" name="precio"
-              data-validate="decimal" (focusout)="handleIva()" />
+              data-validate="decimal" (focusout)="handleIva()" (keyup.enter)="handleIva()" />
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
@@ -131,20 +131,20 @@
         </div>
         <form #frmDetalle class="row mb-4">
           <div class="col-sm-2 ms-auto">
-            <label class="form-label">Porcentaje</label>
+            <label class="form-label">Utilidad %</label>
             <input type="text" class="form-control form-control-sm text-end" id="porcentaje" name="porcentaje"
               (focusout)="handleIvaGanancia()"  (keyup.enter)="handleIvaGanancia()" data-validate="decimal" />
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
           </div>
-          <div class="col-sm-2">
+          <!-- <div class="col-sm-2">
             <label class="form-label">IVA</label>
             <select class="form-select form-select-sm" id="idIvaD" name="idIvaD" (change)="handleIvaGanancia()">
               <option *ngFor="let item of listaIvas" value="{{item.idIva}}">
                 {{item.nombre}}</option>
             </select>
-          </div>
+          </div> -->
           <div class="col-sm-2">
             <label class="form-label">Ganancia</label>
             <input type="text" class="form-control form-control-sm text-end" id="total" name="total"
@@ -154,8 +154,8 @@
             </div>
           </div>
           <div class="col-sm-2">
-            <label class="form-label">PVP</label>
-            <input type="text" class="form-control form-control-sm text-end" id="totalIvaD" name="totalIvaD" 
+            <label class="form-label">PVP <small class="fw-bold fs-xs">INCLUIDO IVA</small></label>
+            <input type="text" class="form-control form-control-sm text-end" id="totalIvaD" name="totalIvaD"
               (focusout)="handlePorcentajePorPrecio()" (keyup.enter)="handlePorcentajePorPrecio()"
               data-validate="decimal" />
             <div class="invalid-feedback">
@@ -174,7 +174,7 @@
                 <thead class="bg-primary text-white">
                   <tr class="text-end">
                     <th class="text-center"><i class="bi-gear"></i></th>
-                    <th>IVA</th>
+                    <!-- <th>IVA</th> -->
                     <th>Porcentaje</th>
                     <th>Ganancia</th>
                     <th>PVP</th>
@@ -189,7 +189,7 @@
                       <button (click)="eliminarPrecio(item)" type="button" class="btn btn-danger text-white btn-sm"
                         style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
                     </td>
-                    <td>{{getIva(item.idIva).nombre}}</td>
+                    <!-- <td>{{getIva(item.idIva).nombre}}</td> -->
                     <td>{{item.porcentaje.toFixed(2).replaceAll(".",",")}}%</td>
                     <td><b>$</b>{{item.total.toFixed(2).replaceAll(".",",")}}</td>
                     <td><b>$</b>{{(item.totalIva+item.total).toFixed(2).replaceAll(".",",")}}</td>

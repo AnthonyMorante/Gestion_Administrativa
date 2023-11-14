@@ -215,12 +215,13 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
         const valorIva = valorPrecio * parseFloat(iva);
         totalIva.value = (valorPrecio + valorIva).toFixed(2).replaceAll(".", ",");
         this.detallePrecios = [...this.detallePrecios].map((x: any) => {
-          const iva = this.listaIvas.find((i: any) => i.idIva == x.idIva)?.valor;
-          const valorIva = precio.value.replaceAll(",", ".") * parseFloat(iva);
-          const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
-          const valorPorcentaje = (parseFloat(precio.value.replaceAll(",", ".")) * x.porcentaje) / 100;
-          x.total = valorPorcentaje;
-          x.totalIva = valorPrecio;
+
+          const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+          const valorPrecio = parseFloat(totalIva.value.replaceAll(",", "."));
+          const valorPorcentaje = (valorPrecio * parseFloat(x.porcentaje.toFixed(2))) / 100;
+          const valorPvp=valorPorcentaje+valorPrecio;
+          x.total = parseFloat(((valorPvp-valorPrecio)/(1+iva)).toFixed(2).replaceAll(",","."));
+          x.totalIva=parseFloat((parseFloat(valorPvp.toFixed(2).replaceAll(",","."))-((valorPvp-valorPrecio)/(1+iva))).toFixed(2));
           return x;
         });
       } else {
@@ -234,20 +235,27 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleIvaGanancia() {
     try {
-      const totalIva = this.el.nativeElement.querySelector("#totalIvaD");
-      const precio = this.el.nativeElement.querySelector("#precio");
+      const totalIva = this.el.nativeElement.querySelector("#totalIva");
       const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
-      const idIva = this.el.nativeElement.querySelector("#idIvaD");
+      const totalIvaD = this.el.nativeElement.querySelector("#totalIvaD");
       const total = this.el.nativeElement.querySelector("#total");
-      if (!!precio.value && !!porcentaje.value) {
+      // const precio = this.el.nativeElement.querySelector("#precio");
+      const idIva = this.el.nativeElement.querySelector("#idIva");
+      // const total = this.el.nativeElement.querySelector("#total");
+      if (!!totalIva.value && !!porcentaje.value) {
         const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
-        const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
-        const valorPrecio = parseFloat(precio.value.replaceAll(",", ".")) + valorIva;
+        const valorPrecio = parseFloat(totalIva.value.replaceAll(",", "."));
         const valorPorcentaje = (valorPrecio * parseFloat(parseFloat(porcentaje.value.replaceAll(",", ".")).toFixed(2))) / 100;
-        total.value = valorPorcentaje.toFixed(2).replaceAll(".", ",");
-        totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
+        const valorPvp=valorPorcentaje+valorPrecio;
+        total.value = ((valorPvp-valorPrecio)/(1+iva)).toFixed(2).replaceAll(".",",");
+        totalIvaD.value=valorPvp.toFixed(2).replaceAll(".",",");
+        // const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
+        // const valorIva = parseFloat(precio.value.replaceAll(",", ".")) * iva;
+        //
+        // totalIva.value = (valorPrecio + valorPorcentaje).toFixed(2).replaceAll(".", ",");
+
       } else {
-        totalIva.value = "0";
+        totalIvaD.value = "0";
       }
       js.limpiarValidadores(this.frmDetalle.nativeElement);
     } catch (e) {
@@ -256,18 +264,24 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   handlePorcentajePorPrecio() {
     try {
+      // const totalIva = this.el.nativeElement.querySelector("#totalIva");
+      // const precioSinIva=this.el.nativeElement.querySelector("#precio");
+      // const precio = this.el.nativeElement.querySelector("#totalIvaD");
+      // const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
+      //const idIva = this.el.nativeElement.querySelector("#idIva");
+      // const total = this.el.nativeElement.querySelector("#total");
       const totalIva = this.el.nativeElement.querySelector("#totalIva");
-      const precioSinIva=this.el.nativeElement.querySelector("#precio");
-      const precio = this.el.nativeElement.querySelector("#totalIvaD");
       const porcentaje = this.el.nativeElement.querySelector("#porcentaje");
-      const idIva = this.el.nativeElement.querySelector("#idIvaD");
+      const totalIvaD = this.el.nativeElement.querySelector("#totalIvaD");
       const total = this.el.nativeElement.querySelector("#total");
-      if (!!precio.value) {
+      const idIva = this.el.nativeElement.querySelector("#idIva");
+      if (!!totalIvaD.value) {
         const iva = this.listaIvas.find((x: any) => x.idIva == idIva.value)?.valor;
-        const valorPrecio = parseFloat(precio.value.replaceAll(",","."));
-        const porcentajeValor=parseFloat(((valorPrecio/(parseFloat(precioSinIva.value.replaceAll(",","."))+(precioSinIva.value.replaceAll(",",".")*iva))*100)).toFixed(2));
-        porcentaje.value=parseFloat((porcentajeValor-100).toFixed(2)).toFixed(2).replaceAll(".",",");
-        total.value = (valorPrecio-parseFloat(totalIva.value.replaceAll(",","."))).toFixed(2).replaceAll(".",",");
+        const valorPvp = parseFloat(totalIvaD.value.replaceAll(",","."));
+        const valorPrecio = parseFloat(totalIva.value.replaceAll(",","."));
+        const porcentajeValor=((valorPvp/valorPrecio)*100)-100;
+        porcentaje.value=porcentajeValor.toFixed(2).replaceAll(".",",");
+        total.value=((valorPvp-valorPrecio)/(1+iva)).toFixed(2).replaceAll(".",",");
       } else {
         porcentaje.value = "0";
       }
@@ -283,6 +297,8 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!await js.validarTodo(this.frmDetalle.nativeElement)) throw new Error("Verifique los campos requeridos");
       if(this.detallePrecios.length==3) throw new Error("Sólo se permiten 3 precios");
       let obj: any = await this.axios.formToJsonTypes(this.frmDetalle.nativeElement);
+      let idIva=js.document.querySelector("#idIva").value;
+      const iva = this.listaIvas.find((x: any) => x.idIva == idIva);
       let totalIva = parseFloat(obj.totalIvaD) - parseFloat(obj.total);
       this.detallePrecios.push({
         idDetallePrecioProducto: `_${(new Date()).getTime()}`,
@@ -290,7 +306,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
         porcentaje: obj.porcentaje,
         total: obj.total,
         activo: true,
-        idIva: obj.idIvaD
+        idIva: iva.idIva
       });
       js.limpiarForm(this.frmDetalle.nativeElement);
     } catch (e) {
