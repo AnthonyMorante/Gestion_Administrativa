@@ -19,11 +19,11 @@
           <!-- <th class="text-end">Sin Iva</th>
           <th class="text-end">Iva</th>
           <th class="text-end">Con Iva</th> -->
-          <th class="text-end">Precios</th>
+          <th>Precios</th>
         </tr>
       </thead>
       <tbody *ngIf="lista?.length>0" class="">
-        <tr *ngFor="let item of lista">
+        <tr *ngFor="let item of lista" title="{{item.nombre}}">
           <td class="text-center">
             <button (click)="editar(item.idProducto)" type="button" class="btn btn-primary text-white btn-sm"
               style="padding:2px 0 2px 6px"><i class="bi-pencil-square" style="font-size:12px"></i></button>
@@ -46,11 +46,11 @@
           </td>
           <td width="10%">{{item.codigo}}</td>
           <td width="50%">{{item.nombre}}</td>
-          <td class="text-end">{{item.cantidad}}</td>
+          <td width="5%" class="text-end">{{item.cantidad}}</td>
           <!-- <td class="text-end"><b>$</b>{{item.precio?.toFixed(2)}}</td>
           <td class="text-end">{{item.iva}}</td>
           <td class="text-end"><b>$</b>{{item.totalIva?.toFixed(2)}}</td> -->
-          <td class="text-end">
+          <td width="37%" >
             <span *ngIf="getPreciosProducto(item.idProducto).length==0">SIN PRECIOS</span>
             <span *ngFor="let precio of getPreciosProducto(item.idProducto),let i=index"><b>PVP{{i+1}}: </b>${{precio.totalIva?.toFixed(2)}}<br></span>
           </td>

@@ -66,7 +66,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.listarPrecios();
       const url = `${this.baseUrl}Productos/listar`;
-      const columns = `idProducto,fechaRegistro,codigo,nombre,precio,totalIva,iva,activo,activoProducto`;
+      const columns = `idProducto,fechaRegistro,codigo,nombre,activo,activoProducto`;
       //DataTables
       this.dtOptions = {
         destroy: true,
