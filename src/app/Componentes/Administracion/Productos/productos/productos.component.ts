@@ -31,17 +31,18 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   fechaRegistro: Date = new Date();
   //Combos
   listaIvas: any = [];
+  listaPrecios:any=[];
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
-  public ngOnInit() {
+  public async ngOnInit():Promise<void> {
     this.modal = new js.bootstrap.Modal(this.modalDatos.nativeElement, {
       keyboard: false,
       backdrop: 'static',
     });
+    this.listarProductos();
     js.activarValidadores(this.frmDatos.nativeElement);
     js.activarValidadores(this.frmDetalle.nativeElement);
-    this.listarProductos();
-    this.comboIvas();
+    await this.comboIvas();
   }
   public ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
@@ -49,8 +50,21 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
+  async listarPrecios():Promise<void>{
+    try {
+      const url=`${this.baseUrl}Productos/listarPrecios`;
+      this.listaPrecios=(await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  getPreciosProducto(_idProducto:any){
+    return this.listaPrecios.filter((x:any)=>x.idProducto==_idProducto);
+  }
   async listarProductos() {
     try {
+      this.listarPrecios();
       const url = `${this.baseUrl}Productos/listar`;
       const columns = `idProducto,fechaRegistro,codigo,nombre,precio,totalIva,iva,activo,activoProducto`;
       //DataTables
@@ -139,6 +153,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
       js.toastSuccess(`Registro ${!this.idProducto ? "guardado" : "editado"} exitosamente`);
       this.modal.hide();
       this.reloadDataTable();
+      this.listarPrecios();
     } catch (e) {
       js.handleError(e);
     } finally {
