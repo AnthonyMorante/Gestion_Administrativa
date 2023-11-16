@@ -52,7 +52,7 @@
           <td class="text-end"><b>$</b>{{item.totalIva?.toFixed(2)}}</td> -->
           <td width="37%" >
             <span *ngIf="getPreciosProducto(item.idProducto).length==0">SIN PRECIOS</span>
-            <span *ngFor="let precio of getPreciosProducto(item.idProducto),let i=index"><b>PVP{{i+1}}: </b>${{precio.totalIva?.toFixed(2)}}<br></span>
+            <span *ngFor="let precio of getPreciosProducto(item.idProducto),let i=index"><b>PVP{{i+1}}: </b>${{(precio.totalIva+precio.total).toFixed(2)}}<br></span>
           </td>
         </tr>
       </tbody>
