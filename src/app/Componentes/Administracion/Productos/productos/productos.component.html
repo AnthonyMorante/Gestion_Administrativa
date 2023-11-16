@@ -16,9 +16,9 @@
           <th>Código</th>
           <th>Producto</th>
           <th>Stock</th>
-          <th class="text-end">Sin Iva</th>
+          <!-- <th class="text-end">Sin Iva</th>
           <th class="text-end">Iva</th>
-          <th class="text-end">Con Iva</th>
+          <th class="text-end">Con Iva</th> -->
           <th class="text-end">Precios</th>
         </tr>
       </thead>
@@ -47,9 +47,9 @@
           <td width="10%">{{item.codigo}}</td>
           <td width="50%">{{item.nombre}}</td>
           <td class="text-end">{{item.cantidad}}</td>
-          <td class="text-end"><b>$</b>{{item.precio?.toFixed(2)}}</td>
+          <!-- <td class="text-end"><b>$</b>{{item.precio?.toFixed(2)}}</td>
           <td class="text-end">{{item.iva}}</td>
-          <td class="text-end"><b>$</b>{{item.totalIva?.toFixed(2)}}</td>
+          <td class="text-end"><b>$</b>{{item.totalIva?.toFixed(2)}}</td> -->
           <td class="text-end">
             <span *ngIf="getPreciosProducto(item.idProducto).length==0">SIN PRECIOS</span>
             <span *ngFor="let precio of getPreciosProducto(item.idProducto),let i=index"><b>PVP{{i+1}}: </b>${{precio.totalIva?.toFixed(2)}}<br></span>
