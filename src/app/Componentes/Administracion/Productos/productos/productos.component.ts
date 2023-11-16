@@ -116,13 +116,14 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tituloModal = "Nuevo registro";
     this.idProducto = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
-    js.limpiarForm(this.frmDetalle.nativeElement, 100);
     this.detallePrecios = [];
     js.limpiarForm(this.frmDetalle.nativeElement, 100);
   }
 
   async editar(idProducto: string): Promise<void> {
     try {
+      js.limpiarForm(this.frmDetalle.nativeElement);
+      js.limpiarForm(this.frmDatos.nativeElement);
       this.tituloModal = "Editar registro"
       this.idProducto = "";
       const url = `${this.baseUrl}Productos/cargar/${idProducto}`;
