@@ -246,7 +246,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       const secuenciales = (await this.axios.get(url)).data;
       const idTipoDocumento = this.el.nativeElement.querySelector("#idTipoDocumento");
       this.tipoDocumento = idTipoDocumento.options[idTipoDocumento.selectedIndex].text;
-      this.secuencial = secuenciales.find((x: any) => x.idTipoDocumento == idTipoDocumento.value).nombre;
+      this.secuencial = secuenciales.find((x: any) => x.idTipoDocumento == idTipoDocumento.value)?.nombre;
     } catch (e) {
       js.handleError(e);
     }
