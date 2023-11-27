@@ -1,8 +1,0 @@
-.ng-select.ng-invalid {
-    border-color: #fa5c7c;
-    background-color: #ffe6e6;
-  }
-  
-  .ng-select.ng-invalid .ng-clear-wrapper:hover .ng-clear {
-    color: #D0021B;
-  }

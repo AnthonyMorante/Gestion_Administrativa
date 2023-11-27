@@ -1,9 +1,9 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css");
 :root{
   --empresa-primary:#FACE19;
     --empresa-primary-hover:#CFAB10;
     --empresa-primary-rgb: 224, 185, 16;
 }
-@import url(https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css);
 /*ESTILO DEL SCROLLBAR*/
 
 *:not(.not-custom-scrollbar)::-webkit-scrollbar {

@@ -1,12 +1,13 @@
-import { ElementRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import axios from 'axios';
-import { global, js } from '../../main';
+import { js,global } from '../app.config';
 import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AxiosService {
+
   constructor(private router: Router) {
     this.interceptorInit();
   }
