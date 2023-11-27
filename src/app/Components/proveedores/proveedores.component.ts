@@ -59,7 +59,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarProveedores() {
     try {
       const url = `${this.baseUrl}Proveedores/listar`;
-      const columns = "idProveedor,identificacion,razonSocial,telefono,direccion";
+      const columns = "idProveedor,identificacion,razonSocial,representante,telefono,direccion";
       //DataTables
       this.dtOptions = {
         destroy: true,
