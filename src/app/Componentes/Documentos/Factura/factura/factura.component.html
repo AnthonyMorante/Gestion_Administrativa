@@ -33,7 +33,7 @@
           </td>
           <td width="5%" class="text-center">{{_js.getDate(item.fechaEmision)}}</td>
           <td>
-            {{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
+            {{item.establecimiento?.toString().padStart(3,'0')}}-{{item.puntoEmision?.toString().padStart(3,'0')}}-{{item.secuencial?.toString().padStart(9,'0')}}
           </td>
           <td width="25%">{{item.cliente}}</td>
           <td width="30%">{{item.claveAcceso}}</td>
