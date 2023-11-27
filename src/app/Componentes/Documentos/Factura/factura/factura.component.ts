@@ -13,6 +13,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
   styleUrls: ['./factura.component.css'],
 })
 export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
+  _js:any=js;
   baseUrl = `${global.BASE_API_URL}api/`;
   componentTitle: string = "";
   //Datatable
@@ -62,6 +63,8 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     totDescuento: 0
   }
   formaPagoDefault: boolean = true;
+  working:boolean=false;
+  interval=setInterval(()=> { this.verificarEstados() }, 600000);
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -82,7 +85,24 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     this.comboProductos();
     this.comboFormaPagos();
     this.comboTiempoFormaPagos();
+    this.verificarEstados();
   }
+
+  async verificarEstados():Promise<void>{
+    try {
+      if(this.working==true) return;
+      const url=`${this.baseUrl}Facturas/verificarEstados`
+      this.working=true;
+      const res=(await this.axios.get(url)).data;
+      if(res=="empty") return;
+      this.reloadDataTable();
+    } catch (e) {
+      console.warn(e);
+    }finally{
+      this.working=false;
+    }
+  }
+
   ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
   }
@@ -266,13 +286,6 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
   }
-
-  getDate(date: string) {
-    return js.getDate(date);
-  }
-  getHour(date: string) {
-    return js.getHour(date);
-  }
   getColor(estado: number) {
     return `background-color:${global.estados[estado]}`
   }
@@ -322,6 +335,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       this.idCliente = res.idCliente;
       this.identifiacion = res.identificacion;
       js.cargarFormulario(this.frmCliente.nativeElement, res);
+      js.idTipoIdenticacion.value=res.idTipoIdentificacion;
     } catch (e) {
       js.handleError(e);
     }
@@ -380,7 +394,6 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
         valor:parseFloat(valorTotal.toFixed(2)),
         tarifaPorcentaje:producto.tarifaPorcentaje
       });
-      console.log(producto);
       this.idProducto.handleClearClick();
       js.limpiarForm(this.frmProducto.nativeElement, 10);
       this.valorIva = "";
@@ -440,7 +453,6 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.valor=parseFloat(detalle.total.toFixed(2));
     detalle.tarifaPorcentaje=precioActual.tarifaPorcentaje
     this.listaDetalleFactura[index] = detalle;
-    console.log(detalle);
     this.calcularTotales();
   }
 
@@ -534,6 +546,7 @@ export class FacturaComponent implements OnInit, AfterViewInit, OnDestroy {
       js.toastSuccess(`Registro de ${this.tipoDocumento} exitoso`);
       this.modal.hide();
       this.reloadDataTable();
+      this.verificarEstados();
     } catch (e) {
       js.handleError(e);
     } finally {

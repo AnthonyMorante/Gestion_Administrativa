@@ -6,18 +6,48 @@ import { Router } from '@angular/router';
 @Injectable({
   providedIn: 'root'
 })
-export class AxiosService{
-  constructor(private router:Router) { }
+export class AxiosService {
+  constructor(private router: Router) {
+    this.interceptorInit();
+  }
+  private interceptorInit() {
+    axios.interceptors.response.use((response) => response,
+      error => {
+        const status = error?.response?.status;
+        if ([511, 401, 403].includes(status)) {
+          switch (status) {
+            case 511: {
+              this.logout();
+              this.router.navigate(["/login"]);
+              js.toastWarning("Su sesión ha caducado");
+              break;
+            }
+            case 401: {
+              this.logout();
+              js.toastWarning("Su sesión ha caducado");
+              this.router.navigate(["/login"]);
+              break;
+            }
 
-  private async redirect():Promise<void>{
-    if(!await this.validateToken()){
+            case 403: {
+              this.logout();
+              this.router.navigate(["/login"]);
+              js.toastWarning("Su sesión ha caducado");
+              break;
+            }
+          }
+        }
+        return Promise.reject(error);
+      });
+  }
+  private async redirect(): Promise<void> {
+    if (!await this.validateToken()) {
       this.router.navigate(["/login"]);
       js.toastWarning("Su sesión ha caducado");
       js.removeError();
     };
   }
   public async get(url: string): Promise<any> {
-    this.redirect();
     return await (axios.get(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -29,7 +59,6 @@ export class AxiosService{
   }
 
   public async postForm(url: string, formData: FormData): Promise<any> {
-    this.redirect();
     return await axios.post(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -40,7 +69,6 @@ export class AxiosService{
   }
 
   public async putForm(url: string, formData: FormData): Promise<any> {
-    await this.redirect();
     return await axios.put(url, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -51,9 +79,7 @@ export class AxiosService{
   }
 
   public async postFormJson(url: string, formData: FormData): Promise<any> {
-    await this.redirect();
     const obj = await this.formToJson(formData);
-    console.log(obj);
     return await axios.post(url, JSON.stringify(obj), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -65,7 +91,6 @@ export class AxiosService{
   }
 
   public async putFormJson(url: string, formData: FormData): Promise<any> {
-    await this.redirect();
     const obj = await this.formToJson(formData);
     return await axios.put(url, JSON.stringify(obj), {
       headers: {
@@ -79,7 +104,6 @@ export class AxiosService{
 
 
   public async postJson(url: string, object: any): Promise<any> {
-    await this.redirect();
     return await axios.post(url, JSON.stringify(object), {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem(global.token.user)}`,
@@ -98,7 +122,6 @@ export class AxiosService{
   }
 
   public async delete(url: string): Promise<any> {
-    await this.redirect();
     return await (axios.delete(url, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem(
@@ -110,7 +133,6 @@ export class AxiosService{
   }
 
   public async formToJson(formData: any) {
-    await this.redirect();
     return new Promise((resolve: any) => {
       let obj: any = {};
       try {
@@ -128,7 +150,6 @@ export class AxiosService{
   }
 
   public async formToJsonTypes(form: any) {
-    await this.redirect();
     return new Promise(async (resolve: any) => {
       let obj: any = {};
       try {
@@ -152,7 +173,7 @@ export class AxiosService{
         let list = Array.from(formData);
         for (let index = 0; index < list.length; index++) {
           const [key, value]: any = list[index];
-          obj[key] = numeros.findIndex((x: number) => x == index)>=0 ? parseFloat(value.replaceAll(",", ".")) : value;
+          obj[key] = numeros.findIndex((x: number) => x == index) >= 0 ? parseFloat(value.replaceAll(",", ".")) : value;
           if (index == list.length - 1) resolve(obj);
         }
       } catch (e) {
@@ -164,6 +185,7 @@ export class AxiosService{
 
   public async validateToken(): Promise<Boolean> {
     const token = localStorage.getItem(global.token.user);
+    if(!token) return false;
     const url = `${global.BASE_API_URL}api/Security/validateToken`;
     return axios.get(url, {
       headers: {
@@ -174,16 +196,31 @@ export class AxiosService{
       },
     }).then(() => true).catch((error) => {
       console.clear();
-      try {
-        if (token == null) return false;
-        const url = `${global.BASE_API_URL}connect/revoque?id_token_hint=${token}`;
-        axios.get(url).then().catch(e => console.warn(e));
-      } finally {
-        localStorage.removeItem(global.token.user);
-        return false;
-      }
+      this.logout();
+      return false;
     });
   }
 
-
+  public  logout():void{
+    try {
+      const token = localStorage.getItem(global.token.user);
+      if (token == null){
+        localStorage.removeItem(global.token.user);
+        return;
+      }
+      const body = new URLSearchParams();
+      body.append("token", token);
+      body.append("token_type_hint","refresh_token");
+      body.append("client_id","Jwt");
+      body.append("client_secret","My Client Secret");
+      const url = `${global.BASE_API_URL}connect/revocation`;
+      axios.post(url, body.toString(), {
+        headers: {
+          'Content-Type': `application/x-www-form-urlencoded`,
+        },
+      });
+    } finally {
+      localStorage.removeItem(global.token.user);
+    }
+  }
 }

@@ -45,11 +45,11 @@ const routes: Routes = [
         component: ProveedoresComponent,
         canActivate: [userGuard]
       },
-      // {
-      //   path: 'facturas',
-      //   component: FacturaComponent,
-      //   canActivate: [userGuard]
-      // },
+      {
+        path: 'facturas',
+        component: FacturaComponent,
+        canActivate: [userGuard]
+      },
     ],
   },
 

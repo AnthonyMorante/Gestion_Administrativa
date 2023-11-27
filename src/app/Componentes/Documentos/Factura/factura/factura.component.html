@@ -31,7 +31,7 @@
               class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
                 style="font-size:12px"></i></button>
           </td>
-          <td width="5%" class="text-center">{{getDate(item.fechaEmision)}}</td>
+          <td width="5%" class="text-center">{{_js.getDate(item.fechaEmision)}}</td>
           <td>
             {{item.establecimiento.toString().padStart(3,'0')}}-{{item.puntoEmision.toString().padStart(3,'0')}}-{{item.secuencial.toString().padStart(9,'0')}}
           </td>
@@ -39,8 +39,8 @@
           <td width="30%">{{item.claveAcceso}}</td>
           <td width="5%" class="text-center"><span class="badge fw-500"
               [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
-          <td width="10%" class="text-center">{{getDate(item.fechaAutorizacion)}}
-            <b>{{getHour(item.fechaAutorizacion)}}</b>
+          <td width="10%" class="text-center">{{_js.getDate(item.fechaAutorizacion)}}
+            <b>{{_js.getHour(item.fechaAutorizacion)}}</b>
           </td>
           <td class="text-end">{{item.telefonoCliente}}</td>
           <td width="10%" class="text-email">{{item.emailCliente}}</td>
@@ -52,7 +52,6 @@
         </tr>
       </tbody>
     </table>
-
   </div>
 </div>
 
@@ -187,7 +186,7 @@
                       (change)="handleProducto($event)" placeholder="Busque y seleccione un producto o servicio"
                       notFoundText="Sin resultados">
                       <ng-option *ngFor="let item of listaProductos"
-                        [value]="item.idProducto">{{item.nombre}}</ng-option>
+                        [value]="item.idProducto">{{item.codigo}} - {{item.nombre}}</ng-option>
                     </ng-select>
                   </div>
                   <div class="col-sm-auto">

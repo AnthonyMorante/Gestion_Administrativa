@@ -66,7 +66,7 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       this.listarPrecios();
       const url = `${this.baseUrl}Productos/listar`;
-      const columns = `idProducto,fechaRegistro,codigo,nombre,activo,activoProducto`;
+      const columns = `idProducto,activo,activoProducto,codigo,nombre,cantidad,precio`;
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -90,9 +90,9 @@ export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         columns: columns.split(",").map((x: string) => { return { data: x } }),
-        columnDefs: [{ targets: [0], searchable: false, orderable: false },
-        { targets: [1], visible: false }],
-        order: [[1, "desc"]]
+        columnDefs: [{ targets: [0,1,2], searchable: false, orderable: false },
+        { targets: [], visible: false }],
+        order: [[4,"ASC"]]
       };
       //DataTables
     } catch (e) {
