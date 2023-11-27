@@ -186,7 +186,7 @@
                       (change)="handleProducto($event)" placeholder="Busque y seleccione un producto o servicio"
                       notFoundText="Sin resultados">
                       <ng-option *ngFor="let item of listaProductos" [value]="item.idProducto">{{item.codigo}} -
-                        {{item.nombre}}</ng-option>
+                        {{item.nombre}} <b>({{item.cantidad}})</b></ng-option>
                     </ng-select>
                   </div>
                   <div class="col-sm-auto">

@@ -4,17 +4,17 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 import { DataTableDirective, DataTablesModule } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { AxiosService } from '../../Services/axios.service';
-import { js,global } from '../../app.config';
+import { js, global } from '../../app.config';
 
 @Component({
   selector: 'app-facturas',
   standalone: true,
-  imports: [CommonModule,DataTablesModule,NgSelectModule],
+  imports: [CommonModule, DataTablesModule, NgSelectModule],
   templateUrl: './facturas.component.html',
   styleUrl: './facturas.component.css'
 })
 export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
-  _js:any=js;
+  _js: any = js;
   baseUrl = `${global.BASE_API_URL}api/`;
   componentTitle: string = "";
   //Datatable
@@ -64,8 +64,8 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     totDescuento: 0
   }
   formaPagoDefault: boolean = true;
-  working:boolean=false;
-  interval=setInterval(()=> { this.verificarEstados() }, 600000);
+  working: boolean = false;
+  interval = setInterval(() => { this.verificarEstados() }, 600000);
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
@@ -78,6 +78,15 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     js.activarValidadores(this.frmProducto.nativeElement);
     js.activarValidadores(this.frmDetalleFormaPagos.nativeElement);
     js.activarValidadores(this.frmInformacionAdicional.nativeElement);
+    this.frmProducto.nativeElement.addEventListener("submit", (e: any) => {
+      e.preventDefault();
+    });
+    this.frmInformacionAdicional.nativeElement.addEventListener("submit", (e: any) => {
+      e.preventDefault();
+    });
+    this.frmDetalleFormaPagos.nativeElement.addEventListener("submit", (e: any) => {
+      e.preventDefault();
+    });
     this.listarFacturas();
     this.comboTipoIdentificaciones();
     this.comboTiposDocumentos();
@@ -89,18 +98,18 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     this.verificarEstados();
   }
 
-  async verificarEstados():Promise<void>{
+  async verificarEstados(): Promise<void> {
     try {
-      if(this.working==true) return;
-      const url=`${this.baseUrl}Facturas/verificarEstados`
-      this.working=true;
-      const res=(await this.axios.get(url)).data;
-      if(res=="empty") return;
+      if (this.working == true) return;
+      const url = `${this.baseUrl}Facturas/verificarEstados`
+      this.working = true;
+      const res = (await this.axios.get(url)).data;
+      if (res == "empty") return;
       this.reloadDataTable();
     } catch (e) {
       console.warn(e);
-    }finally{
-      this.working=false;
+    } finally {
+      this.working = false;
     }
   }
 
@@ -238,7 +247,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.handleSecuencial()
     }, 200);
     this.calcularTotales();
-
+    this.comboProductos();
   }
 
   async handleSecuencial(): Promise<void> {
@@ -336,7 +345,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.idCliente = res.idCliente;
       this.identifiacion = res.identificacion;
       js.cargarFormulario(this.frmCliente.nativeElement, res);
-      js.idTipoIdenticacion.value=res.idTipoIdentificacion;
+      js.idTipoIdenticacion.value = res.idTipoIdentificacion;
     } catch (e) {
       js.handleError(e);
     }
@@ -376,7 +385,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       if (valorTotal < precioSugerido) descuento = precioSugerido - valorTotal;
       this.listaDetalleFactura.push({
         cantidad: valorCantidad,
-        descuento:parseFloat(descuento.toFixed(2)),
+        descuento: parseFloat(descuento.toFixed(2)),
         subtotal: parseFloat(subtotal.toFixed(2)),
         valorPorcentaje: producto.iva,
         nombreIva: producto.nombreIva,
@@ -388,12 +397,12 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
         idDetallePrecioProducto: producto.idProducto,
         codigo: producto.codigo,
         producto: producto.nombre,
-        nombrePorcentaje:producto.nombreIva,
-        nombre:producto.nombre,
-        totalSinIva:parseFloat(subtotal.toFixed(2)),
-        valorProductoSinIva:parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
-        valor:parseFloat(valorTotal.toFixed(2)),
-        tarifaPorcentaje:producto.tarifaPorcentaje
+        nombrePorcentaje: producto.nombreIva,
+        nombre: producto.nombre,
+        totalSinIva: parseFloat(subtotal.toFixed(2)),
+        valorProductoSinIva: parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
+        valor: parseFloat(valorTotal.toFixed(2)),
+        tarifaPorcentaje: producto.tarifaPorcentaje
       });
       this.idProducto.handleClearClick();
       js.limpiarForm(this.frmProducto.nativeElement, 10);
@@ -445,14 +454,14 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.subtotal = parseFloat((detalle.precio * detalle.cantidad).toFixed(2));
     detalle.nombreIva = precioActual.nombreIva;
     detalle.idIva = precioActual.idIva;
-    detalle.porcentaje =parseFloat((detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0).toFixed(2));
+    detalle.porcentaje = parseFloat((detalle.subtotal > 0 ? detalle.subtotal * precioActual.iva : 0).toFixed(2));
     detalle.total = parseFloat((detalle.subtotal + detalle.porcentaje).toFixed(2));
     detalle.idDetallePrecioProducto = precioActual.idDetallePrecioProducto;
-    detalle.nombrePorcentaje=precioActual.nombreIva;
-    detalle.valorProductoSinIva=parseFloat(precioActual.precio.toFixed(2));
-    detalle.totalSinIva=parseFloat(detalle.precio.toFixed(2));
-    detalle.valor=parseFloat(detalle.total.toFixed(2));
-    detalle.tarifaPorcentaje=precioActual.tarifaPorcentaje
+    detalle.nombrePorcentaje = precioActual.nombreIva;
+    detalle.valorProductoSinIva = parseFloat(precioActual.precio.toFixed(2));
+    detalle.totalSinIva = parseFloat(detalle.precio.toFixed(2));
+    detalle.valor = parseFloat(detalle.total.toFixed(2));
+    detalle.tarifaPorcentaje = precioActual.tarifaPorcentaje
     this.listaDetalleFactura[index] = detalle;
     this.calcularTotales();
   }
@@ -529,7 +538,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
-      if (this.formaPagoDefault && this.listaDetallePagos.length==0) {
+      if (this.formaPagoDefault && this.listaDetallePagos.length == 0) {
         const pago: any = await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);
         pago.valor = this.factura.totalFactura;
         this.listaDetallePagos.push(pago)
@@ -537,7 +546,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.listaDetallePagos.length == 0) throw new Error("Debe agregar el pago o dejar el pago por defecto");
       const emisor: any = await this.axios.formToJsonTypes(this.frmEmisor.nativeElement);
       const cliente: any = await this.axios.formToJsonTypes(this.frmCliente.nativeElement);
-      const factura = { ...this.factura, ...emisor,...cliente };
+      const factura = { ...this.factura, ...emisor, ...cliente };
       factura.formaPago = this.listaDetallePagos;
       factura.informacionAdicional = this.listaAdicionales;
       factura.detalleFactura = this.listaDetalleFactura;
