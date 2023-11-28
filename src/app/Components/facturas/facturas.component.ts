@@ -352,20 +352,29 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleTotalAgregar(): void {
-    let cantidad = this.el.nativeElement.querySelector("#cantidad");
-    let precio = this.el.nativeElement.querySelector("#precio");
-    const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
-    let iva = this.el.nativeElement.querySelector("#iva");
-    const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
-    totalProducto.value = "0";
-    iva.value = "0";
-    if (!cantidad.value || !precio.value) return;
-    cantidad = parseFloat(cantidad.value.replaceAll(",", "."));
-    precio = parseFloat(precio.value.replaceAll(",", "."));
-    const valorIva = (precio * cantidad) * producto.iva;
-    iva.value = valorIva.toFixed(2).replaceAll(".", ",");
-    totalProducto.value = ((cantidad * precio) + valorIva).toFixed(2).replaceAll(".", ",");
-    js.validarTodo(this.frmProducto.nativeElement);
+    try{
+      let cantidad = this.el.nativeElement.querySelector("#cantidad");
+      let precio = this.el.nativeElement.querySelector("#precio");
+      const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
+      let iva = this.el.nativeElement.querySelector("#iva");
+      const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
+      totalProducto.value = "0";
+      iva.value = "0";
+      if (!cantidad.value || !precio.value) return;
+      if(producto.cantidad<parseFloat(cantidad.value.replaceAll(",","."))) {
+        js.toastWarning(`El producto sólo dispone de <b>${producto.cantidad}</b> unidades en stock`);
+        cantidad.value=producto.cantidad.toString().replaceAll(".",",");
+      }
+      cantidad = parseFloat(cantidad.value.replaceAll(",", "."));
+      precio = parseFloat(precio.value.replaceAll(",", "."));
+      const valorIva = (precio * cantidad) * producto.iva;
+      iva.value = valorIva.toFixed(2).replaceAll(".", ",");
+      totalProducto.value = ((cantidad * precio) + valorIva).toFixed(2).replaceAll(".", ",");
+      js.validarTodo(this.frmProducto.nativeElement);
+    } catch(e){
+      js.handleError(e);
+    }
+
   }
 
   async agregar(): Promise<void> {
@@ -376,6 +385,10 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
       const iva = this.el.nativeElement.querySelector("#iva");
       const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
+      if(this.listaDetalleFactura.find((x:any)=>x.idProducto==producto.idProducto)){
+        js.toastInfo("El producto ya existe en factura puede editar la cantidad en la lista");
+        return;
+      }
       let descuento = 0;
       const valorTotal = parseFloat(totalProducto.value.replaceAll(",", "."));
       const valorCantidad = parseFloat(cantidad.value);
@@ -426,6 +439,11 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     const precio = row.querySelector("[data-ref='precio']").querySelector("input");
     let valorPrecio = parseFloat(precio.value.replaceAll(",", "."));
     const cantidad = row.querySelector("[data-ref='cantidad']").querySelector("input");
+    const producto=this.listaProductos.find((x:any)=>x.idProducto==this.listaDetalleFactura[index].idProducto);
+    if(producto.cantidad<parseFloat(cantidad.value.replaceAll(",","."))) {
+      js.toastWarning(`El producto sólo dispone de <b>${producto.cantidad}</b> unidades en stock`);
+      cantidad.value=producto.cantidad.toString().replaceAll(".",",");
+    }
     detalle.cantidad = parseInt(cantidad.value);
     if (valorDescuento > (precioActual.precio * detalle.cantidad)) {
       detalle.descuento = precioActual.precio;

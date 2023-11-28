@@ -15,7 +15,7 @@
           <th>CLIENTE</th>
           <th>CLAVE ACCESO</th>
           <th class="text-center">ESTADO</th>
-          <th class="text-center">FECHA AUTORIZACIÓN</th>
+          <th>FECHA AUTORIZACIÓN</th>
           <th class="text-end">TELÉFONO</th>
           <th>EMAIL</th>
 
@@ -37,7 +37,7 @@
           </td>
           <td width="25%">{{item.cliente}}</td>
           <td width="30%">{{item.claveAcceso}}</td>
-          <td width="5%" class="text-center"><span class="badge fw-500"
+          <td width="5%"><span class="badge fw-500"
               [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span></td>
           <td width="10%" class="text-center">{{_js.getDate(item.fechaAutorizacion)}}
             <b>{{_js.getHour(item.fechaAutorizacion)}}</b>
