@@ -44,7 +44,6 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: 'Inicio', component: InicioComponent },
   { path: '', pathMatch: 'full', redirectTo: 'login' },
   { path: '**', pathMatch: 'full', redirectTo: 'login' }
 ];
