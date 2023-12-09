@@ -280,21 +280,58 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   async xml(claveAcceso: string): Promise<void> {
     try {
-      const url = `${this.baseUrl}Facturas/xml/${claveAcceso}`;
-      const res = (await this.axios.get(url)).data;
+      js.loaderShow();
+      const url = `${this.baseUrl}facturas/descargarXml/${claveAcceso}`;
+      const res = (await this.axios.getFile(url)).data;
+      const blob = new Blob([res], { type: 'application/xml' });
+      const urlFile = URL.createObjectURL(blob);
+      let a = document.createElement('a');
+      document.body.appendChild(a);
+      a.setAttribute('style', 'display: none');
+      a.href = urlFile;
+      a.download = `${claveAcceso}.xml`;
+      a.click();
+      window.URL.revokeObjectURL(urlFile);
+      a.remove();
     } catch (e) {
       js.handleError(e);
+    } finally {
+      js.loaderHide();
     }
   }
 
   async pdf(claveAcceso: string): Promise<void> {
     try {
-      const url = `${this.baseUrl}Facturas/pdf/${claveAcceso}`;
-      const res = (await this.axios.get(url)).data;
+      js.loaderShow();
+      const url = `${this.baseUrl}facturas/descargarPdf/${claveAcceso}`;
+      const res = (await this.axios.getFile(url)).data;
+      const blob = new Blob([res], { type: 'application/pdf' });
+      const urlFile = URL.createObjectURL(blob);
+      let a = document.createElement('a');
+      document.body.appendChild(a);
+      a.setAttribute('style', 'display: none');
+      a.href = urlFile;
+      a.download = `${claveAcceso}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(urlFile);
+      a.remove();
     } catch (e) {
       js.handleError(e);
+    } finally {
+      js.loaderHide();
     }
-
+  }
+  async reenviar(claveAcceso: string): Promise<void> {
+    try {
+      js.loaderShow();
+      const url = `${this.baseUrl}Facturas/reenviar/${claveAcceso}`;
+      await this.axios.get(url);
+      this.listarFacturas();
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      js.loaderHide();
+    }
   }
   getColor(estado: number) {
     return `background-color:${global.estados[estado]}`
@@ -352,7 +389,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleTotalAgregar(): void {
-    try{
+    try {
       let cantidad = this.el.nativeElement.querySelector("#cantidad");
       let precio = this.el.nativeElement.querySelector("#precio");
       const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
@@ -361,9 +398,9 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       totalProducto.value = "0";
       iva.value = "0";
       if (!cantidad.value || !precio.value) return;
-      if(producto.cantidad<parseFloat(cantidad.value.replaceAll(",","."))) {
+      if (producto.cantidad < parseFloat(cantidad.value.replaceAll(",", "."))) {
         js.toastWarning(`El producto sólo dispone de <b>${producto.cantidad}</b> unidades en stock`);
-        cantidad.value=producto.cantidad.toString().replaceAll(".",",");
+        cantidad.value = producto.cantidad.toString().replaceAll(".", ",");
       }
       cantidad = parseFloat(cantidad.value.replaceAll(",", "."));
       precio = parseFloat(precio.value.replaceAll(",", "."));
@@ -371,7 +408,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       iva.value = valorIva.toFixed(2).replaceAll(".", ",");
       totalProducto.value = ((cantidad * precio) + valorIva).toFixed(2).replaceAll(".", ",");
       js.validarTodo(this.frmProducto.nativeElement);
-    } catch(e){
+    } catch (e) {
       js.handleError(e);
     }
 
@@ -385,7 +422,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       const totalProducto = this.el.nativeElement.querySelector("#totalProducto");
       const iva = this.el.nativeElement.querySelector("#iva");
       const producto = this.listaProductos.find((x: any) => x.idProducto == this.idProducto.selectedValues[0]);
-      if(this.listaDetalleFactura.find((x:any)=>x.idProducto==producto.idProducto)){
+      if (this.listaDetalleFactura.find((x: any) => x.idProducto == producto.idProducto)) {
         js.toastInfo("El producto ya existe en factura puede editar la cantidad en la lista");
         return;
       }
@@ -414,7 +451,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
         nombre: producto.nombre,
         totalSinIva: parseFloat(subtotal.toFixed(2)),
         valorProductoSinIva: parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
-        valor: parseFloat(valorTotal.toFixed(2)),
+        valor: parseFloat((parseFloat(precio.value.replaceAll(",", "."))+producto.iva).toFixed(2)),
         tarifaPorcentaje: producto.tarifaPorcentaje
       });
       this.idProducto.handleClearClick();
@@ -439,10 +476,10 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     const precio = row.querySelector("[data-ref='precio']").querySelector("input");
     let valorPrecio = parseFloat(precio.value.replaceAll(",", "."));
     const cantidad = row.querySelector("[data-ref='cantidad']").querySelector("input");
-    const producto=this.listaProductos.find((x:any)=>x.idProducto==this.listaDetalleFactura[index].idProducto);
-    if(producto.cantidad<parseFloat(cantidad.value.replaceAll(",","."))) {
+    const producto = this.listaProductos.find((x: any) => x.idProducto == this.listaDetalleFactura[index].idProducto);
+    if (producto.cantidad < parseFloat(cantidad.value.replaceAll(",", "."))) {
       js.toastWarning(`El producto sólo dispone de <b>${producto.cantidad}</b> unidades en stock`);
-      cantidad.value=producto.cantidad.toString().replaceAll(".",",");
+      cantidad.value = producto.cantidad.toString().replaceAll(".", ",");
     }
     detalle.cantidad = parseInt(cantidad.value);
     if (valorDescuento > (precioActual.precio * detalle.cantidad)) {
@@ -478,7 +515,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.nombrePorcentaje = precioActual.nombreIva;
     detalle.valorProductoSinIva = parseFloat(precioActual.precio.toFixed(2));
     detalle.totalSinIva = parseFloat(detalle.precio.toFixed(2));
-    detalle.valor = parseFloat(detalle.total.toFixed(2));
+    detalle.valor = parseFloat((detalle.valorPorcentaje+detalle.valorProductoSinIva).toFixed(2));
     detalle.tarifaPorcentaje = precioActual.tarifaPorcentaje
     this.listaDetalleFactura[index] = detalle;
     this.calcularTotales();

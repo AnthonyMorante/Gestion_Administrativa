@@ -201,7 +201,18 @@ export class AxiosService {
       return false;
     });
   }
-
+  public async getFile(url: string): Promise<any> {
+    return await axios({
+      method: "GET",
+      url,
+      responseType: 'arraybuffer',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem(
+          global.token.user
+        )}`
+      }
+    });
+  }
   public  logout():void{
     try {
       const token = localStorage.getItem(global.token.user);
