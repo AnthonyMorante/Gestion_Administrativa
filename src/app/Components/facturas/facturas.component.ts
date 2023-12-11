@@ -65,7 +65,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   formaPagoDefault: boolean = true;
   working: boolean = false;
-  interval = setInterval(() => { this.verificarEstados() }, 600000);
+  interval = setInterval(() => { this.verificarEstados() }, 10000);
   constructor(private axios: AxiosService, private el: ElementRef) { }
 
   ngOnInit() {
