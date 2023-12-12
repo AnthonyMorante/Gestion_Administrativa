@@ -12,9 +12,15 @@ export class AxiosService {
     this.interceptorInit();
   }
   private interceptorInit() {
-    axios.interceptors.response.use((response) => response,
-      error => {
+    axios.interceptors.response.use((response) => response
+      ,error => {
         const status = error?.response?.status;
+        if(!status){
+          this.logout();
+          this.router.navigate(["/login"]);
+          js.toastWarning("Su sesión ha caducado");
+          return;
+        }
         if ([511, 401, 403].includes(status)) {
           switch (status) {
             case 511: {
@@ -40,13 +46,6 @@ export class AxiosService {
         }
         return Promise.reject(error);
       });
-  }
-  private async redirect(): Promise<void> {
-    if (!await this.validateToken()) {
-      this.router.navigate(["/login"]);
-      js.toastWarning("Su sesión ha caducado");
-      js.removeError();
-    };
   }
   public async get(url: string): Promise<any> {
     return await (axios.get(url, {
@@ -226,13 +225,14 @@ export class AxiosService {
       body.append("client_id","Jwt");
       body.append("client_secret","My Client Secret");
       const url = `${global.BASE_API_URL}connect/revocation`;
-      axios.post(url, body.toString(), {
+      axios.post(url, body?.toString(), {
         headers: {
           'Content-Type': `application/x-www-form-urlencoded`,
         },
       });
     } finally {
       localStorage.removeItem(global.token.user);
+      setTimeout(()=>js.top?.location.reload(),1900);
     }
   }
 }

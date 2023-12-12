@@ -100,7 +100,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async verificarEstados(): Promise<void> {
     try {
-      if (this.working == true) return;
+      if (this.working == true || this.lista.filter((x:any)=>x.idTipoEstadoSri!=2).length==0) return;
       const url = `${this.baseUrl}Facturas/verificarEstados`
       this.working = true;
       const res = (await this.axios.get(url)).data;
