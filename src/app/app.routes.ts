@@ -7,6 +7,8 @@ import { LoginComponent } from './Components/login/login.component';
 import { ProductosComponent } from './Components/productos/productos.component';
 import { ProveedoresComponent } from './Components/proveedores/proveedores.component';
 import { userGuard } from './Guards/user.guard';
+import { LotesComponent } from './Components/lotes/lotes.component';
+import { ConfiguracionesComponent } from './Components/configuraciones/configuraciones.component';
 
 export const routes: Routes = [
   {
@@ -17,6 +19,11 @@ export const routes: Routes = [
   {
     path: 'Inicio', component: InicioComponent, canActivate: [userGuard],
     children: [
+      {
+        path: 'configuraciones-sri',
+        component: ConfiguracionesComponent,
+        canActivate: [userGuard]
+      },
       {
         path: 'clientes',
         component: ClientesComponent,
@@ -30,6 +37,11 @@ export const routes: Routes = [
       {
         path: 'productos',
         component: ProductosComponent,
+        canActivate: [userGuard]
+      },
+      {
+        path: 'lotes',
+        component: LotesComponent,
         canActivate: [userGuard]
       },
       {

@@ -1,0 +1,67 @@
+<div class="row page-title"><i class='bi-gear'></i>Configuraciones SRI</div>
+<div class="component-content">
+<div class="card">
+  <div class="card-body">
+      <form class="row" id="frmDatos" (submit)="$event.preventDefault()">
+        <div class="row">
+          <div class="col-sm-4">
+            <label class="form-label">Ruc</label>
+            <input class="form-control form-control-sm text-end" id="identificacion" name="identificacion" data-validate="ruc" [maxLength]="14"/>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8">
+            <label class="form-label">Razón Social</label>
+            <input class="form-control form-control-sm" id="razonSocial" name="razonSocial" [maxLength]="200"/>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-4">
+            <label class="form-label">Teléfono</label>
+            <input class="form-control form-control-sm text-end" id="telefono" name="telefono" data-validate="numeros" [maxLength]="14"/>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8">
+            <label class="form-label">Dirección Matriz</label>
+            <textarea class="form-control form-control-sm" id="direccionMatriz" name="direccionMatriz" [maxLength]="200"></textarea>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8">
+            <label class="form-label">Firma</label>
+            <input type="file" accept=".p12" class="form-control form-control-sm" id="archivoLogo" name="archivoLogo" data-validate="no-validate"/>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-8">
+            <label class="form-label">Archivo Logo</label>
+            <input type="file" accept=".p12" class="form-control form-control-sm" id="archivoLogo" name="archivoLogo"data-validate="no-validate"/>
+            <div class="invalid-feedback">
+              * Campo requerido
+            </div>
+          </div>
+        </div>
+        <div class="mt-3">
+          <a class="btn btn-secondary btn-sm me-1" [routerLink]="['/Inicio']">Cancelar</a>
+          <button type="button" class="btn btn-primary btn-sm">Guardar Cambios</button>
+        </div>
+      </form>
+  </div>
+</div>
+</div>

@@ -1,0 +1,70 @@
+<div class="row page-title"><i class='bi-cart-plus'></i>Lotes</div>
+<div class="component-content">
+  <div class=" my-2">
+    <form id="frmDatos" class="row">
+      <div class="col-sm-6">
+        <label class="form-label">Producto</label>
+        <ng-select #idProducto id="idProducto" [clearable]="true" [virtualScroll]="true"
+          placeholder="Busque y seleccione un producto"
+          notFoundText="Sin resultados">
+          @for(item of listaProductos;track item.idProducto){
+            <ng-option [value]="item.idProducto">{{item.codigo}} -
+              {{item.nombre}} <b>({{item.cantidad}})</b>
+            </ng-option>
+          }
+        </ng-select>
+        <div class="invalid-feedback">
+          * Campo requerido
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <label class="form-label">Cantidad</label>
+        <input class="form-control form-control-sm text-end" data-validate="decimal-no-cero" id="cantidad" name="cantidad"/>
+        <div class="invalid-feedback">
+          * Campo requerido
+        </div>
+      </div>
+      <div class="col-sm-auto mt-4">
+        <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Agregar Lote</button>
+      </div>
+    </form>
+    <div class="table-responsive p-1">
+      <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
+        <thead>
+          <tr>
+            <th class="text-center w-gear"><i class="bi-gear"></i></th>
+            <th>Fecha Registro</th>
+            <th class="text-end">Cantidad</th>
+            <th>Código</th>
+            <th>Producto</th>
+            <th>Usuario Registro</th>
+          </tr>
+        </thead>
+        @if(lista.length>0){
+        <tbody>
+          @for(item of lista;track idLote){
+          <tr>
+            <td class="text-center">
+              <button (click)="eliminar(item.idLote)" type="button" class="btn btn-danger text-white btn-sm"
+                style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
+            </td>
+            <td class="text-nowrap">{{item.fechaRegistro.substring(0,10).split('-').reverse().join('-')}} <b>{{item.fechaRegistro.substring(11,16)}}{{(item.fechaRegistro.substring(11,13))>=12?"PM":"AM"}}</b></td>
+            <td class="text-end">{{item.cantidad}}</td>
+            <td>{{item.codigo}}</td>
+            <td>{{item.producto}}</td>
+            <td>{{item.usuario}}</td>
+          </tr>
+          }
+        </tbody>
+        }@else{
+        <tbody>
+          <tr>
+            <td colspan="6" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+          </tr>
+        </tbody>
+        }
+      </table>
+
+    </div>
+  </div>
+</div>

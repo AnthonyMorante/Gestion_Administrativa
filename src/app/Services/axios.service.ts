@@ -16,9 +16,8 @@ export class AxiosService {
       ,error => {
         const status = error?.response?.status;
         if(!status){
-          this.logout();
+          this.logout(true);
           this.router.navigate(["/login"]);
-          js.toastWarning("Su sesión ha caducado");
           return;
         }
         if ([511, 401, 403].includes(status)) {
@@ -212,7 +211,7 @@ export class AxiosService {
       }
     });
   }
-  public  logout():void{
+  public  logout(internal?:boolean):void{
     try {
       const token = localStorage.getItem(global.token.user);
       if (token == null){
@@ -232,7 +231,10 @@ export class AxiosService {
       });
     } finally {
       localStorage.removeItem(global.token.user);
-      setTimeout(()=>js.top?.location.reload(),1900);
+      if(internal)
+        if(!!js.document.querySelector(".modal-backdrop")){
+          js.top?.location.reload()
+        }
     }
   }
 }

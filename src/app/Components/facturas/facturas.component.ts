@@ -100,7 +100,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async verificarEstados(): Promise<void> {
     try {
-      if (this.working == true || this.lista.filter((x:any)=>x.idTipoEstadoSri!=2).length==0) return;
+      if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2).length == 0) return;
       const url = `${this.baseUrl}Facturas/verificarEstados`
       this.working = true;
       const res = (await this.axios.get(url)).data;
@@ -451,7 +451,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
         nombre: producto.nombre,
         totalSinIva: parseFloat(subtotal.toFixed(2)),
         valorProductoSinIva: parseFloat(parseFloat(precio.value.replaceAll(",", ".")).toFixed(2)),
-        valor: parseFloat((parseFloat(precio.value.replaceAll(",", "."))+producto.iva).toFixed(2)),
+        valor: parseFloat((parseFloat(precio.value.replaceAll(",", ".")) + producto.iva).toFixed(2)),
         tarifaPorcentaje: producto.tarifaPorcentaje
       });
       this.idProducto.handleClearClick();
@@ -515,7 +515,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     detalle.nombrePorcentaje = precioActual.nombreIva;
     detalle.valorProductoSinIva = parseFloat(precioActual.precio.toFixed(2));
     detalle.totalSinIva = parseFloat(detalle.precio.toFixed(2));
-    detalle.valor = parseFloat((detalle.valorPorcentaje+detalle.valorProductoSinIva).toFixed(2));
+    detalle.valor = parseFloat((detalle.valorPorcentaje + detalle.valorProductoSinIva).toFixed(2));
     detalle.tarifaPorcentaje = precioActual.tarifaPorcentaje
     this.listaDetalleFactura[index] = detalle;
     this.calcularTotales();

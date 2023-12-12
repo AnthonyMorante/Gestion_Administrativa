@@ -126,6 +126,11 @@ function activarValidadores(e) {
                         e.addEventListener("keyup", () => {
                             soloNumerosNoCero(e);
                         }),
+                        "decimal-no-cero" == t &&
+                        e.addEventListener("keyup", () => {
+                          parseToDecimal(e),
+                          decimalNoCero(e);
+                        }),
                         "letras" == t &&
                         e.addEventListener("keyup", () => {
                             soloLetras(e);
@@ -173,6 +178,11 @@ function activarValidadores(e) {
                 "numeros-no-cero" == t &&
                 e.addEventListener("keyup", () => {
                     soloNumerosNoCero(e);
+                }),
+                "decimal-no-cero" == t &&
+                e.addEventListener("keyup", () => {
+                  parseToDecimal(e),
+                  decimalNoCero(e);
                 }),
                 "numeros-no-validate" == t &&
                 e.addEventListener("keyup", () => {
@@ -488,6 +498,18 @@ function decimal(e) {
             t(i);
     })
 };
+function decimalNoCero(e) {
+  return new Promise((t) => {
+      e.classList.remove("is-invalid");
+      let _ = e.parentElement.querySelector(".invalid-feedback"),
+          i = !0;
+      _ && (_.innerText = "* Campo requerido"),
+          "" == e.value.trim() && (e.classList.add("is-invalid"), (i = !1)),
+          "" == e.value.split(",")[1] && (_ && (_.innerText = "* Valor inv\xe1lido"), e.classList.add("is-invalid"), (i = !1)),
+          0.1 > parseFloat(e.value.replaceAll(",", ".")) && (_ && (_.innerText = "* M\xednimo 0.1"), e.classList.add("is-invalid"), (i = !1)),
+          t(i);
+  })
+};
 function soloNumeros(e) {
     return new Promise((t) => {
         e.classList.remove("is-invalid");
@@ -557,7 +579,8 @@ async function validarTodo(e) {
                 o = await todoDecimales(e),
                 l = await todoClaves(e),
                 v = await todoNoEspacios(e);
-            c = _ * i * r * a * l * o * s * n * v * ru;
+                d = await todoDecimalesNoCero(e);
+            c = _ * i * r * a * l * o * s * n * v * ru *d;
             t(c > 0);
         } catch (_) {
             console.log(`${_}`);
@@ -716,6 +739,26 @@ async function todoDecimales(e) {
         console.log(`${_}`);
     }
     return await t;
+};
+async function todoDecimalesNoCero(e) {
+  let t;
+  try {
+      t = new Promise(async (t) => {
+          let _ = !0,
+              i = 0,
+              r = e.querySelectorAll('input[data-validate="decimal-no-cero"]');
+          if (0 == r.length) {
+              t(!0);
+              return;
+          }
+          r.forEach(async (e) => {
+              (await decimalNoCero(e)) || (_ = !1), i == r.length - 1 && t(_), i++;
+          });
+      });
+  } catch (_) {
+      console.log(`${_}`);
+  }
+  return await t;
 };
 async function todoCedulas(e) {
     let t;
