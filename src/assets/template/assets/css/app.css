@@ -2033,3 +2033,6 @@ tr td[colspan] i{
   width: 100%;
   height: calc(100vh - 217px);
 }
+.fs-xs2{
+ font-size: 10px;
+}
