@@ -3204,7 +3204,9 @@ button.swal2-confirm[style*="background-color: red"]:hover {
   font-weight: 600 !important;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
-
+input.is-invalid ~ a[id^="_pvw_"]{
+  display: none !important;
+  }
 /* .ng-option:hover,
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected,
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-selected.ng-option-marked{

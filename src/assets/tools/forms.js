@@ -1188,10 +1188,10 @@ function crearPasswordPreview() {
             const element = document.querySelector(`#_pvw_${item.id}`);
             if (!element) {
                 const elementHTML = `<a id="_pvw_${item.id}" href='javascript:;' onclick='__handlePasswordView("${item.id}")' tabindex="-1"
-                style='position:sticky;float:right;margin-right:10px;margin-top:-28px;z-index:999'><i class='bi-eye-fill text-primary'></i></a>`;
+                style='position:absolute;margin-left:${item.offsetWidth*0.88}px;margin-top:-${item.classList.contains("form-control-sm")?item.offsetHeight/1.19:item.offsetHeight/1.3}px;z-index:999'><i class='bi-eye-fill text-dark'></i></a>`;
                 item.insertAdjacentHTML("afterend", elementHTML);
             } else {
-                item.value == "" ? element.hidden = true : element.removeAttribute("hidden");
+                item.value == "" ? element.setAttribute("hidden",true) : element.removeAttribute("hidden");
             }
 
 
