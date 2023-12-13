@@ -4,7 +4,7 @@
     <div class="card-body">
       <form class="row" id="frmDatos" (submit)="$event.preventDefault()">
         <div class="row">
-          <div class="col-auto alert alert-dark shadow-sm bg-gradient fs-6 p-2 mb-0 ms-2">
+          <div class="col-auto alert alert-secondary shadow-sm fs-6 p-2 mb-0 ms-2">
             <label class="me-1 fw-500">RUC:</label>{{datos.identificacion}}
           </div>
         </div>
@@ -71,7 +71,7 @@
         </div>
         <div class="mt-3">
           <a class="btn btn-secondary btn-sm me-1" [routerLink]="['/Inicio']">Cancelar</a>
-          <button type="button" class="btn btn-primary btn-sm">Guardar Cambios</button>
+          <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Guardar Cambios</button>
         </div>
       </form>
     </div>
@@ -91,16 +91,16 @@
         <form id="frmFirma" (submit)="$event.preventDefault();validarFirma()">
           <div class="col-sm-6 mx-auto">
             <label class="form-label">Ingrese la contraseña de la firma digital</label>
-            <input class="form-control form-control-sm" id="codigo" name="codigo" [maxLength]="50" />
+            <input type="password" class="form-control form-control-sm" id="codigo" name="codigo" [maxLength]="50" />
             <div class="invalid-feedback">
               * Campo requerido
             </div>
           </div>
         </form>
       </div>
-      <div class="text-center bg-light py-2">
+      <div class="modal-footer-center bg-light py-2">
         <button type="button" class="btn btn-secondary btn-sm mx-1" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary btn-sm mx-1">Validar</button>
+        <button type="button" class="btn btn-primary btn-sm mx-1" (click)="validarFirma()">Validar</button>
       </div>
     </div>
   </div>
