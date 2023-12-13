@@ -43,8 +43,7 @@ function limpiarForm(e,time) {
             }
         });
     }
-};
-
+}
 function activarValidadores(e) {
     if (!e) {
         console.error("No se ha enviado ning\xfan form");
@@ -206,19 +205,15 @@ function activarValidadores(e) {
         }
     });
 }
-
 function noEspacios(e) {
     e.value = e.value.replaceAll(" ", "");
 }
-
 function minusculas(e) {
     e.value = e.value.toLocaleLowerCase();
 }
-
 function mayusculas(e) {
     e.value = e.value.toUpperCase();
 }
-
 function limpiarSelect(e) {
     try {
         let t = $(e)[0].selectize;
@@ -229,7 +224,6 @@ function limpiarSelect(e) {
         console.warn(`limpiarSelectize: ${i.message}`);
     }
 }
-
 function cargarFormulario(e, t) {
     try {
 
@@ -259,8 +253,7 @@ function cargarFormulario(e, t) {
     } catch (_) {
         console.warn(`${_.message}`);
     }
-};
-
+}
 function cargarFormularioInForm(e, t) {
     try {
         if (!t) throw Error("No se han enviado los datos o el form");
@@ -289,8 +282,7 @@ function cargarFormularioInForm(e, t) {
     } catch (_) {
         console.warn(`${_.message}`);
     }
-};
-
+}
 function cargarFormularioInFormNoSelect2(e, t) {
     try {
         if (!t) throw Error("No se han enviado los datos o el form");
@@ -315,7 +307,7 @@ function cargarFormularioInFormNoSelect2(e, t) {
     } catch (_) {
         console.warn(`${_.message}`);
     }
-};
+}
 function validarVacio(e) {
     return new Promise((t) => {
         try {
@@ -336,8 +328,7 @@ function validarVacio(e) {
             t(!1);
         }
     })
-};
-
+}
 function parseToDecimal(e) {
     (e.value = e.value.replace(/(?!^[\-\d\,.])[^\d\\d\,.]/g, "")),
         (e.value = e.value.replaceAll("d", "")),
@@ -345,7 +336,7 @@ function parseToDecimal(e) {
         (e.value = e.value.replaceAll(".", ",")),
         (e.value = e.value.replaceAll("-", "")),
         e.value.split(",").length > 2 && (e.value = e.value.substring(0, e.value.length - 1));
-};
+}
 async function validarCedula(e) {
     let t,
         _ = e.parentElement.querySelector(".invalid-feedback");
@@ -401,8 +392,7 @@ async function validarCedula(e) {
         console.log(i), (t = !1);
     }
     return await t;
-};
-
+}
 async function validarRuc(e) {
     let t,
         _ = e.parentElement.querySelector(".invalid-feedback");
@@ -458,8 +448,7 @@ async function validarRuc(e) {
         console.log(i), (t = !1);
     }
     return await t;
-};
-
+}
 function validarEmail(e) {
     return new Promise((t) => {
         let _ = !0,
@@ -472,7 +461,7 @@ function validarEmail(e) {
         let r = e.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
         null == r && (e.classList.add("is-invalid"), (_ = !1)), t(_);
     })
-};
+}
 function validarNoEspacios(e) {
     return new Promise((t) => {
         let _ = !0,
@@ -485,7 +474,7 @@ function validarNoEspacios(e) {
             t(1);
         }
     })
-};
+}
 function decimal(e) {
     return new Promise((t) => {
         e.classList.remove("is-invalid");
@@ -497,7 +486,7 @@ function decimal(e) {
             0 > parseFloat(e.value.replaceAll(",", ".")) && (_ && (_.innerText = "* M\xednimo 0"), e.classList.add("is-invalid"), (i = !1)),
             t(i);
     })
-};
+}
 function decimalNoCero(e) {
   return new Promise((t) => {
       e.classList.remove("is-invalid");
@@ -509,7 +498,7 @@ function decimalNoCero(e) {
           0.1 > parseFloat(e.value.replaceAll(",", ".")) && (_ && (_.innerText = "* M\xednimo 0.1"), e.classList.add("is-invalid"), (i = !1)),
           t(i);
   })
-};
+}
 function soloNumeros(e) {
     return new Promise((t) => {
         e.classList.remove("is-invalid");
@@ -521,7 +510,7 @@ function soloNumeros(e) {
         (e.value = e.value.replace(/[`~!@#$%^&*()_|+\=?;:'",.<>\{\}\[\]\\\/]/gi, ""));
         "" == e.value.trim() ? (e.classList.add("is-invalid"), t(!1)) : t(!0);
     })
-};
+}
 function soloNumerosNoCero(e) {
     return new Promise((t) => {
         e.classList.remove("is-invalid"),
@@ -533,8 +522,7 @@ function soloNumerosNoCero(e) {
             (e.value = e.value.replace(/[`~!@#$%^&*()_|+\=?;:'",.<>\{\}\[\]\\\/]/gi, "")),
             "" == e.value.trim() ? (e.classList.add("is-invalid"), t(!1)) : 0 == parseInt(e.value) ? (e.classList.add("is-invalid"), t(!1)) : ((e.value = parseInt(e.value)), t(!0));
     })
-};
-
+}
 function soloNumerosNoCeroNoValidate(e){
   (e.value = e.value.replace(/[a-zA-Z]/g, "")),
   (e.value = e.value.replaceAll(" ", "")),
@@ -552,7 +540,7 @@ function soloLetras(e) {
             (e.value = e.value.replace(/[`~!@#$%^&*()_|+\=?;:'",.<>\{\}\[\]\\\/]/gi, "")),
             "" == e.value.trim() ? (e.classList.add("is-invalid"), t(!1)) : t(!0);
     })
-};
+}
 function validarClave(e) {
     return new Promise((t) => {
         let _ = !0;
@@ -565,7 +553,7 @@ function validarClave(e) {
             "" == i.value && (i.classList.add("is-invalid"), (a.innerText = "* Campo requerido"), (_ = !1)),
             t(_);
     })
-};
+}
 async function validarTodo(e) {
     return await new Promise(async (t) => {
         try {
@@ -586,7 +574,7 @@ async function validarTodo(e) {
             console.log(`${_}`);
         }
     });
-};
+}
 async function todoVacios(e) {
     let t;
     try {
@@ -619,7 +607,7 @@ async function todoVacios(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoEmail(e) {
     let t;
     try {
@@ -639,7 +627,7 @@ async function todoEmail(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoNoEspacios(e) {
     let t;
     try {
@@ -659,7 +647,7 @@ async function todoNoEspacios(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoNumeros(e) {
     let t;
     try {
@@ -679,7 +667,7 @@ async function todoNumeros(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoNumerosNoCero(e) {
     let t;
     try {
@@ -699,7 +687,7 @@ async function todoNumerosNoCero(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoLetras(e) {
     let t;
     try {
@@ -719,7 +707,7 @@ async function todoLetras(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoDecimales(e) {
     let t;
     try {
@@ -739,7 +727,7 @@ async function todoDecimales(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function todoDecimalesNoCero(e) {
   let t;
   try {
@@ -759,7 +747,7 @@ async function todoDecimalesNoCero(e) {
       console.log(`${_}`);
   }
   return await t;
-};
+}
 async function todoCedulas(e) {
     let t;
     try {
@@ -779,8 +767,7 @@ async function todoCedulas(e) {
         console.log(`${_}`);
     }
     return await t;
-};
-
+}
 async function todoRucs(e) {
     let t;
     try {
@@ -800,18 +787,17 @@ async function todoRucs(e) {
         console.log(`${_}`);
     }
     return await t;
-};
-
+}
 async function disableLogin(e) {
     e.querySelectorAll("input,select,button").forEach((e) => {
         e.disabled = !0;
     });
-};
+}
 async function enableLogin(e) {
     e.querySelectorAll("input,select,button").forEach((e) => {
         e.disabled = !1;
     });
-};
+}
 async function todoClaves(e) {
     let t;
     try {
@@ -831,13 +817,13 @@ async function todoClaves(e) {
         console.log(`${_}`);
     }
     return await t;
-};
+}
 async function parseHora(e) {
     return new Date(Date.parse(e)).toLocaleTimeString()
-};
+}
 async function parseFecha(e) {
     return new Date(Date.parse(e)).toLocaleDateString()
-};
+}
 async function controlarRangoFechas(e, t) {
     let _ = new Date().toISOString().split("T")[0];
     e?.setAttribute("min", _),
@@ -865,7 +851,7 @@ async function controlarRangoFechas(e, t) {
             let r = sessionStorage.getItem("fechaDesde");
             sessionStorage.getItem("fechaHasta") < r ? (i && (i.innerText = "* Fecha fuera de rango"), _.target.classList.add("is-invalid")) : (e?.classList.remove("is-invalid"), t?.classList.remove("is-invalid"));
         });
-};
+}
 function validarRangoFechas(e, t) {
     return new Promise((_) => {
         if (e && t) {
@@ -878,26 +864,22 @@ function validarRangoFechas(e, t) {
             }
         } else console.log("No se han enviado los dos objetos de fecha requeridos"), _(!1);
     })
-};
-
+}
 function getHoraFormat(e) {
     am_pm;
-};
-
+}
 function bloquearBotones() {
     document.querySelectorAll("button,a").forEach((e) => {
         e.dataset.guardar && (e.innerHTML = "Espere..."), e.getAttribute("data-event") && ((e.dataset.buttonContent = e.innerHTML), (e.innerHTML = "Espere...")), e.classList.add("no-event"), e.setAttribute("disabled", "true");
     });
     document.querySelector("html").classList.add("_block");
-};
-
+}
 function desbloquearBotones() {
     document.querySelectorAll("button,a").forEach((e) => {
         e.dataset.guardar && (e.innerHTML = "Guardar"), e.dataset.buttonContent && ((e.innerHTML = e.dataset.buttonContent), e.removeAttribute("data-button-content")), e.classList.remove("no-event"), e.removeAttribute("disabled");
     });
     document.querySelector("html").classList.remove("_block");
-};
-
+}
 function limpiarSelect2(e) {
     try {
         e &&
@@ -909,8 +891,7 @@ function limpiarSelect2(e) {
     } catch (t) {
         console.warn(t.message);
     }
-};
-
+}
 function addAntiForgeryToken(e) {
     try {
         let t = document.querySelector("[name='__RequestVerificationToken']");
@@ -919,8 +900,7 @@ function addAntiForgeryToken(e) {
     } catch (_) {
         console.error(`addAntiForgeryToken: ${_.message}`);
     }
-};
-
+}
 function copiarAlPortaPapeles(_mensaje) {
     navigator.clipboard.writeText(`${_mensaje.replaceAll("'", "").replaceAll('"', '').replaceAll("<br>", "\n").replaceAll("</b>", "\n")}`);
     toastSuccess("Texto copiado al portapapeles", "topCenter", 1009);
@@ -1011,8 +991,7 @@ async function handleError(e) {
     } catch (_) {
         console.log(_), console.error("Error");
     }
-};
-
+}
 function limpiarValidadores(e) {
     e &&
         e.querySelectorAll("input,select,textarea").forEach((e) => {
@@ -1023,63 +1002,41 @@ function limpiarValidadores(e) {
                 }
             } else e.classList.remove("is-invalid");
         });
-};
-
+}
 function formToUpperCase(e) {
     e &&
         e.querySelectorAll("input,select,textarea").forEach((e) => {
             e.dataset?.validate == "email" || e.hasAttribute("password") || e.hasAttribute("no-uppercase") || (e.value = e.value.toUpperCase());
         });
-};
-
+}
 function ocultarEventos() {
     document.querySelectorAll("[onclick]").forEach((item) => {
         let fn = item.getAttribute("onclick"),
             fnEncript = CryptoJS.AES.encrypt(fn, "juancarloslozadacastillo.!191989");
         item.removeAttribute("onclick"), (item.dataset.event = fnEncript), item.addEventListener("click", () => eval(fn));
     });
-};
-
+}
 function toBase64(e) {
     return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(e));
-};
-
-
+}
 function encriptar(texto) {
     return CryptoJS.AES.encrypt(texto.toString(),
     "Juancarloslozadacastillo.!191989", { iv: "1989" }).toString();
 }
-
 function desencriptar(textoEncriptado) {
     return CryptoJS.AES.decrypt(textoEncriptado?.replaceAll(" ", "+"), "Juancarloslozadacastillo.!191989", { iv: "1989" }).toString(CryptoJS.enc.Utf8);
 }
-
 function loaderShow(_texto) {
     try {
         const _element = document.createElement("span");
         _element.id = "__loader_jc_lc_191989";
         _element.innerHTML = `${_texto || "CARGANDO"}${"<div class='loader-atom'><div>"}`;
-        // document.querySelector("body").append(_element);
-        // const _p_el = _element.getBoundingClientRect();
-        // let _b_el = document.elementsFromPoint(_p_el.x, _p_el.y);
-        // if (_b_el.length >= 0) _b_el = _b_el.filter(x => x != _element)[0]
-        // if (!!_b_el) {
-        //     const _bg = window.getComputedStyle(_b_el)?.getPropertyValue("background-color");
-        //     if (!!_bg) {
-        //         const _rgba = [...(_bg.split("(")[1].split(")")[0]).split(",")];
-        //         const luma = 0.2126 * parseInt(_rgba[0]) + 0.7152 * parseInt(_rgba[1]) + 0.0722 * parseInt(_rgba[0]);
-        //         if (luma < 40) {
-        //             _element.classList.add("light")
-        //         }
-        //     }
-        // }
     } catch (e) {
         console.warn(e);
     } finally {
         bloquearBotones();
     }
-};
-
+}
 function loaderHide() {
     try {
         const _element = document.querySelector("#__loader_jc_lc_191989");
@@ -1089,12 +1046,11 @@ function loaderHide() {
     } finally {
         desbloquearBotones();
     }
-};
+}
 document.querySelectorAll("script").forEach((e) => {
     e.src = CryptoJS.AES.encrypt(e.src, "juancarloslozadacastillo.!191989");
 });
 window.addEventListener("load", () => ocultarEventos());
-
 function disableForm(form) {
     form.querySelectorAll("input,select").forEach(item => {
         item.setAttribute("readonly", true);
@@ -1102,14 +1058,12 @@ function disableForm(form) {
     form.querySelectorAll("button").forEach(item => {
         item.disabled = true;
     });
-};
-
+}
 function disableFormNoButton(form) {
     form.querySelectorAll("input,select").forEach(item => {
         item.setAttribute("readonly", true);
     });
-};
-
+}
 function enableForm(form) {
     form.querySelectorAll("input,select").forEach(item => {
         if (item.dataset.disabled != undefined) item.setAttribute("readonly", true);
@@ -1118,8 +1072,7 @@ function enableForm(form) {
     form.querySelectorAll("button").forEach(item => {
         item.disabled = false;
     });
-};
-
+}
 function limitarFechaInput(input, min, max) {
     try {
         if (!!min) {
@@ -1135,17 +1088,15 @@ function limitarFechaInput(input, min, max) {
     } catch (e) {
         console.warn(`${e.message}`);
     }
-};
-
+}
 const jsonHeaders = {
     headers: {
         'Content-Type': 'application/json'
     }
-};
+}
 function getDateValue(_inputDate) {
     return moment(_inputDate.value, moment.ISO_8601)._d;
 }
-
 function todayDate(){
   return moment.tz("America/Guayaquil").format().split("T")[0];
 }
@@ -1156,13 +1107,11 @@ function todayTime(){
 function today(){
   return moment.tz("America/Guayaquil").format();
 }
-
 function getDateOnly() {
     let _f = new Date();
     _f.setHours(0, 0, 0, 0);
     return _f;
 }
-
 function getDate(e){
   try {
     const f=e.split("T")[0].split("-");
@@ -1171,7 +1120,6 @@ function getDate(e){
     return e;
   }
 }
-
 function getHour(e){
   try {
     const h=e.split("T")[1];
@@ -1181,7 +1129,6 @@ function getHour(e){
     return e;
   }
 }
-
 function crearPasswordPreview() {
     document.querySelectorAll("[type='password']").forEach(item => {
         item.addEventListener("keyup", () => {
@@ -1190,15 +1137,17 @@ function crearPasswordPreview() {
                 const elementHTML = `<a id="_pvw_${item.id}" href='javascript:;' onclick='__handlePasswordView("${item.id}")' tabindex="-1"
                 style='position:absolute;margin-left:${item.offsetWidth*0.88}px;margin-top:-${item.classList.contains("form-control-sm")?item.offsetHeight/1.19:item.offsetHeight/1.3}px;z-index:999'><i class='bi-eye-fill text-dark'></i></a>`;
                 item.insertAdjacentHTML("afterend", elementHTML);
+                window.addEventListener("resize",()=>{
+                  const _item=document.querySelector(`#${item.id}`);
+                  const _element=document.querySelector(`#_pvw_${item.id}`);
+                  _element.style.marginLeft=`${_item.offsetWidth*0.88}px`
+                });
             } else {
                 item.value == "" ? element.setAttribute("hidden",true) : element.removeAttribute("hidden");
             }
-
-
-        })
+        });
     });
 }
-
 function crearPasswordPreviewLogin() {
     document.querySelectorAll("[type='password']").forEach(item => {
         item.addEventListener("keyup", () => {
@@ -1215,9 +1164,6 @@ function crearPasswordPreviewLogin() {
         })
     });
 }
-
-
-
 function __handlePasswordView(item) {
     try {
         item = document.querySelector(`#${item}`);
@@ -1240,20 +1186,16 @@ function __handlePasswordView(item) {
         console.warn(e);
     }
 }
-
 function loaderDataTable() {
     return `<div class='loader-datatable-container'><div class="loader-datatable"></div></div>
     `;
 }
-
 function notFoundDataTable() {
     return "<p class='my-0'><i class='bi-database-exclamation fs-dt-lg not-found-data'></i></p><p class='fw-bold fc-dt'>No se encontraron resultados</p>";
 }
-
 function notDataDataTable() {
     return "<p class='my-0'><i class='bi-database fs-dt-lg not-found-data'></i></p><p class='fw-bold fc-dt'>Ningún registro disponible</p>";
 }
-
 function dataTableEs() {
     return {
     "processing": "Procesando...",
@@ -1497,8 +1439,7 @@ function dataTableEs() {
         "renameTitle": "Cambiar Nombre Estado"
     }
 }
-};
-
+}
 function select2(select, dropdownParent) {
     if (!!dropdownParent) {
         $(`#${select}`).select2({
@@ -1508,7 +1449,6 @@ function select2(select, dropdownParent) {
         $(`#${select}`).select2();
     }
 }
-
 function validarClaves(idClave, idConfir) {
     return new Promise(resolve => {
         let clave = document.querySelector(`#${idClave}`);
@@ -1529,7 +1469,6 @@ function validarClaves(idClave, idConfir) {
         resolve(mensaje);
     });
 }
-
 function removeError(){
     setTimeout(()=>{
         document.querySelector(".error")?.closest("div.iziToast-capsule")?.remove();
