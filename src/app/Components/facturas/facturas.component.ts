@@ -242,6 +242,8 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     js.limpiarForm(this.frmEmisor.nativeElement, 100);
     js.limpiarForm(this.frmDetalleFormaPagos.nativeElement, 100);
     js.limpiarForm(this.frmInformacionAdicional.nativeElement, 100);
+    js.identificacion.value="";
+    js.idTipoIdenticacion.classList.remove("readonly");
     setTimeout(() => {
       this.el.nativeElement.querySelector("#fechaEmision").value = js.todayDate();
       this.handleSecuencial()
@@ -378,6 +380,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
         this.nuevoCliente = true;
         return;
       }
+      js.idTipoIdenticacion.classList.add("readonly");
       this.nuevoCliente = false;
       this.idCliente = res.idCliente;
       this.identifiacion = res.identificacion;
