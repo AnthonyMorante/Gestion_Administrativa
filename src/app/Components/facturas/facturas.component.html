@@ -554,31 +554,119 @@
 
 <div class="modal fade glass" #modalCambios tabindex="-1" role="dialog" aria-labelledby="modalCambiosLabel"
   aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable" role="document">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
     <div class="modal-content bg-primary">
       <div class="modal-header py-2">
-        <label class="modal-title text-white" id="modalCambiosLabel">Valor Recibido</label>
+        <label class="modal-title text-white" id="modalCambiosLabel"></label>
         <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"
           (click)="modalC.hide()">
         </button>
       </div>
       <div class="modal-body bg-white">
-        <form #frmDatos class="row">
+        <form #frmCambios class="row">
 
-          <div class="col-sm-6">
-            <label class="form-label">Valor Recibido</label>
-            <input type="text" class="form-control form-control-sm text-end" id="telefono" name="telefono"
-              data-validate="numeros" maxLength="500" maxlength="500" />
-            <div class="invalid-feedback">
-              *Campo Requerido
+          <div class="row  mt-2">
+
+            <div class="col-sm-6 text-end" >
+
+              <label  class="lblCambio">Total a Cobrar</label>
+
+            </div>
+
+            <div class="col-sm-6">
+
+              <input readonly  class="form-control iptCambio form-control-sm text-end" 
+                id="totalCobrar"
+                name="totalCobrar"
+                data-validate="decimal"
+                maxLength="500" maxlength="500"
+                />
+
+                
+              <div class="invalid-feedback">
+                *Campo Requerido
+              </div>
+            </div>
+
+          </div>
+
+
+
+          <div class="row  mt-2">
+
+            <div class="col-sm-6 text-end">
+
+              <label  class="lblCambio">Valor Recibido</label>
+
+            </div>
+
+
+            <div class="col-sm-6 ">
+
+
+              <input type="text" class="form-control form-control-sm iptCambio text-end"  id="telefono" name="telefono"
+                data-validate="numeros" maxLength="500" maxlength="500" 
+                id="valorRecibido"
+                name="valorRecibido"
+                (keyup)="calcularTotalesCambios($event.target)"
+                />
+              <div class="invalid-feedback">
+                *Campo Requerido
+              </div>
+
             </div>
           </div>
 
+
+          <div class="row mt-2 ">
+
+
+            <div class="col-sm-6 text-end">
+
+              <label  class="lblCambio">Saldo</label>
+
+            </div>
+
+
+            <div class="col-sm-6">
+
+              <input type="text" class="form-control form-control-sm text-end iptCambio" id="telefono" name="telefono"
+                data-validate="numeros" maxLength="500" maxlength="500"
+                id="saldo"
+                name="saldo"
+                readonly
+                />
+              <div class="invalid-feedback">
+                *Campo Requerido
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="row mt-2 ">
+
+            <div class="col-sm-6 text-end">
+
+              <label  class="lblCambio">Cambio</label>
+
+            </div>
+
+            <div class="col-sm-6">
+
+              <input type="text" class="form-control form-control-sm text-end iptCambio" id="telefono" name="telefono"
+                data-validate="numeros" maxLength="500" maxlength="500" 
+                id="cambio"
+                name="cambio"
+                readonly
+                />
+            </div>
+          </div>
         </form>
       </div>
       <div class="modal-footer bg-light py-2">
-        <button type="button" class="btn btn-primary btn-sm"  (click)="guardar()" >Guardar</button>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="modalC.hide()"  >Cancelar</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Guardar</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modalC.hide()">Cancelar</button>
       </div>
     </div>
   </div>

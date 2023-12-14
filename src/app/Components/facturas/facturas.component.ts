@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 import { DataTableDirective, DataTablesModule } from 'angular-datatables';
@@ -65,10 +65,13 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     totalFactura: 0,
     totDescuento: 0
   }
+  valorRecibido:number=0;
+  saldo:number=0;
+  cambio:number=0;
   formaPagoDefault: boolean = true;
   working: boolean = false;
   interval = setInterval(() => { this.verificarEstados() }, 10000);
-  constructor(private axios: AxiosService, private el: ElementRef) { }
+  constructor(private axios: AxiosService, private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
     this.identificacion = document.querySelector("#identificacion");
@@ -527,6 +530,45 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     this.calcularTotales();
   }
 
+
+  calcularTotalesCambios(e:any):void{
+
+    try {
+      let valorRecibido=this.el.nativeElement.querySelector("#valorRecibido");
+      let totalCobrar=this.el.nativeElement.querySelector("#totalCobrar");
+      let cambio=this.el.nativeElement.querySelector("#cambio");
+      let saldo=this.el.nativeElement.querySelector("#saldo");
+      valorRecibido.value =e.value.toString().replace(".", ",");
+      let valorCambio = valorRecibido.value.replace(",", ".") - totalCobrar.value.replace(",", ".");
+      cambio.value= valorCambio.toFixed(2).replaceAll(".", ",");
+      if(valorCambio<0) {
+
+        saldo.value= (valorCambio * - 1).toFixed(2).replaceAll(".", ",");
+        cambio.value= (valorCambio * - 1).toFixed(2).replaceAll(".", ",");
+        this.renderer.addClass(cambio, 'is-invalid');
+        
+
+      }else{
+
+          saldo.value= 0.00.toFixed(2).replaceAll(".", ",");
+          this.renderer.removeClass(cambio, 'is-invalid');
+
+      }
+
+      this.factura.valorRecibido=parseFloat (valorRecibido.value.replaceAll(",", "."));
+      this.factura.saldo=parseFloat (saldo.value.replaceAll(",", "."));
+      this.factura.cambio=parseFloat (cambio.value.replaceAll(",", "."));
+      console.log(this.factura);
+  
+
+    } catch (e) {
+      js.handleError(e);
+    }
+      
+    
+
+  }
+
   calcularTotales(): void {
     try {
       this.factura.subtotal = parseFloat((this.listaDetalleFactura.map((x: any) => { return x.subtotal }).reduce((pre: number, value: number) => pre + value, 0)).toFixed(2));
@@ -535,6 +577,11 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.factura.iva12 = parseFloat(this.listaDetalleFactura.map((x: any) => { return x.porcentaje }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
       this.factura.totDescuento = parseFloat(this.listaDetalleFactura.map((x: any) => { return x.descuento }).reduce((pre: number, value: number) => pre + value, 0).toFixed(2));
       this.factura.totalFactura = parseFloat((this.listaDetalleFactura.map((x: any) => { return x.total }).reduce((pre: number, value: number) => pre + value, 0)).toFixed(2));
+      this.el.nativeElement.querySelector("#totalCobrar").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
+      this.el.nativeElement.querySelector("#saldo").value = 0.00.toFixed(2).replaceAll(".", ",");
+      this.el.nativeElement.querySelector("#cambio").value = 0.00.toFixed(2).replaceAll(".", ",");
+
+
       if (this.listaDetallePagos.length == 0) {
         this.el.nativeElement.querySelector("#valor").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
       } else {
