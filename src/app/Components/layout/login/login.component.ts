@@ -1,8 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AxiosService } from '../../Services/axios.service';
-import { js, global } from '../../app.config';
+import { AxiosService } from '../../../Services/axios.service';
+import { js, global } from '../../../app.config';
 
 @Component({
   selector: 'app-login',
@@ -39,6 +39,7 @@ export class LoginComponent implements OnInit {
       const res = (await this.axios.postXForm(this.baseUrl, body)).data;
       localStorage.setItem(global.token.user, res.access_token);
       this.router.navigate(["/Inicio"]);
+      console.clear();
     } catch (e) {
       js.handleError(e);
     } finally {

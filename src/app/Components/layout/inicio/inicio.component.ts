@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd, RouterModule } from '@angular/router';
-import { AxiosService } from '../../Services/axios.service';
-import { js,global } from '../../app.config';
+import { AxiosService } from '../../../Services/axios.service';
+import { js,global } from '../../../app.config';
 import { jwtDecode } from 'jwt-decode';
 
 @Component({
