@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { global, js } from '../../app.config';
 import { AxiosService } from '../../Services/axios.service';
 import { DataTableDirective, DataTablesModule } from 'angular-datatables';
@@ -9,12 +17,15 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule, DataTablesModule],
   templateUrl: './facturas-proveedores.component.html',
-  styleUrl: './facturas-proveedores.component.css'
+  styleUrl: './facturas-proveedores.component.css',
 })
-export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
+export class FacturasProveedoresComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   lista: any = [];
   modal: any;
-  @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective =
+    {} as DataTableDirective;
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   mensajeDataTable: string = js.loaderDataTable();
@@ -24,11 +35,6 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   public formasPagos: any = [];
   public idFactura: number = 0;
   private baseUrl: string = `${global.BASE_API_URL}api/FacturasProveedores/`;
-
-
-
-
-
 
   //retenciones
   _js: any = js;
@@ -53,18 +59,14 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     subtotal: 0,
     iva12: 0,
     totalFactura: 0,
-    totDescuento: 0
-  }
-
-
-
-
+    totDescuento: 0,
+  };
 
   constructor(
     private _axios: AxiosService,
     private el: ElementRef,
     private renderer: Renderer2
-  ) { }
+  ) {}
   ngOnInit() {
     this.modal = new js.bootstrap.Modal(js.modalDatos, {
       keyboard: false,
@@ -72,21 +74,24 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     });
     this.listarFacturas();
     //retenciones
-    this.modalRetencion = new js.bootstrap.Modal(this.modalRetenciones.nativeElement, {
-      keyboard: false,
-      backdrop: 'static',
-    });
-    this.el.nativeElement.querySelector("#docSustento").value = "FACTURA";
-    this.el.nativeElement.querySelector("#docSustento").disabled = true;;
+    this.modalRetencion = new js.bootstrap.Modal(
+      this.modalRetenciones.nativeElement,
+      {
+        keyboard: false,
+        backdrop: 'static',
+      }
+    );
+    this.el.nativeElement.querySelector('#docSustento').value = 'FACTURA';
+    this.el.nativeElement.querySelector('#docSustento').disabled = true;
     this.comboEstablecimientos();
     this.comboPuntosEmisiones();
     this.comboFormaPagos();
     this.comboTiempoFormaPagos();
     setTimeout(() => {
-      this.el.nativeElement.querySelector("#fechaEmision").value = js.todayDate();
+      this.el.nativeElement.querySelector('#fechaEmision').value =
+        js.todayDate();
       this.handleSecuencial();
     }, 200);
-
   }
   ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
@@ -95,10 +100,10 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     this.dtTrigger.unsubscribe();
   }
 
-
   handleDefaultFormaPago(defaultFormaPago: any): void {
     this.formaPagoDefault = defaultFormaPago.checked;
-    this.el.nativeElement.querySelector("#valor").value = this.retenciones.totalFactura.toFixed(2).replaceAll(".", ",");
+    this.el.nativeElement.querySelector('#valor').value =
+      this.retenciones.totalFactura.toFixed(2).replaceAll('.', ',');
   }
 
   async handleSecuencial(): Promise<void> {
@@ -138,7 +143,6 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-
   async comboPuntosEmisiones() {
     try {
       const url = `${this.baseUrlRetencion}Retenciones/puntosEmisiones`;
@@ -149,47 +153,46 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   }
 
   handleNumeroFactura(): void {
-    const establecimiento = this.el.nativeElement.querySelector("#idEstablecimiento").value;
-    const puntoEmision = this.el.nativeElement.querySelector("#idPuntoEmision").value;
-    this.establecimiento = (this.listaEstablecimientos.find((x: any) => x.idEstablecimiento == establecimiento).nombre).toString().padStart(3, '0');
-    this.puntoEmision = (this.listaPuntosEmisiones.find((x: any) => x.idPuntoEmision == puntoEmision).nombre).toString().padStart(3, '0');
+    const establecimiento =
+      this.el.nativeElement.querySelector('#idEstablecimiento').value;
+    const puntoEmision =
+      this.el.nativeElement.querySelector('#idPuntoEmision').value;
+    this.establecimiento = this.listaEstablecimientos
+      .find((x: any) => x.idEstablecimiento == establecimiento)
+      .nombre.toString()
+      .padStart(3, '0');
+    this.puntoEmision = this.listaPuntosEmisiones
+      .find((x: any) => x.idPuntoEmision == puntoEmision)
+      .nombre.toString()
+      .padStart(3, '0');
   }
 
-  async cargaRetencion(autorizacion:number){
-
+  async cargaRetencion(autorizacion: number) {
     try {
-
-     const url = `${this.baseUrlRetencion}Retenciones/unDato?claveAcceso=${autorizacion}`;
-     this.listaUnaRetencion = (await this._axios.get(url)).data;
-     const nComprobante = this.el.nativeElement.querySelector("#nComprobante");
-     const claveAcceso = this.el.nativeElement.querySelector("#claveAcceso");
-     const base = this.el.nativeElement.querySelector("#base");
-     const bBaseImponible = this.el.nativeElement.querySelector("#bBaseImponible");
-     nComprobante.value=`${this.listaUnaRetencion.estab}${this.listaUnaRetencion.ptoEmi}${this.listaUnaRetencion.secuencial}`;
-     claveAcceso.value= this.listaUnaRetencion.claveAcceso;
-     base.value=this.listaUnaRetencion.totalSinImpuesto;
-     bBaseImponible.value=this.listaUnaRetencion.valor;
-     this.retenciones.totalFactura=this.listaUnaRetencion.importeTotal;
-     console.log(this.listaUnaRetencion);
-     console.log(nComprobante);
-
+      const url = `${this.baseUrlRetencion}Retenciones/unDato?claveAcceso=${autorizacion}`;
+      this.listaUnaRetencion = (await this._axios.get(url)).data;
+      const nComprobante = this.el.nativeElement.querySelector('#nComprobante');
+      const claveAcceso = this.el.nativeElement.querySelector('#claveAcceso');
+      const base = this.el.nativeElement.querySelector('#base');
+      const bBaseImponible =
+        this.el.nativeElement.querySelector('#bBaseImponible');
+      nComprobante.value = `${this.listaUnaRetencion.estab}${this.listaUnaRetencion.ptoEmi}${this.listaUnaRetencion.secuencial}`;
+      claveAcceso.value = this.listaUnaRetencion.claveAcceso;
+      base.value = this.listaUnaRetencion.totalSinImpuesto;
+      bBaseImponible.value = this.listaUnaRetencion.valor;
+      this.retenciones.totalFactura = this.listaUnaRetencion.importeTotal;
+      console.log(this.listaUnaRetencion);
+      console.log(nComprobante);
     } catch (e) {
-
       js.handleError(e);
-      
     }
-
   }
-
-
-
-
-
 
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}listar`;
-      const columns = "idFactura,fechaRegistro,fechaEmision,nombreComercial,razonSocial,importeTotal";
+      const columns =
+        'idFactura,fechaRegistro,fechaEmision,nombreComercial,razonSocial,importeTotal';
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -202,7 +205,11 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
             this.lista = [];
             const res = (await this._axios.postJson(url, _data)).data;
             this.lista = res.data;
-            (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
+            res.data.length == 0 && !!_data.search.value
+              ? (this.mensajeDataTable = js.notFoundDataTable())
+              : res.data.length == 0 && !_data.search.value
+              ? (this.mensajeDataTable = js.notDataDataTable())
+              : (this.mensajeDataTable = js.loaderDataTable());
             resolve({
               recordsTotal: res.recordsTotal,
               recordsFiltered: res.recordsFiltered,
@@ -212,9 +219,11 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
             js.handleError(e);
           }
         },
-        columns: columns.split(",").map((x: string) => { return { data: x } }),
+        columns: columns.split(',').map((x: string) => {
+          return { data: x };
+        }),
         columnDefs: [{ targets: [0], searchable: false, orderable: false }],
-        order: [[1, "desc"]]
+        order: [[1, 'desc']],
       };
       //DataTables
     } catch (e) {
@@ -222,10 +231,12 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     }
   }
   reloadDataTable(): void {
-    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) =>
+      dtInstance.ajax.reload()
+    );
   }
   nuevo() {
-    js.modalDatosLabel.innerText = "NUEVA FACTURA DE PROVEEDOR";
+    js.modalDatosLabel.innerText = 'NUEVA FACTURA DE PROVEEDOR';
     js.limpiarForm(js.frmXml);
     this.factura = null;
     this.productos = [];
@@ -245,19 +256,25 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
         return;
       }
       js.loaderShow();
-      let url = `${this.baseUrl}leerXml`
+      let url = `${this.baseUrl}leerXml`;
       let data = new FormData(js.frmXml);
       const res = (await this._axios.postForm(url, data)).data;
       this.factura = res.factura;
-      this.productosProveedores = res.productosProveedores.filter((x:any)=>this.factura.sriDetallesFacturas.map((x:any)=>x.codigoPrincipal).includes(x.codigoPrincipal));
+      this.productosProveedores = res.productosProveedores.filter((x: any) =>
+        this.factura.sriDetallesFacturas
+          .map((x: any) => x.codigoPrincipal)
+          .includes(x.codigoPrincipal)
+      );
       this.productos = res.productos;
       this.formasPagos = res.formasPagos;
       this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
-        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo).formaPago;
+        x.formaPagoTexto = this.formasPagos.find(
+          (f: any) => x.formaPago == f.codigo
+        ).formaPago;
         return x;
       });
       setTimeout(() => {
-        js.tbodyDetalle.querySelectorAll("select").forEach((item: any) => {
+        js.tbodyDetalle.querySelectorAll('select').forEach((item: any) => {
           js.select2(item.id, js.modalDatos);
         });
         js.activarValidadores(js.tbodyDetalle);
@@ -285,13 +302,15 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       js.modalDatosLabel.innerHTML = `FACTURA N°</b>${this.factura.estab}-${this.factura.ptoEmi}-${this.factura.secuencial}`;
       this.productosProveedores = res.productosProveedores;
       this.productos = res.productos;
-      this.formasPagos=res.formasPagos;
+      this.formasPagos = res.formasPagos;
       this.factura.sriPagos = [...this.factura.sriPagos].map((x: any) => {
-        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo)?.formaPago;
+        x.formaPagoTexto = this.formasPagos.find(
+          (f: any) => x.formaPago == f.codigo
+        )?.formaPago;
         return x;
       });
       setTimeout(() => {
-        js.tbodyDetalle.querySelectorAll("select").forEach((item: any) => {
+        js.tbodyDetalle.querySelectorAll('select').forEach((item: any) => {
           js.select2(item.id, js.modalDatos);
         });
         js.activarValidadores(js.tbodyDetalle);
@@ -308,31 +327,65 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
 
   handleReferenciaInterna(codigoPrincipal: any, selectId: any) {
     const idProducto = js.tbodyDetalle.querySelector(`#s2_${selectId}_select`);
-    this.productosProveedores[selectId] = { idProducto: idProducto.value, codigoPrincipal, identificacion: this.factura.ruc };
+    this.productosProveedores[selectId] = {
+      idProducto: idProducto.value,
+      codigoPrincipal,
+      identificacion: this.factura.ruc,
+    };
   }
 
   selectedItem(codigoPrincipal: any, idProducto: any): boolean {
-    return !!this.productosProveedores.find((x: any) => x?.codigoPrincipal == codigoPrincipal && x?.idProducto == idProducto);
+    return !!this.productosProveedores.find(
+      (x: any) =>
+        x?.codigoPrincipal == codigoPrincipal && x?.idProducto == idProducto
+    );
   }
 
   subTotal0(): string {
-    return this.factura.sriDetallesFacturas.map((x:any)=>{ return x.sriDetallesFacturasImpuestos[0]}).filter((x: any) => x?.codigo == 0).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
+    return this.factura.sriDetallesFacturas
+      .map((x: any) => {
+        return x.sriDetallesFacturasImpuestos[0];
+      })
+      .filter((x: any) => x?.codigo == 0)
+      .reduce((total: number, item: any) => {
+        return total + item.baseImponible;
+      }, 0)
+      .toFixed(2);
   }
   subTotal12(): string {
-    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 2).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
+    return this.factura.sriTotalesConImpuestos
+      .filter((x: any) => x.codigo == 2)
+      .reduce((total: number, item: any) => {
+        return total + item.baseImponible;
+      }, 0)
+      .toFixed(2);
   }
   iva12(): string {
-    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 2).reduce((total: number, item: any) => { return total + item.valor }, 0).toFixed(2);
+    return this.factura.sriTotalesConImpuestos
+      .filter((x: any) => x.codigo == 2)
+      .reduce((total: number, item: any) => {
+        return total + item.valor;
+      }, 0)
+      .toFixed(2);
   }
 
   async guardar(): Promise<void> {
     try {
-      if (!await js.validarTodo(js.tbodyDetalle)) throw new Error("Verifique que todos los productos tengan una referencia interna");
-      if (!await js.toastPreguntar(`<p class='mt-2 fs-md'>¿Está seguro que desea guardar está factura?
+      if (!(await js.validarTodo(js.tbodyDetalle)))
+        throw new Error(
+          'Verifique que todos los productos tengan una referencia interna'
+        );
+      if (
+        !(await js.toastPreguntar(`<p class='mt-2 fs-md'>¿Está seguro que desea guardar está factura?
       </br>El stock de productos se aumentará acorde a las referencias internas seleccionadas<p>
-      <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`)) return;
+      <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`))
+      )
+        return;
       const url = `${this.baseUrl}guardar`;
-      const json = { factura: this.factura, listaProductos: this.productosProveedores};
+      const json = {
+        factura: this.factura,
+        listaProductos: this.productosProveedores,
+      };
       await this._axios.postJson(url, json);
       this.modal.hide();
       this.reloadDataTable();
@@ -341,9 +394,3 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 }
-
-
-
-
-
-
