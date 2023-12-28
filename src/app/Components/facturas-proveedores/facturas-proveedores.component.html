@@ -10,8 +10,9 @@
             <thead>
                 <tr>
                     <th class="text-center w-gear"><i class="bi-gear"></i></th>
-                    <th width="19%">FECHA REGISTRO</th>
-                    <th width="19%">FECHA EMISIÓN</th>
+                    <th width="7%">FECHA REGISTRO</th>
+                    <th width="7%">FECHA EMISIÓN</th>
+                    <th>CLAVE ACCESO</th>
                     <th>PROVEEDOR</th>
                     <th>REPRESENTANTE</th>
                     <th class="text-end">VALOR TOTAL</th>
@@ -34,6 +35,7 @@
                     </td>
                     <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
                     <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
+                    <td>{{item.claveAcceso}}</td>
                     <td>{{item.nombreComercial}}</td>
                     <td>{{item.razonSocial}}</td>
                     <td class="text-end">{{item.importeTotal}}</td>
@@ -43,7 +45,7 @@
             }@else {
             <tbody>
                 <tr>
-                    <td colspan="6" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+                    <td colspan="7" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
                 </tr>
             </tbody>
             }

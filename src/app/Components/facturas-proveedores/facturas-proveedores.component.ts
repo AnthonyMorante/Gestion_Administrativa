@@ -192,7 +192,7 @@ export class FacturasProveedoresComponent
     try {
       const url = `${this.baseUrl}listar`;
       const columns =
-        'idFactura,fechaRegistro,fechaEmision,nombreComercial,razonSocial,importeTotal';
+        'idFactura,fechaRegistro,fechaEmision,claveAcceso,nombreComercial,razonSocial,importeTotal';
       //DataTables
       this.dtOptions = {
         destroy: true,
