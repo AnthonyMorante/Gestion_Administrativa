@@ -22,6 +22,18 @@ export class RetencionesComponent {
   secuencial: number = 0;
   listaEstablecimientos: any = [];
   listaPuntosEmisiones: any = [];
+  listaTiempoFormaPagos: any = [];
+  formaPagoDefault: boolean = true;
+  listaFormaPagos: any = [];
+  factura: any = {
+    subtotal12: 0,
+    subtotal0: 0,
+    subtotal: 0,
+    iva12: 0,
+    totalFactura: 0,
+    totDescuento: 0
+  }
+  
 
   ngOnInit() {
 
@@ -33,7 +45,9 @@ export class RetencionesComponent {
     this.el.nativeElement.querySelector("#docSustento").disabled = true;;
     this.comboEstablecimientos();
     this.comboPuntosEmisiones();
-    
+    this.comboFormaPagos();
+    this.comboTiempoFormaPagos();
+
   }
 
   constructor(
@@ -49,11 +63,39 @@ export class RetencionesComponent {
     }, 200);
   }
 
+  handleDefaultFormaPago(defaultFormaPago: any): void {
+    this.formaPagoDefault = defaultFormaPago.checked;
+    this.el.nativeElement.querySelector("#valor").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
+  }
+
   async handleSecuencial(): Promise<void> {
     try {
       const url = `${this.baseUrl}Retenciones/secuenciales`;
       const secuenciales = (await this.axios.get(url)).data;
       this.secuencial = secuenciales[0]?.nombre;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
+  
+
+
+  async comboFormaPagos() {
+    try {
+      const url = `${this.baseUrl}Facturas/formaPagos`;
+      this.listaFormaPagos = (await this.axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
+  async comboTiempoFormaPagos() {
+    try {
+      const url = `${this.baseUrl}Facturas/tiempoFormaPagos`;
+      this.listaTiempoFormaPagos = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
     }
