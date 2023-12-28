@@ -22,7 +22,7 @@
             <tbody>
                 @for(item of lista;track item.claveAcceso){
                 <tr>
-                    <td><button class="btn text-dark btn-sm btn-file-td" title="ver"><i class="bi-eye-fill"
+                    <td><button class="btn text-primarybtn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
                                 style="font-size: 16px !important;"></i></button></td>
                     <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
                     <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
@@ -142,7 +142,7 @@
                                                                 <td>{{item.codigoPrincipal}}</td>
                                                                 <td width="37%">{{item.descripcion}}</td>
                                                                 <td width="37%">
-                                                                    <select class="form-select form-select-sm" id="s2_{{$index}}_select" (change)="handleReferenciaInterna(item.codigoPrincipal,$index)" onchange="handleSelect2(this,event)">
+                                                                    <select class="form-select form-select-sm" [class]="idFactura>0?'readonly':''" id="s2_{{$index}}_select" (change)="handleReferenciaInterna(item.codigoPrincipal,$index)" onchange="handleSelect2(this,event)">
                                                                         <option value="">Seleccione</option>
                                                                         @for(producto of productos;track producto.idProducto){
                                                                             <option value="{{producto.idProducto}}" [selected]="selectedItem(item.codigoPrincipal,producto.idProducto)">{{producto.producto}}</option>    
@@ -168,12 +168,35 @@
                             <div class="col-sm-12">
                                 <div class="card card-custom">
                                     <h5 class="card-title">
+                                       Información Adicional
+                                    </h5>
+                                    <div class="card-body py-1">
+                                        <table class="table table-custom w-100 fs-md">
+                                        @for(item of factura.sriCamposAdicionales;track item.nombre){
+                                            <tr>
+                                                <td [innerHTML]="item.text"></td>
+                                            </tr>
+                                        }
+                                    </table>
+                      
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="card card-custom">
+                                    <h5 class="card-title">
                                        Formas de pago
                                     </h5>
-                                    <div class="card-body">
-                                        <div class="col-sm-12">
-                                            
-                                        </div>
+                                    <div class="card-body py-1">
+                                        <table class="table table-custom w-100 fs-md">
+                                        @for(item of factura.sriPagos;track item.formaPago){
+                                            <tr>
+                                                <td>{{item.formaPago}}-{{item.formaPagoTexto}}</td>
+                                                <td class="text-end">{{item.total}}</td>
+                                            </tr>
+                                        }
+                                    </table>
+                      
                                     </div>
                                 </div>
                             </div>
@@ -216,8 +239,8 @@
                 </div>
             </div>
             <div class="modal-footer bg-light py-2">
-                @if(!!factura){
-                    <button type="button" class="btn btn-success btn-sm">Guardar</button>
+                @if(this.idFactura==0 && !!this.factura){
+                    <button type="button" class="btn btn-success btn-sm" (click)="guardar()">Guardar</button>
                 }
                 <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
               </div>

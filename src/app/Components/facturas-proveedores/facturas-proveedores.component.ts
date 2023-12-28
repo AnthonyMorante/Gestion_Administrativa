@@ -19,9 +19,10 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   dtTrigger: Subject<any> = new Subject<any>();
   mensajeDataTable: string = js.loaderDataTable();
   public factura: any;
-  public preciosProductos: any=[];
-  public productos: any=[];
-  public idFactura:number=0;
+  public productosProveedores: any = [];
+  public productos: any = [];
+  public formasPagos: any = [];
+  public idFactura: number = 0;
   private baseUrl: string = `${global.BASE_API_URL}api/FacturasProveedores/`;
   constructor(private _axios: AxiosService) { }
   ngOnInit() {
@@ -77,60 +78,117 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
   }
   nuevo() {
-    js.modalDatosLabel.innerText="NUEVA FACTURA DE PROVEEDOR";
-    this.factura=null;
-    this.idFactura=0;
+    js.modalDatosLabel.innerText = "NUEVA FACTURA DE PROVEEDOR";
+    this.factura = null;
+    this.idFactura = 0;
     js.activarValidadores(js.frmXml);
   }
 
   public async handleXml(): Promise<void> {
     try {
-      if (!js.fileXml.files[0]){
-        this.factura=null;
-        this.productos=[];
-        this.preciosProductos=[];
+      this.factura = null;
+      this.productos = [];
+      this.productosProveedores = [];
+      this.formasPagos = [];
+      if (!js.fileXml.files[0]) {
         return;
       }
       js.loaderShow();
       let url = `${this.baseUrl}leerXml`
       let data = new FormData(js.frmXml);
       const res = (await this._axios.postForm(url, data)).data;
-      this.factura=res.factura;
-      this.preciosProductos=res.preciosProductos;
-      this.productos=res.productos;
+      this.factura = res.factura;
+
+      this.productosProveedores = res.productosProveedores;
+      this.productos = res.productos;
+      this.formasPagos = res.formasPagos;
+      this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
+        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo).formaPago;
+        return x;
+      });
       console.log(this.factura);
-      setTimeout(()=>{
-        js.tbodyDetalle.querySelectorAll("select").forEach((item:any) => {
-          js.select2(item.id,js.modalDatos);
+      setTimeout(() => {
+        js.tbodyDetalle.querySelectorAll("select").forEach((item: any) => {
+          js.select2(item.id, js.modalDatos);
         });
         js.activarValidadores(js.tbodyDetalle);
-      },100);
+      }, 100);
     } catch (e) {
       js.handleError(e);
-    }finally{
-      setTimeout(()=>{
-      js.loaderHide();
-    },100);
+    } finally {
+      setTimeout(() => {
+        js.loaderHide();
+      }, 100);
     }
   }
 
-  handleReferenciaInterna(codigoPrincipal:any,selectId:any){
-    const idProducto=js.tbodyDetalle.querySelector(`#s2_${selectId}_select`);
-    this.preciosProductos[selectId]={idProducto:idProducto.value,codigoPrincipal,identificacion:this.factura.ruc};
+  public async ver(idFactura:number): Promise<void> {
+    try {
+      this.factura = null;
+      this.productos = [];
+      this.productosProveedores = [];
+      this.formasPagos = [];
+      js.loaderShow();
+      let url = `${this.baseUrl}unDato/${idFactura}`;
+      const res = (await this._axios.get(url)).data;
+      this.idFactura=idFactura;
+      this.factura = res.factura;
+      this.productosProveedores = res.productosProveedores;
+      this.productos = res.productos;
+      this.formasPagos = res.formasPagos;
+      this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
+        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo).formaPago;
+        return x;
+      });
+      setTimeout(() => {
+        js.tbodyDetalle.querySelectorAll("select").forEach((item: any) => {
+          js.select2(item.id, js.modalDatos);
+        });
+        js.activarValidadores(js.tbodyDetalle);
+        this.modal.show();
+      }, 100);
+    } catch (e) {
+      js.handleError(e);
+    } finally {
+      setTimeout(() => {
+        js.loaderHide();
+      }, 100);
+    }
   }
 
-  selectedItem(codigoPrincipal:any,idProducto:any):boolean{
-    return !!this.preciosProductos.find((x:any)=>x?.codigoPrincipal==codigoPrincipal && x?.idProducto==idProducto);
+  handleReferenciaInterna(codigoPrincipal: any, selectId: any) {
+    const idProducto = js.tbodyDetalle.querySelector(`#s2_${selectId}_select`);
+    this.productosProveedores[selectId] = { idProducto: idProducto.value, codigoPrincipal, identificacion: this.factura.ruc };
   }
 
-  subTotal0():string{
-    return this.factura.sriTotalesConImpuestos.filter((x:any)=>x.codigo==0).reduce((total:number,item:any)=>{return total+item.baseImponible},0).toFixed(2);
+  selectedItem(codigoPrincipal: any, idProducto: any): boolean {
+    return !!this.productosProveedores.find((x: any) => x?.codigoPrincipal == codigoPrincipal && x?.idProducto == idProducto);
   }
-  subTotal12():string{
-    return this.factura.sriTotalesConImpuestos.filter((x:any)=>x.codigo==2).reduce((total:number,item:any)=>{return total+item.baseImponible},0).toFixed(2);
+
+  subTotal0(): string {
+    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 0).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
   }
-  iva12():string{
-    return this.factura.sriTotalesConImpuestos.filter((x:any)=>x.codigo==2).reduce((total:number,item:any)=>{return total+item.valor},0).toFixed(2);
+  subTotal12(): string {
+    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 2).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
+  }
+  iva12(): string {
+    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 2).reduce((total: number, item: any) => { return total + item.valor }, 0).toFixed(2);
+  }
+
+  async guardar(): Promise<void> {
+    try {
+      if (!await js.validarTodo(js.tbodyDetalle)) throw new Error("Verifique que todos los productos tengan una referencia interna");
+      if (!await js.toastPreguntar(`<p class='mt-2 fs-md'>¿Está seguro que desea guardar está factura?
+      </br>El stock de productos se aumentará acorde a las referencias internas seleccionadas<p>
+      <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`)) return;
+      const url = `${this.baseUrl}guardar`;
+      const json = { factura: this.factura, listaProductos: this.productosProveedores };
+      await this._axios.postJson(url, json);
+      this.modal.hide();
+      this.listarFacturas();
+    } catch (e) {
+      js.handleError(e);
+    }
   }
 }
 
