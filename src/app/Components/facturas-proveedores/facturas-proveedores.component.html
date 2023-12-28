@@ -22,7 +22,7 @@
             <tbody>
                 @for(item of lista;track item.claveAcceso){
                 <tr>
-                    <td><button class="btn text-primarybtn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
+                    <td><button class="btn text-primary btn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
                                 style="font-size: 16px !important;"></i></button></td>
                     <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
                     <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
@@ -133,6 +133,7 @@
                                                             <th>Referencia Interna</th>
                                                             <th>Cantidad</th>
                                                             <th>Precio Unitario</th>
+                                                            <th>Descuento</th>
                                                             <th>Total</th>
                                                         </tr>
                                                     </thead>
@@ -151,6 +152,7 @@
                                                                 </td>
                                                                 <td class="text-end">{{item.cantidad}}</td>
                                                                 <td class="text-end">{{item.precioUnitario.toFixed(2)}}</td>
+                                                                <td class="text-end text-danger">-{{item.descuento.toFixed(2)}}</td>
                                                                 <td class="text-end">{{item.precioTotalSinImpuesto.toFixed(2)}}</td>
                                                             </tr>
                                                         }
@@ -224,7 +226,7 @@
                                   </tr>
                                   <tr>
                                     <td>Descuento</td>
-                                    <td>{{factura.totalDescuento?.toFixed(2)}}</td>
+                                    <td class="text-danger">-{{factura.totalDescuento?.toFixed(2)}}</td>
                                   </tr>
                                   <tr>
                                     <td><b>Total</b></td>
