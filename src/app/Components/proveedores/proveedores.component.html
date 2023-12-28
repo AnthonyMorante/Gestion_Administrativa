@@ -1,9 +1,9 @@
 <div class="row page-title"><i class='bi-briefcase'></i>Proveedores</div>
 <div class="component-content">
   <div class=" my-2">
-    <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+    <!-- <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
       Nuevo Registro <i class="bi-plus"></i>
-    </button>
+    </button> -->
   </div>
   <div class="table-responsive p-1">
     <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
@@ -12,24 +12,24 @@
           <th class="text-center w-gear"><i class="bi-gear"></i></th>
           <th>IDENTIFICACION</th>
           <th>RAZÓN SOCIAL</th>
-          <th>REPRESENTANTE</th>
           <th class="text-end">Teléfono</th>
+          <th>Email</th>
           <th>Dirección</th>
         </tr>
       </thead>
       <tbody *ngIf="lista?.length>0" class="">
         <tr *ngFor="let item of lista">
           <td class="text-center">
-            <button (click)="editar(item.idProveedor)" type="button" class="btn btn-primary text-white btn-sm"
+            <button (click)="editar(item.identificacion)" type="button" class="btn btn-primary text-white btn-sm"
               style="padding:2px 0 2px 6px"><i class="bi-pencil-square" style="font-size:12px"></i></button>
-            <button (click)="eliminar(item.idProveedor)" type="button" class="btn btn-danger text-white btn-sm"
-              style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
+            <!-- <button (click)="eliminar(item.idProveedor)" type="button" class="btn btn-danger text-white btn-sm"
+              style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button> -->
           </td>
           <td>{{item.identificacion}}</td>
           <td width="20%">{{item.razonSocial}}</td>
-          <td width="20%">{{item.representante}}</td>
           <td class="text-end">{{item.telefono}}</td>
-          <td width="35%">{{item.direccion}}</td>
+          <td width="25%">{{item.email}}</td>
+          <td width="20%">{{item.direccion}}</td>
         </tr>
       </tbody>
       <tbody *ngIf="lista?.length==0">
@@ -55,16 +55,8 @@
       <div class="modal-body bg-white">
         <form #frmDatos class="row">
           <div class="col-sm-6">
-            <label class="form-label">Tipo Documento</label>
-            <select class="form-select form-select-sm" id="idTipoIdentificacion" name="idTipoIdentificacion"
-              (change)="handleDocumento($event.target)">
-              <option *ngFor="let item of listaTipoIdentificaciones" value="{{item.idTipoIdentificacion}}">
-                {{item.nombre}}</option>
-            </select>
-          </div>
-          <div class="col-sm-6">
             <label class="form-label">Identificacion</label>
-            <input type="text" class="form-control form-control-sm" id="identificacion" name="identificacion"
+            <input type="text" class="form-control form-control-sm readonly" id="identificacion" name="identificacion"
               maxlength="30" />
             <div class="invalid-feedback">
               *Campo Requerido
@@ -80,19 +72,10 @@
             </div>
           </div>
 
-          <div class="col-sm-12">
-            <label class="form-label">Representante</label>
-            <input type="text" class="form-control form-control-sm" id="representante" name="representante"
-              maxlength="30" />
-            <div class="invalid-feedback">
-              *Campo Requerido
-            </div>
-          </div>
-
           <div class="col-sm-4">
             <label class="form-label">Teléfono</label>
-            <input type="text" class="form-control form-control-sm text-end" id="telefono" name="telefono"
-              data-validate="numeros" maxLength="500" maxlength="500" />
+            <input type="text" class="form-control form-control-sm text-end" data-validate="numeros" id="telefono" name="telefono"
+              data-validate="numeros" maxLength="20" maxlength="20" />
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
@@ -105,27 +88,6 @@
               *Campo Requerido
             </div>
           </div>
-          <div class="col-sm-6">
-            <label class="form-label">Provincia</label>
-            <ng-select #idProvincia id="idProvincia" [clearable]="true" placeholder="Seleccione"
-              (change)="comboCiudades($event)" notFoundText="Sin resultados">
-              <ng-option *ngFor="let item of listaProvincias" [value]="item.idProvincia">{{item.nombre}}</ng-option>
-            </ng-select>
-            <div class="invalid-feedback">
-              * Campo Requerido
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <label class="form-label">Ciudad</label>
-            <ng-select #idCiudad id="idCiudad" [clearable]="true"
-              placeholder="{{!idProvincia.selectedValues[0] ?'Seleccione una provincia':'Seleccione'}}"
-              notFoundText="Sin resultados">
-              <ng-option *ngFor="let item of listaCiudades" [value]="item.idCiudad">{{item.nombre}}</ng-option>
-            </ng-select>
-            <div class="invalid-feedback">
-              * Campo Requerido
-            </div>
-          </div>
           <div class="col-sm-12">
             <label class="form-label">Dirección</label>
             <textarea type="text" class="form-control form-control-sm" id="direccion" name="direccion"
@@ -133,17 +95,6 @@
             <div class="invalid-feedback">
               *Campo Requerido
             </div>
-          </div>
-
-          <div class="col-sm-12">
-            <label class="form-label">Página Web</label>
-            <input type="text" class="form-control form-control-sm" id="paginaWeb" name="paginaWeb" data-validate="no-validate"
-              maxlength="1000" />
-          </div>
-          <div class="col-sm-12">
-            <label class="form-label">Observaciones</label>
-            <textarea type="text" class="form-control form-control-sm" id="observacion" name="observacion"
-              data-validate="no-validate" maxLength="500"></textarea>
           </div>
         </form>
       </div>
