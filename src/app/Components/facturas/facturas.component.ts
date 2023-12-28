@@ -185,7 +185,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}Facturas/listar`;
-      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
+      const columns = "idFactura,fechaRegistro,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -560,10 +560,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.factura.valorRecibido=parseFloat (valorRecibido.value.replaceAll(",", "."));
       this.factura.saldo=parseFloat (saldo.value.replaceAll(",", "."));
-      this.factura.cambio=parseFloat (cambio.value.replaceAll(",", "."));
-      console.log(this.factura);
-  
-
+      this.factura.cambio=parseFloat (cambio.value.replaceAll(",", ".")); 
     } catch (e) {
       js.handleError(e);
     }
@@ -647,7 +644,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async abrirModalCambios(): Promise<void> {
     try {
-
+      js.activarValidadores(js.frmCambios);
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
@@ -667,11 +664,9 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async guardar(): Promise<void> {
     try {
-
- 
-
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
+      if(!await js.validarTodo(js.frmCambios)) throw new Error("Verifique los campos requeridos");
       if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
       if (this.formaPagoDefault && this.listaDetallePagos.length == 0) {
         const pago: any = await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);
@@ -681,7 +676,8 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.listaDetallePagos.length == 0) throw new Error("Debe agregar el pago o dejar el pago por defecto");
       const emisor: any = await this.axios.formToJsonTypes(this.frmEmisor.nativeElement);
       const cliente: any = await this.axios.formToJsonTypes(this.frmCliente.nativeElement);
-      const factura = { ...this.factura, ...emisor, ...cliente };
+      const cambio: any = await this.axios.formToJsonTypes(js.frmCambios);
+      const factura = { ...this.factura, ...emisor, ...cliente,...cambio };
       factura.formaPago = this.listaDetallePagos;
       factura.informacionAdicional = this.listaAdicionales;
       factura.detalleFactura = this.listaDetalleFactura;

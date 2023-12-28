@@ -1,14 +1,10 @@
 .lblCambio{
-
-    font-size: 17px !important;
-    font-weight: bolder;
-
+    font-size: 14px !important;
+    font-weight: 600;
+    padding-top: 3px;
+    text-transform: uppercase;
 }
-
-
 .iptCambio {
-
-    font-size: 19px !important;
-    font-weight: bolder;
+    font-size: 14px !important;
     margin: 0;
 }
