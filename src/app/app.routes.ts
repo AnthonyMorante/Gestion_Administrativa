@@ -2,13 +2,14 @@ import { Routes } from '@angular/router';
 import { ClientesComponent } from './Components/clientes/clientes.component';
 import { EmpleadosComponent } from './Components/empleados/empleados.component';
 import { FacturasComponent } from './Components/facturas/facturas.component';
-import { InicioComponent } from './Components/inicio/inicio.component';
-import { LoginComponent } from './Components/login/login.component';
+import { InicioComponent } from './Components/layout/inicio/inicio.component';
+import { LoginComponent } from './Components/layout/login/login.component';
 import { ProductosComponent } from './Components/productos/productos.component';
 import { ProveedoresComponent } from './Components/proveedores/proveedores.component';
 import { userGuard } from './Guards/user.guard';
 import { LotesComponent } from './Components/lotes/lotes.component';
 import { ConfiguracionesComponent } from './Components/configuraciones/configuraciones.component';
+import { FacturasProveedoresComponent } from './Components/facturas-proveedores/facturas-proveedores.component';
 import { RetencionesComponent } from './Components/retenciones/retenciones.component';
 
 export const routes: Routes = [
@@ -58,6 +59,13 @@ export const routes: Routes = [
       {
         path: 'retenciones',
         component: RetencionesComponent,
+        canActivate: [userGuard]
+      },
+
+      {
+
+        path: 'facturas-proveedores',
+        component: FacturasProveedoresComponent,
         canActivate: [userGuard]
       },
     ],

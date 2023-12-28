@@ -36,13 +36,13 @@
               "./src/assets/tools/toast.css"
             ],
             "scripts": [
-              "node_modules/jquery/dist/jquery.js",
               "src/assets/template/assets/js/bootstrap.bundle.min.js",
+              "node_modules/jquery/dist/jquery.min.js",
+              "./src/assets/tools/toast.js",
+              "./src/assets/tools/forms.js",
               "src/assets/template/assets/plugins/simplebar/js/simplebar.min.js",
               "src/assets/template/assets/plugins/metismenu/js/metisMenu.min.js",
               "src/assets/template/assets/js/app.js",
-              "./src/assets/tools/toast.js",
-              "./src/assets/tools/forms.js",
               "node_modules/datatables.net/js/jquery.dataTables.js",
               "node_modules/datatables.net-bs/js/dataTables.bootstrap.min.js"
             ]

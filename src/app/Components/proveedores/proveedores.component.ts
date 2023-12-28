@@ -31,12 +31,6 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
   idProveedor: string = "";
   identificacion: any;
   fechaRegistro: Date = new Date();
-  //Combos
-  @ViewChild('idProvincia', { static: true }) idProvincia: NgSelectComponent = {} as NgSelectComponent;
-  @ViewChild('idCiudad', { static: true }) idCiudad: NgSelectComponent = {} as NgSelectComponent;
-  listaTipoIdentificaciones: any = [];
-  listaProvincias: any = [];
-  listaCiudades: any = [];
   constructor(private axios: AxiosService) { }
 
   ngOnInit() {
@@ -47,8 +41,6 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     js.activarValidadores(this.frmDatos.nativeElement);
     this.listarProveedores();
-    this.comboTipoIdentificaciones();
-    this.comboProvincia();
   }
   ngAfterViewInit(): void {
     this.dtTrigger.next(this.dtOptions);
@@ -59,7 +51,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarProveedores() {
     try {
       const url = `${this.baseUrl}Proveedores/listar`;
-      const columns = "idProveedor,identificacion,razonSocial,representante,telefono,direccion";
+      const columns = "identificacion,razonSocial,telefono,email,direccion";
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -94,70 +86,20 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
   reloadDataTable(): void {
     this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
   }
-  async comboTipoIdentificaciones(): Promise<void> {
-    try {
-      const url = `${this.baseUrl}TipoIdentificaciones/listar`;
-      this.listaTipoIdentificaciones = (await this.axios.get(url)).data;
-    } catch (e) {
-      js.handleError(e);
-    }
-  }
-
-  async comboProvincia(): Promise<void> {
-    this.idProvincia.handleClearClick();
-    this.idCiudad.handleClearClick();
-    this.idProvincia.handleClearClick();
-    const url = `${this.baseUrl}Provincias/listar`;
-    this.listaProvincias = (await this.axios.get(url)).data;
-  }
-  async comboCiudades(idProvincia: any): Promise<void> {
-    this.listaCiudades = [];
-    if (!idProvincia) {
-      this.idCiudad.handleClearClick();
-      return;
-    }
-    this.idCiudad.handleClearClick();
-    const url = `${this.baseUrl}Ciudades/listar?idProvincia=${idProvincia}`;
-    this.listaCiudades = (await this.axios.get(url)).data;
-  }
-
 
   nuevo() {
     this.tituloModal = "Nuevo registro";
     this.idProveedor = "";
-    this.idCiudad.handleClearClick();
-    this.idProvincia.handleClearClick();
-    this.listaCiudades = [];
     js.limpiarForm(this.frmDatos.nativeElement, 100);
   }
-  handleDocumento(idTipoIdentificacion: any): void {
-    const tipo = this.listaTipoIdentificaciones.find((x: any) => x.idTipoIdentificacion == idTipoIdentificacion.value)?.codigo;
-    if (tipo == 5) {
-      this.identificacion.setAttribute("data-validate", "cedula");
-      js.activarValidadores(this.identificacion.closest("div"));
-      js.validarCedula(this.identificacion);
-    } else if (tipo == 4) {
-      this.identificacion.setAttribute("data-validate", "ruc");
-      js.activarValidadores(this.identificacion.closest("div"));
-      js.validarRuc(this.identificacion);
-    } else {
-      this.identificacion.removeAttribute("data-validate");
-      js.activarValidadores(this.identificacion.closest("div"));
-      js.validarVacio(this.identificacion);
-    }
-  }
-
   async editar(idProveedor: string): Promise<void> {
     try {
       this.tituloModal = "Editar registro"
       this.idProveedor = "";
       const url = `${this.baseUrl}Proveedores/cargar/${idProveedor}`;
       const res = (await this.axios.get(url)).data;
-      res.idProvincia = res.idCiudadNavigation.idProvincia;
-      js.cargarFormulario(this.frmDatos.nativeElement, res);
-      this.idProvincia.select(this.idProvincia.itemsList.findItem(res.idProvincia));
-      setTimeout(() => this.idCiudad.select(this.idCiudad.itemsList.findItem(res.idCiudad)), 100);
-      this.idProveedor = res.idProveedor;
+      this.idProveedor = res.identificacion;
+      js.cargarFormulario(this.frmDatos.nativeElement,res);
       this.modal.show();
     } catch (e) {
       js.handleError(e);
@@ -171,8 +113,6 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
       const url = `${this.baseUrl}Proveedores/${!this.idProveedor ? "insertar" : "actualizar"}`;
       const data = new FormData(this.frmDatos.nativeElement);
       if (!!this.idProveedor) data.append("idProveedor", this.idProveedor);
-      data.append("idProvincia", this.idProvincia.selectedValues[0]);
-      data.append("idCiudad", this.idCiudad.selectedValues[0]);
       if (!this.idProveedor) await this.axios.postFormJson(url, data);
       else await this.axios.putFormJson(url, data);
       js.toastSuccess(`Registro ${!this.idProveedor ? "guardado" : "editado"} exitosamente`);
