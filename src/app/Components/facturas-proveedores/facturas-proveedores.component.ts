@@ -226,7 +226,11 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   }
   nuevo() {
     js.modalDatosLabel.innerText = "NUEVA FACTURA DE PROVEEDOR";
+    js.limpiarForm(js.frmXml);
     this.factura = null;
+    this.productos = [];
+    this.productosProveedores = [];
+    this.formasPagos = [];
     this.idFactura = 0;
     js.activarValidadores(js.frmXml);
   }
@@ -281,9 +285,9 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       js.modalDatosLabel.innerHTML = `FACTURA N°</b>${this.factura.estab}-${this.factura.ptoEmi}-${this.factura.secuencial}`;
       this.productosProveedores = res.productosProveedores;
       this.productos = res.productos;
-      this.formasPagos = res.formasPagos;
-      this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
-        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo).formaPago;
+      this.formasPagos=res.formasPagos;
+      this.factura.sriPagos = [...this.factura.sriPagos].map((x: any) => {
+        x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo)?.formaPago;
         return x;
       });
       setTimeout(() => {
@@ -312,7 +316,7 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   }
 
   subTotal0(): string {
-    return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 0).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
+    return this.factura.sriDetallesFacturas.map((x:any)=>{ return x.sriDetallesFacturasImpuestos[0]}).filter((x: any) => x?.codigo == 0).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
   }
   subTotal12(): string {
     return this.factura.sriTotalesConImpuestos.filter((x: any) => x.codigo == 2).reduce((total: number, item: any) => { return total + item.baseImponible }, 0).toFixed(2);
@@ -328,10 +332,10 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       </br>El stock de productos se aumentará acorde a las referencias internas seleccionadas<p>
       <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`)) return;
       const url = `${this.baseUrl}guardar`;
-      const json = { factura: this.factura, listaProductos: this.productosProveedores };
+      const json = { factura: this.factura, listaProductos: this.productosProveedores};
       await this._axios.postJson(url, json);
       this.modal.hide();
-      this.listarFacturas();
+      this.reloadDataTable();
     } catch (e) {
       js.handleError(e);
     }

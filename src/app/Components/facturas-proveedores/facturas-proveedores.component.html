@@ -175,23 +175,25 @@
                             </div>
                         </div>
                         <div class="col-sm-7">
-                            <div class="col-sm-12">
-                                <div class="card card-custom">
-                                    <h5 class="card-title">
-                                       Información Adicional
-                                    </h5>
-                                    <div class="card-body py-1">
-                                        <table class="table table-custom bg-white w-100 fs-md">
-                                        @for(item of factura.sriCamposAdicionales;track item.nombre){
-                                            <tr>
-                                                <td class="text-uppercase" [innerHTML]="item.text"></td>
-                                            </tr>
-                                        }
-                                    </table>
-                      
+                            @if(factura.sriCamposAdicionales.length>0){
+                                <div class="col-sm-12">
+                                    <div class="card card-custom">
+                                        <h5 class="card-title">
+                                           Información Adicional
+                                        </h5>
+                                        <div class="card-body py-1">
+                                            <table class="table table-custom bg-white w-100 fs-md">
+                                            @for(item of factura.sriCamposAdicionales;track item.nombre){
+                                                <tr>
+                                                    <td class="text-uppercase" [innerHTML]="item.text"></td>
+                                                </tr>
+                                            }
+                                        </table>
+                          
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                             <div class="col-sm-12">
                                 <div class="card card-custom">
                                     <h5 class="card-title">
