@@ -40,14 +40,6 @@
         </a>
       </li>
       <li class="home">
-        <a [routerLink]="['facturas-proveedores']" [routerLinkActive]="['active']">
-          <div class="parent-icon">
-            <i class='bi-receipt'></i>
-          </div>
-          <div class="menu-title">Facturas Proveedores</div>
-        </a>
-      </li>
-      <li class="home">
         <a [routerLink]="['productos']" [routerLinkActive]="['active']">
           <div class="parent-icon">
             <i class='bi-boxes'></i>
@@ -69,6 +61,14 @@
             <i class='bi-receipt-cutoff'></i>
           </div>
           <div class="menu-title">Facturación</div>
+        </a>
+      </li>
+      <li class="home">
+        <a [routerLink]="['facturas-proveedores']" [routerLinkActive]="['active']">
+          <div class="parent-icon">
+            <i class='bi-receipt'></i>
+          </div>
+          <div class="menu-title">Facturas Proveedores</div>
         </a>
       </li>
       <li class="home">
@@ -102,7 +102,8 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" [routerLink]="['configuraciones-sri']"><i class="bi-gear"></i><span>Configuraciones SRI</span></a>
+              <a class="dropdown-item" [routerLink]="['configuraciones-sri']"><i
+                  class="bi-gear"></i><span>Configuraciones SRI</span></a>
             </li>
             <li>
               <a class="dropdown-item logout" href="javascript:;" (click)="logout()"><i
