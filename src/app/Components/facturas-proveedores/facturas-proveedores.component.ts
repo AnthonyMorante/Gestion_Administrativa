@@ -106,7 +106,6 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
         x.formaPagoTexto = this.formasPagos.find((f: any) => x.formaPago == f.codigo).formaPago;
         return x;
       });
-      console.log(this.factura);
       setTimeout(() => {
         js.tbodyDetalle.querySelectorAll("select").forEach((item: any) => {
           js.select2(item.id, js.modalDatos);

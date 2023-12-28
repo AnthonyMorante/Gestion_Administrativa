@@ -22,8 +22,16 @@
             <tbody>
                 @for(item of lista;track item.claveAcceso){
                 <tr>
-                    <td><button class="btn text-primary btn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
-                                style="font-size: 16px !important;"></i></button></td>
+                    <td>
+                        <button class="btn text-primary btn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
+                                style="font-size: 16px !important;"></i>
+                        </button>
+                    @if(item.totalRetenciones==0){
+                        <button class="btn text-dark btn-sm btn-file-td" title="Generar retención"><i class="bi-receipt"
+                            style="font-size: 16px !important;"></i>
+                        </button>
+                    }
+                    </td>
                     <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
                     <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
                     <td>{{item.nombreComercial}}</td>
