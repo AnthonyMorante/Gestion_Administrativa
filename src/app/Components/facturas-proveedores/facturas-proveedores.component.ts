@@ -102,7 +102,7 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       let data = new FormData(js.frmXml);
       const res = (await this._axios.postForm(url, data)).data;
       this.factura = res.factura;
-      this.productosProveedores = res.productosProveedores;
+      this.productosProveedores = res.productosProveedores.filter((x:any)=>this.factura.sriDetallesFacturas.map((x:any)=>x.codigoPrincipal).includes(x.codigoPrincipal));
       this.productos = res.productos;
       this.formasPagos = res.formasPagos;
       this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
