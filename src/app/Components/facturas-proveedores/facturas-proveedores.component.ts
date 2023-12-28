@@ -98,7 +98,6 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       let data = new FormData(js.frmXml);
       const res = (await this._axios.postForm(url, data)).data;
       this.factura = res.factura;
-
       this.productosProveedores = res.productosProveedores;
       this.productos = res.productos;
       this.formasPagos = res.formasPagos;
@@ -132,6 +131,7 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       const res = (await this._axios.get(url)).data;
       this.idFactura=idFactura;
       this.factura = res.factura;
+      js.modalDatosLabel.innerHTML = `FACTURA N°</b>${this.factura.estab}-${this.factura.ptoEmi}-${this.factura.secuencial}`;
       this.productosProveedores = res.productosProveedores;
       this.productos = res.productos;
       this.formasPagos = res.formasPagos;

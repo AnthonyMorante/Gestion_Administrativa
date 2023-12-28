@@ -181,10 +181,10 @@
                                        Información Adicional
                                     </h5>
                                     <div class="card-body py-1">
-                                        <table class="table table-custom w-100 fs-md">
+                                        <table class="table table-custom bg-white w-100 fs-md">
                                         @for(item of factura.sriCamposAdicionales;track item.nombre){
                                             <tr>
-                                                <td [innerHTML]="item.text"></td>
+                                                <td class="text-uppercase" [innerHTML]="item.text"></td>
                                             </tr>
                                         }
                                     </table>
