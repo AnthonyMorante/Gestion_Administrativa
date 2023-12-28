@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { global, js } from '../../app.config';
 import { AxiosService } from '../../Services/axios.service';
 import { DataTableDirective, DataTablesModule } from 'angular-datatables';
@@ -24,13 +24,68 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   public formasPagos: any = [];
   public idFactura: number = 0;
   private baseUrl: string = `${global.BASE_API_URL}api/FacturasProveedores/`;
-  constructor(private _axios: AxiosService) { }
+
+
+
+
+
+
+  //retenciones
+  _js: any = js;
+  baseUrlRetencion = `${global.BASE_API_URL}api/`;
+  componentTitle: string = '';
+  @ViewChild('modalRetenciones', { static: true })
+  modalRetenciones: ElementRef = {} as ElementRef;
+  modalRetencion: any;
+  tipoDocumento: string = 'RETENCIÓN';
+  establecimiento: string = '001';
+  puntoEmision: string = '001';
+  secuencial: number = 0;
+  listaEstablecimientos: any = [];
+  listaPuntosEmisiones: any = [];
+  listaTiempoFormaPagos: any = [];
+  listaUnaRetencion: any = [];
+  formaPagoDefault: boolean = true;
+  listaFormaPagos: any = [];
+  retenciones: any = {
+    subtotal12: 0,
+    subtotal0: 0,
+    subtotal: 0,
+    iva12: 0,
+    totalFactura: 0,
+    totDescuento: 0
+  }
+
+
+
+
+
+  constructor(
+    private _axios: AxiosService,
+    private el: ElementRef,
+    private renderer: Renderer2
+  ) { }
   ngOnInit() {
     this.modal = new js.bootstrap.Modal(js.modalDatos, {
       keyboard: false,
       backdrop: 'static',
     });
     this.listarFacturas();
+    //retenciones
+    this.modalRetencion = new js.bootstrap.Modal(this.modalRetenciones.nativeElement, {
+      keyboard: false,
+      backdrop: 'static',
+    });
+    this.el.nativeElement.querySelector("#docSustento").value = "FACTURA";
+    this.el.nativeElement.querySelector("#docSustento").disabled = true;;
+    this.comboEstablecimientos();
+    this.comboPuntosEmisiones();
+    this.comboFormaPagos();
+    this.comboTiempoFormaPagos();
+    setTimeout(() => {
+      this.el.nativeElement.querySelector("#fechaEmision").value = js.todayDate();
+      this.handleSecuencial();
+    }, 200);
 
   }
   ngAfterViewInit(): void {
@@ -39,6 +94,98 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
   ngOnDestroy(): void {
     this.dtTrigger.unsubscribe();
   }
+
+
+  handleDefaultFormaPago(defaultFormaPago: any): void {
+    this.formaPagoDefault = defaultFormaPago.checked;
+    this.el.nativeElement.querySelector("#valor").value = this.retenciones.totalFactura.toFixed(2).replaceAll(".", ",");
+  }
+
+  async handleSecuencial(): Promise<void> {
+    try {
+      const url = `${this.baseUrlRetencion}Retenciones/secuenciales`;
+      const secuenciales = (await this._axios.get(url)).data;
+      this.secuencial = secuenciales[0]?.nombre;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async comboFormaPagos() {
+    try {
+      const url = `${this.baseUrlRetencion}Facturas/formaPagos`;
+      this.listaFormaPagos = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async comboTiempoFormaPagos() {
+    try {
+      const url = `${this.baseUrlRetencion}Facturas/tiempoFormaPagos`;
+      this.listaTiempoFormaPagos = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  async comboEstablecimientos() {
+    try {
+      const url = `${this.baseUrlRetencion}Retenciones/establecimientos`;
+      this.listaEstablecimientos = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
+  async comboPuntosEmisiones() {
+    try {
+      const url = `${this.baseUrlRetencion}Retenciones/puntosEmisiones`;
+      this.listaPuntosEmisiones = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+  handleNumeroFactura(): void {
+    const establecimiento = this.el.nativeElement.querySelector("#idEstablecimiento").value;
+    const puntoEmision = this.el.nativeElement.querySelector("#idPuntoEmision").value;
+    this.establecimiento = (this.listaEstablecimientos.find((x: any) => x.idEstablecimiento == establecimiento).nombre).toString().padStart(3, '0');
+    this.puntoEmision = (this.listaPuntosEmisiones.find((x: any) => x.idPuntoEmision == puntoEmision).nombre).toString().padStart(3, '0');
+  }
+
+  async cargaRetencion(autorizacion:number){
+
+    try {
+
+     const url = `${this.baseUrlRetencion}Retenciones/unDato?claveAcceso=${autorizacion}`;
+     this.listaUnaRetencion = (await this._axios.get(url)).data;
+     const nComprobante = this.el.nativeElement.querySelector("#nComprobante");
+     const claveAcceso = this.el.nativeElement.querySelector("#claveAcceso");
+     const base = this.el.nativeElement.querySelector("#base");
+     const bBaseImponible = this.el.nativeElement.querySelector("#bBaseImponible");
+     nComprobante.value=`${this.listaUnaRetencion.estab}${this.listaUnaRetencion.ptoEmi}${this.listaUnaRetencion.secuencial}`;
+     claveAcceso.value= this.listaUnaRetencion.claveAcceso;
+     base.value=this.listaUnaRetencion.totalSinImpuesto;
+     bBaseImponible.value=this.listaUnaRetencion.valor;
+     this.retenciones.totalFactura=this.listaUnaRetencion.importeTotal;
+     console.log(this.listaUnaRetencion);
+     console.log(nComprobante);
+
+    } catch (e) {
+
+      js.handleError(e);
+      
+    }
+
+  }
+
+
+
+
+
+
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}listar`;
@@ -120,7 +267,7 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
-  public async ver(idFactura:number): Promise<void> {
+  public async ver(idFactura: number): Promise<void> {
     try {
       this.factura = null;
       this.productos = [];
@@ -129,7 +276,7 @@ export class FacturasProveedoresComponent implements OnInit, AfterViewInit, OnDe
       js.loaderShow();
       let url = `${this.baseUrl}unDato/${idFactura}`;
       const res = (await this._axios.get(url)).data;
-      this.idFactura=idFactura;
+      this.idFactura = idFactura;
       this.factura = res.factura;
       js.modalDatosLabel.innerHTML = `FACTURA N°</b>${this.factura.estab}-${this.factura.ptoEmi}-${this.factura.secuencial}`;
       this.productosProveedores = res.productosProveedores;

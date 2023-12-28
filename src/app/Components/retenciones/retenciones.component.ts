@@ -11,11 +11,11 @@ import { AxiosService } from '../../Services/axios.service';
 })
 export class RetencionesComponent {
   _js: any = js;
-  baseUrl = `${global.BASE_API_URL}api/`;
+  baseUrlRetencion = `${global.BASE_API_URL}api/`;
   componentTitle: string = '';
   @ViewChild('modalRetenciones', { static: true })
   modalRetenciones: ElementRef = {} as ElementRef;
-  modal: any;
+  modalRetencion: any;
   tipoDocumento: string = 'RETENCIÓN';
   establecimiento: string = '001';
   puntoEmision: string = '001';
@@ -25,7 +25,7 @@ export class RetencionesComponent {
   listaTiempoFormaPagos: any = [];
   formaPagoDefault: boolean = true;
   listaFormaPagos: any = [];
-  factura: any = {
+  retenciones: any = {
     subtotal12: 0,
     subtotal0: 0,
     subtotal: 0,
@@ -37,7 +37,7 @@ export class RetencionesComponent {
 
   ngOnInit() {
 
-    this.modal = new js.bootstrap.Modal(this.modalRetenciones.nativeElement, {
+    this.modalRetencion = new js.bootstrap.Modal(this.modalRetenciones.nativeElement, {
       keyboard: false,
       backdrop: 'static',
     });
@@ -65,12 +65,12 @@ export class RetencionesComponent {
 
   handleDefaultFormaPago(defaultFormaPago: any): void {
     this.formaPagoDefault = defaultFormaPago.checked;
-    this.el.nativeElement.querySelector("#valor").value = this.factura.totalFactura.toFixed(2).replaceAll(".", ",");
+    this.el.nativeElement.querySelector("#valor").value = this.retenciones.totalFactura.toFixed(2).replaceAll(".", ",");
   }
 
   async handleSecuencial(): Promise<void> {
     try {
-      const url = `${this.baseUrl}Retenciones/secuenciales`;
+      const url = `${this.baseUrlRetencion}Retenciones/secuenciales`;
       const secuenciales = (await this.axios.get(url)).data;
       this.secuencial = secuenciales[0]?.nombre;
     } catch (e) {
@@ -78,23 +78,18 @@ export class RetencionesComponent {
     }
   }
 
-
-  
-
-
   async comboFormaPagos() {
     try {
-      const url = `${this.baseUrl}Facturas/formaPagos`;
+      const url = `${this.baseUrlRetencion}Facturas/formaPagos`;
       this.listaFormaPagos = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
     }
   }
 
-
   async comboTiempoFormaPagos() {
     try {
-      const url = `${this.baseUrl}Facturas/tiempoFormaPagos`;
+      const url = `${this.baseUrlRetencion}Facturas/tiempoFormaPagos`;
       this.listaTiempoFormaPagos = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
@@ -103,7 +98,7 @@ export class RetencionesComponent {
 
   async comboEstablecimientos() {
     try {
-      const url = `${this.baseUrl}Retenciones/establecimientos`;
+      const url = `${this.baseUrlRetencion}Retenciones/establecimientos`;
       this.listaEstablecimientos = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
@@ -113,7 +108,7 @@ export class RetencionesComponent {
 
   async comboPuntosEmisiones() {
     try {
-      const url = `${this.baseUrl}Retenciones/puntosEmisiones`;
+      const url = `${this.baseUrlRetencion}Retenciones/puntosEmisiones`;
       this.listaPuntosEmisiones = (await this.axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
