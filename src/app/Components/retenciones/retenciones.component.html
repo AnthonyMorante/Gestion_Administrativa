@@ -2,89 +2,11 @@
 <div class="component-content">
   <div class=" my-2">
 
-    <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+    <button (click)="modalRetencion.show();nuevo()" type="button" class="btn btn-primary">
       Nueva Retención <i class="bi-plus"></i>
     </button>
   </div>
-  <!-- <div class="table-responsive p-1">
-      <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
-        <thead>
-          <tr>
-            <th class="text-center w-gear"><i class="bi-files"></i></th>
-            <th class="text-center">FECHA EMISIÓN</th>
-            <th>DOCUMENTO</th>
-            <th>CLIENTE</th>
-            <th>CLAVE ACCESO</th>
-            <th class="text-center">ESTADO</th>
-            <th>FECHA AUTORIZACIÓN</th>
-            <th class="text-end">TELÉFONO</th>
-            <th>EMAIL</th>
-  
-          </tr>
-        </thead>
-        @if(lista.length>0){
-  
-        <tbody>
-          @for(item of lista;track item.claveAcceso){
-          <tr>
-            <td class="text-center">
-              @if(item.estadoSri=='AUTORIZADO'){
-              <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
-                class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
-                  style="font-size:12px"></i></button>
-              <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
-                class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
-                  style="font-size:12px"></i></button>
-              }
-              @else if(item.estadoSri=="EN PROCESAMIENTO"){
-              <span class="fs-xs">EN PROCESAMIENTO</span>
-              }
-              @else if(item.estadoSri=="NO AUTORIZADO"){
-              <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
-                class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
-                  style="font-size:12px"></i></button>
-              <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
-                class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
-                  style="font-size:12px"></i></button>
-              }@else if(item.estadoSri=="RECIBIDA"){
-              <span class="fs-xs">ESPERANDO AUTORIZACIÓN</span>
-              }
-              @else{
-              <button (click)="reenviar(item.claveAcceso)" title="Reenviar a SRI" type="button"
-                class="btn text-info btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-arrow-clockwise"
-                  style="font-size:12px"></i></button>
-              }
-            </td>
-            <td width="5%" class="text-center">{{item.fechaEmision.substring(0,10).split('-').reverse().join('-')}}</td>
-            <td>
-              {{item.establecimiento?.toString().padStart(3,'0')}}-{{item.puntoEmision?.toString().padStart(3,'0')}}-{{item.secuencial?.toString().padStart(9,'0')}}
-            </td>
-            <td width="25%">{{item.cliente}}</td>
-            <td width="30%">{{item.claveAcceso}}</td>
-            <td width="5%"><span class="badge fw-500" [style]="getColor(item.idTipoEstadoSri)">{{item.estadoSri}}</span>
-            </td>
-            <td width="10%" class="text-center">
-              @if(item.estadoSri=='AUTORIZADO'){
-              {{item.fechaAutorizacion.substring(0,10).split('-').reverse().join('-')}}
-              <b>{{item.fechaAutorizacion.substring(11,16)}}{{(item.fechaAutorizacion.substring(11,13))>=12?"PM":"AM"}}</b>
-              }@else {
-              <span class="fs-xs">ESPERANDO AUTORIZACIÓN</span>
-              }
-            </td>
-            <td class="text-end">{{item.telefonoCliente}}</td>
-            <td width="10%" class="text-email">{{item.emailCliente}}</td>
-          </tr>
-          }
-        </tbody>
-        }@else {
-        <tbody>
-          <tr>
-            <td colspan="10" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
-          </tr>
-        </tbody>
-        }
-      </table>
-    </div> -->
+
 </div>
 
 <div class="modal fade glass" #modalRetenciones tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
@@ -98,7 +20,7 @@
             </b>
           </h6>
         </label>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modalRetencion.hide()">
         </button>
       </div>
       <div class="modal-body bg-white">
@@ -484,24 +406,24 @@
                 <table class="table-totales">
                   <tr>
                     <td>Subtotal 12%</td>
-                    <td>{{factura.subtotal12.toFixed(2).replaceAll(".",",")}}</td>
+                    <td>{{retenciones.subtotal12.toFixed(2).replaceAll(".",",")}}</td>
                   </tr>
                   <tr>
                     <td>Subtotal 0%</td>
-                    <td>{{factura.subtotal0.toFixed(2).replaceAll(".",",")}}</td>
+                    <td>{{retenciones.subtotal0.toFixed(2).replaceAll(".",",")}}</td>
                   </tr>
                   <tr>
                     <td>Total IVA</td>
-                    <td>{{factura.iva12.toFixed(2).replaceAll(".",",")}}</td>
+                    <td>{{retenciones.iva12.toFixed(2).replaceAll(".",",")}}</td>
                   </tr>
 
                   <tr>
                     <td>Total Retenido</td>
-                    <td>{{factura.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
+                    <td>{{retenciones.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
                   </tr>
                   <tr>
                     <td><b>Total</b></td>
-                    <td><b>{{factura.totalFactura.toFixed(2).replaceAll(".",",")}}</b></td>
+                    <td><b>{{retenciones.totalFactura.toFixed(2).replaceAll(".",",")}}</b></td>
                   </tr>
                 </table>
               </div>
@@ -516,7 +438,7 @@
 
       <div class="modal-footer bg-light py-2">
         <button type="button" class="btn btn-success btn-sm">Firmar y enviar</button>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modalRetencion.hide()">Cancelar</button>
       </div>
     </div>
   </div>
