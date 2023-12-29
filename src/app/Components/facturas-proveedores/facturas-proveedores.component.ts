@@ -51,6 +51,8 @@ export class FacturasProveedoresComponent
   listaPuntosEmisiones: any = [];
   listaTiempoFormaPagos: any = [];
   listaUnaRetencion: any = [];
+  listaPorcentajeImpuestos: any = [];
+
   formaPagoDefault: boolean = true;
   listaFormaPagos: any = [];
   retenciones: any = {
@@ -87,6 +89,7 @@ export class FacturasProveedoresComponent
     this.comboPuntosEmisiones();
     this.comboFormaPagos();
     this.comboTiempoFormaPagos();
+    this.comboPorcentajeImpuestos();
     setTimeout(() => {
       this.el.nativeElement.querySelector('#fechaEmision').value =
         js.todayDate();
@@ -152,6 +155,18 @@ export class FacturasProveedoresComponent
     }
   }
 
+  async comboPorcentajeImpuestos() {
+    try {
+      const url = `${this.baseUrlRetencion}Retenciones/porcentajeImpuestosRetenciones`;
+      this.listaPorcentajeImpuestos = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
+  
+
   handleNumeroFactura(): void {
     const establecimiento =
       this.el.nativeElement.querySelector('#idEstablecimiento').value;
@@ -167,22 +182,46 @@ export class FacturasProveedoresComponent
       .padStart(3, '0');
   }
 
-  async cargaRetencion(autorizacion: number) {
+  async limpiarRetencion() {
+
+    this.retenciones.subtotal12 = 0;
+    this.retenciones.subtotal0 = 0;
+    this.retenciones.subtotal= 0;
+    this.retenciones.iva12= 0;
+    this.retenciones.totalFactura= 0;
+    this.retenciones.totDescuento= 0;
+    const nComprobante = this.el.nativeElement.querySelector('#nComprobante').value="";
+    const claveAcceso = this.el.nativeElement.querySelector('#claveAcceso').value="";
+    const base = this.el.nativeElement.querySelector('#base').value="";
+    const bBaseImponible =this.el.nativeElement.querySelector('#bBaseImponible').value="";
+
+  }
+
+  async cargaRetencion(autorizacion: number,idFactura:string) {
     try {
-      const url = `${this.baseUrlRetencion}Retenciones/unDato?claveAcceso=${autorizacion}`;
-      this.listaUnaRetencion = (await this._axios.get(url)).data;
+      const url = `${this.baseUrlRetencion}Retenciones/unDato?claveAcceso=${autorizacion}&idFactura=${idFactura}`;
       const nComprobante = this.el.nativeElement.querySelector('#nComprobante');
       const claveAcceso = this.el.nativeElement.querySelector('#claveAcceso');
       const base = this.el.nativeElement.querySelector('#base');
-      const bBaseImponible =
-        this.el.nativeElement.querySelector('#bBaseImponible');
-      nComprobante.value = `${this.listaUnaRetencion.estab}${this.listaUnaRetencion.ptoEmi}${this.listaUnaRetencion.secuencial}`;
-      claveAcceso.value = this.listaUnaRetencion.claveAcceso;
-      base.value = this.listaUnaRetencion.totalSinImpuesto;
-      bBaseImponible.value = this.listaUnaRetencion.valor;
-      this.retenciones.totalFactura = this.listaUnaRetencion.importeTotal;
-      console.log(this.listaUnaRetencion);
-      console.log(nComprobante);
+      const bBaseImponible =this.el.nativeElement.querySelector('#bBaseImponible');
+      this.listaUnaRetencion = (await this._axios.get(url)).data;
+      const totales =this.listaUnaRetencion.res;
+      const subtotales =this.listaUnaRetencion.subtotales;
+      nComprobante.value = `${totales.estab}${totales.ptoEmi}${totales.secuencial}`;
+      claveAcceso.value = totales.claveAcceso;
+      base.value = totales.totalSinImpuesto;
+      bBaseImponible.value = totales.valor;
+      this.retenciones.totalFactura = totales.importeTotal;
+      this.retenciones.iva12= totales.valor;
+
+      if(subtotales.length !=0)
+      subtotales.map((x:any) =>{
+        
+        if(x.codigo=="2")this.retenciones.subtotal12=x.sumatoria;
+        if(x.codigo=="0")this.retenciones.subtotal0=x.sumatoria;
+      
+      });
+
     } catch (e) {
       js.handleError(e);
     }
