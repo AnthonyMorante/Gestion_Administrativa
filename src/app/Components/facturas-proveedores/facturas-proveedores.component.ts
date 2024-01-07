@@ -52,8 +52,8 @@ export class FacturasProveedoresComponent
   listaTiempoFormaPagos: any = [];
   listaUnaRetencion: any = [];
   listaPorcentajeImpuestos: any = [];
-  listaTipoIdentificaciones:any=[];
-  listaAdicionales:any=[];
+  listaTipoIdentificaciones: any = [];
+  listaAdicionales: any = [];
   formaPagoDefault: boolean = true;
   listaFormaPagos: any = [];
   retenciones: any = {
@@ -62,9 +62,11 @@ export class FacturasProveedoresComponent
     subtotal: 0,
     iva12: 0,
     totalFactura: 0,
-    totDescuento: 0,
+    totRetenido: 0,
   };
   listaRetencionesRenta: any = [];
+  valorRetenido: number = 0;
+  acumValorRetenido: number = 0;
 
   constructor(
     private _axios: AxiosService,
@@ -73,7 +75,7 @@ export class FacturasProveedoresComponent
   ) { }
   ngOnInit() {
     js.activarValidadores(this.frmInformacionAdicional.nativeElement);
-    this.frmInformacionAdicional.nativeElement.addEventListener("submit", (e: any) => {e.preventDefault();});
+    this.frmInformacionAdicional.nativeElement.addEventListener("submit", (e: any) => { e.preventDefault(); });
     this.modal = new js.bootstrap.Modal(js.modalDatos, {
       keyboard: false,
       backdrop: 'static',
@@ -129,7 +131,7 @@ export class FacturasProveedoresComponent
       js.handleError(e);
     }
   }
-  
+
 
 
   async handleSecuencial(): Promise<void> {
@@ -197,7 +199,7 @@ export class FacturasProveedoresComponent
     }
   }
 
-  
+
 
 
 
@@ -242,16 +244,19 @@ export class FacturasProveedoresComponent
       const idPorcentajeImpuestoRetencion = this.el.nativeElement.querySelector('#porcentajeImpuestoRetencion').value;
       const base = this.el.nativeElement.querySelector('#base');
       const nComprobante = this.el.nativeElement.querySelector('#nComprobante');
+      if (base.value == "") return;
       let objImpuestoRetencion = this.listaPorcentajeImpuestos.find((x: any) => x.idPorcentajeImpuestoRetencion == idPorcentajeImpuestoRetencion);
-      objImpuestoRetencion.porcentajeRetener=objImpuestoRetencion.valor;
-      objImpuestoRetencion.codigoRetencion=objImpuestoRetencion.codigo;
-      objImpuestoRetencion.numDocSustento=nComprobante.value;
-      objImpuestoRetencion.valorRetenido = parseFloat(((parseFloat(base.value) * objImpuestoRetencion.valor) / 100).toFixed(2));
+      objImpuestoRetencion.porcentajeRetener = objImpuestoRetencion.valor;
+      objImpuestoRetencion.codigoRetencion = objImpuestoRetencion.codigo;
+      objImpuestoRetencion.numDocSustento = nComprobante.value;
+      this.valorRetenido = parseFloat(((parseFloat(base.value) * objImpuestoRetencion.valor) / 100).toFixed(2));
+      objImpuestoRetencion.valorRetenido = this.valorRetenido;
+      this.acumValorRetenido = this.acumValorRetenido + this.valorRetenido;
       objImpuestoRetencion.baseImponible = parseFloat(parseFloat(base.value).toFixed(2));
       objImpuestoRetencion.id = currentTimestamp;
+      this.retenciones.totRetenido = this.acumValorRetenido
       this.listaRetencionesRenta.push(objImpuestoRetencion);
       base.value = "";
-
     } catch (e) {
       js.handleError(e);
     }
@@ -265,6 +270,8 @@ export class FacturasProveedoresComponent
       const obj = this.listaRetencionesRenta.find((x: any) => x.id === id);
       const base = this.el.nativeElement.querySelector('#base');
       base.value = obj.baseImponible;
+      this.acumValorRetenido = this.acumValorRetenido - obj.valorRetenido;
+      this.retenciones.totRetenido = this.acumValorRetenido;
       if (index !== -1) this.listaRetencionesRenta.splice(index, 1);
 
     } catch (e) {
@@ -289,9 +296,9 @@ export class FacturasProveedoresComponent
       const subtotales = this.listaUnaRetencion.subtotales;
       nComprobante.value = `${totales.estab}${totales.ptoEmi}${totales.secuencial}`;
       claveAcceso.value = totales.claveAcceso;
-      fechaEmisionC.value=totales.fechaEmision.split("T")[0];
-      tipoDocumentoC.value=parseFloat(totales.tipoIdentificacionComprador);
-      identificacionC.value= totales.identificacionComprador;
+      fechaEmisionC.value = totales.fechaEmision.split("T")[0];
+      tipoDocumentoC.value = parseFloat(totales.tipoIdentificacionComprador);
+      identificacionC.value = totales.identificacionComprador;
       base.value = totales.totalSinImpuesto;
       bBaseImponible.value = totales.valor;
       this.retenciones.totalFactura = totales.importeTotal;
@@ -527,12 +534,16 @@ export class FacturasProveedoresComponent
     try {
 
 
-      let fechaEmision= this.el.nativeElement.querySelector("#fechaEmision").value;
-      let nComprobante= this.el.nativeElement.querySelector("#nComprobante").value;
+      console.log(this.listaUnaRetencion);
+
+      let fechaEmision = this.el.nativeElement.querySelector("#fechaEmision").value;
+      let nComprobante = this.el.nativeElement.querySelector("#nComprobante").value;
       const fechaEmisionC = this.el.nativeElement.querySelector('#fechaEmisionC').value;
       const tipoDocumentoC = this.el.nativeElement.querySelector('#tipoDocumentoC').value;
       const identificacionC = this.el.nativeElement.querySelector('#identificacionC').value;
       const claveAcceso = this.el.nativeElement.querySelector('#claveAcceso').value;
+      const idEstablecimiento = this.el.nativeElement.querySelector("#idEstablecimiento").value;
+      const idPuntoEmision = this.el.nativeElement.querySelector("#idPuntoEmision").value;
 
       if (
         !(await js.toastPreguntar(`<p class='mt-2 fs-md'>¿Está seguro que desea guardar está retención?
@@ -541,19 +552,24 @@ export class FacturasProveedoresComponent
       )
         return;
 
-      this.retenciones.fechaEmision=fechaEmision;
-      this.retenciones.establecimiento=this.establecimiento;
-      this.retenciones.puntoEmision=this.puntoEmision;
-      this.retenciones.secuencial= this.secuencial.toString();
-      this.retenciones.impuestos= this.listaRetencionesRenta;
-      this.retenciones.fechaEmisionDocSustento= fechaEmisionC;
-      this.retenciones.fechaEmisionDocSustento= fechaEmision;
-      this.retenciones.numAutDocSustento= claveAcceso;
-      this.retenciones.identificacionSujetoRetenido= identificacionC;
-      this.retenciones.tipoDocumentoSujetoRetenido= tipoDocumentoC;      
-      this.retenciones.numDocSustento=nComprobante;
-      this.retenciones.infoAdicional= this.listaAdicionales;
-      console.log(this.retenciones);
+      this.retenciones.fechaEmision = fechaEmision;
+      this.retenciones.establecimiento = this.establecimiento;
+      this.retenciones.puntoEmision = this.puntoEmision;
+      this.retenciones.secuencial = this.secuencial.toString();
+      this.retenciones.impuestos = this.listaRetencionesRenta;
+      this.retenciones.fechaEmisionDocSustento = fechaEmisionC;
+      this.retenciones.fechaEmisionDocSustento = fechaEmision;
+      this.retenciones.numAutDocSustento = claveAcceso;
+      this.retenciones.identificacionSujetoRetenido = identificacionC;
+      this.retenciones.tipoDocumentoSujetoRetenido = tipoDocumentoC;
+      this.retenciones.numDocSustento = nComprobante;
+      this.retenciones.infoAdicional = this.listaAdicionales;
+      this.retenciones.idEstablecimiento = idEstablecimiento;
+      this.retenciones.idPuntoEmision = idPuntoEmision;
+      this.retenciones.indentificacionSujetoRetenido=this.listaUnaRetencion.res.identificacionComprador;
+      this.retenciones.tipoIdentificacionSujetoRetenido=this.listaUnaRetencion.res.tipoIdentificacionComprador;
+      this.retenciones.razonSocialSujetoRetenido=this.listaUnaRetencion.res.razonSocialComprador;
+      this.retenciones.idUsuario=this.listaUnaRetencion.res.idUsuario;
       const url = `${this.baseUrlRetencion}Retenciones/insertar`;
       await this._axios.postJson(url, this.retenciones);
 
