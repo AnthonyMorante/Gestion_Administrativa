@@ -221,18 +221,17 @@ export class FacturasProveedoresComponent
 
   async limpiarRetencion() {
 
-    this.retenciones.subtotal12 = 0;
-    this.retenciones.subtotal0 = 0;
-    this.retenciones.subtotal = 0;
-    this.retenciones.iva12 = 0;
-    this.retenciones.totalFactura = 0;
-    this.retenciones.totDescuento = 0;
-    this.listaRetencionesRenta = 0;
-    this.el.nativeElement.querySelector('#nComprobante').value = "";
-    this.el.nativeElement.querySelector('#claveAcceso').value = "";
-    this.el.nativeElement.querySelector('#base').value = "";
-    this.el.nativeElement.querySelector('#bBaseImponible').value = "";
-
+      this.retenciones.subtotal12 = 0;
+      this.retenciones.subtotal0 = 0;
+      this.retenciones.subtotal = 0;
+      this.retenciones.iva12 = 0;
+      this.retenciones.totalFactura = 0;
+      this.retenciones.totDescuento = 0;
+      this.listaRetencionesRenta = [];
+      this.el.nativeElement.querySelector('#nComprobante').value = "";
+      this.el.nativeElement.querySelector('#claveAcceso').value = "";
+      this.el.nativeElement.querySelector('#base').value = "";
+      this.el.nativeElement.querySelector('#bBaseImponible').value = "";
   }
 
 
