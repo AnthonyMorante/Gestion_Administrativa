@@ -11,6 +11,7 @@ import { LotesComponent } from './Components/lotes/lotes.component';
 import { ConfiguracionesComponent } from './Components/configuraciones/configuraciones.component';
 import { FacturasProveedoresComponent } from './Components/facturas-proveedores/facturas-proveedores.component';
 import { RetencionesComponent } from './Components/retenciones/retenciones.component';
+import { CajaComponent } from './Components/caja/caja.component';
 
 export const routes: Routes = [
   {
@@ -49,6 +50,11 @@ export const routes: Routes = [
       {
         path: 'proveedores',
         component: ProveedoresComponent,
+        canActivate: [userGuard]
+      },
+      {
+        path: 'caja',
+        component: CajaComponent,
         canActivate: [userGuard]
       },
       {

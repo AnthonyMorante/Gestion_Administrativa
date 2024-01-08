@@ -1,0 +1,204 @@
+<div class="row page-title"><i class='bi-cash-coin'></i>Caja</div>
+<div class="component-content">
+  <div class=" my-2">
+    @if(!aperturaDia){
+    <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+      Abrir Caja <i class="bi-plus"></i>
+    </button>
+    }
+  </div>
+  <div class="table-responsive p-1">
+    <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
+      <thead>
+        <tr>
+          <th class="text-center w-gear"><i class="bi-gear"></i></th>
+          <th>FECHA APERTURA</th>
+          <th>TOTAL APERTURA</th>
+          <th>FECHA CIERRE</th>
+          <th>TOTAL CIERRE</th>
+        </tr>
+      </thead>
+      @if(lista.length>0){
+      <tbody>
+        @for(item of lista;track item.idCaja){
+        <tr>
+          <td class="text-center">
+            @if(!item.fechaCierre){
+            <button (click)="editar(item.idCaja)" type="button" class="btn btn-primary text-white btn-sm"
+              style="padding:2px 0 2px 6px"><i class="bi-pencil-square" style="font-size:12px"></i></button>
+            <button (click)="eliminar(item.idCaja)" type="button" class="btn btn-danger text-white btn-sm"
+              style="padding:2px 0 2px 6px"><i class="bi-trash" style="font-size:12px"></i></button>
+            }@else {
+              <i class="bi-check-circle-fill fs-6 text-success" title="Caja cerrada"></i>
+            }
+
+          </td>
+          <td>{{item.fechaRegistro.substring(0,10).split('-').reverse().join('-')}}
+            <b>{{item.fechaRegistro.substring(11,16)}}{{(item.fechaRegistro.substring(11,13))>=12?"PM":"AM"}}</b>
+          </td>
+          <td>${{item.totalApertura.toFixed(2)}}</td>
+          <td>
+            @if(!!item.fechaCierre){
+            {{item.fechaCierre.substring(0,10).split('-').reverse().join('-')}}
+            <b>{{item.fechaCierre.substring(11,16)}}{{(item.fechaCierre.substring(11,13))>=12?"PM":"AM"}}</b>
+            }@else {
+            <button class="btn btn-success btn-sm" (click)="cargarCierre(item.idCaja)">Cerrar Caja</button>
+            }
+          </td>
+          <td width="50%">
+            @if(!!item.fechaCierre){
+            ${{item.totalCierre.toFixed(2)}}
+            }@else {
+            $0
+            }
+          </td>
+        </tr>
+        }
+      </tbody>
+      }@else{
+      <tbody>
+        <tr>
+          <td colspan="7" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+        </tr>
+      </tbody>
+      }
+    </table>
+
+  </div>
+</div>
+
+<div class="modal fade glass" #modalDatos tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content bg-primary">
+      <div class="modal-header py-2">
+        <label class="modal-title text-white" id="modalDatosLabel">{{tituloModal}}</label>
+        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"
+          (click)="modal.hide()">
+        </button>
+      </div>
+      <div class="modal-body bg-white">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" [checked]="denominaciones" id="detallado"
+            (change)="mostarDenominaciones()">
+          <label class="form-check-label fw-bold fs-sm pb-1" for="detallado"><i
+              class="bi-list-columns me-2"></i>DETALLAR DENOMINACIONES</label>
+        </div>
+        @if(denominaciones){
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead class="bg-primary text-black">
+              <tr>
+                <th>DENOMINACIÓN</th>
+                <th>CANTIDAD</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="detalleCaja">
+              @for(item of detalleCaja;track item.idDetalleCaja){
+              <tr>
+                <td width="50%" class="text-uppercase fs-sm fw-bold">{{item.nombre}} <small
+                    class="fw-500 fst-italic">{{item.tipo}}</small></td>
+                <td width="25%"><input class="form-control form-control-sm text-end" data-validate="numeros"
+                    name="cantidad" value="{{item.cantidad}}" (focusout)="handleTotales(item.idDenominacion,$index)"
+                    (keyup.enter)="handleTotales(item.idDenominacion,$index)" /></td>
+                <td width="25%"><input tabindex="-1" class="form-control form-control-sm text-end readonly" name="total"
+                    value="{{item.total.toFixed(2)}}" /></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+        <table class="mt-2">
+          <tr class="text-end fs-md">
+            <td width="308px">
+            </td>
+            <td class="textn-end fw-bold pe-2">TOTAL</td>
+            <td class="pe-2 fs-5">
+              <div class="col-auto">
+                <input class="form-control form-control-sm text-end" [class]="!denominaciones?'':'readonly'" id="total"
+                  name="total" data-validate="decimal" value="{{total}}" />
+                <div class="invalid-feedback">
+                  * Campo requerido
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-primary btn-sm" (click)="guardar()">Guardar</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade glass" id="modalCierre" tabindex="-1" role="dialog" aria-labelledby="modalCierreLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content bg-success">
+      <div class="modal-header bg-success py-2">
+        <label class="modal-title text-white" id="modalCierreLabel">{{tituloModalCierre}}</label>
+        <button type="button" class="btn-close btn-close-white" data-dismiss="modal" aria-label="Close"
+          (click)="modal.hide()">
+        </button>
+      </div>
+      <div class="modal-body bg-white">
+        <div class="form-check form-switch">
+          <input class="form-check-input success" type="checkbox" [checked]="denominaciones" id="detalladoCierre"
+            (change)="mostarDenominacionesCierre()">
+          <label class="form-check-label fw-bold fs-sm pb-1" for="detalladoCierre"><i
+              class="bi-list-columns me-2"></i>DETALLAR DENOMINACIONES</label>
+        </div>
+        @if(denominaciones){
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead class="bg-success text-white">
+              <tr>
+                <th>DENOMINACIÓN</th>
+                <th>CANTIDAD</th>
+                <th>TOTAL</th>
+              </tr>
+            </thead>
+            <tbody id="detalleCajaCierre">
+              @for(item of detalleCajaCierre;track item.idDetalleCaja){
+              <tr>
+                <td width="50%" class="text-uppercase fs-sm fw-bold">{{item.nombre}} <small
+                    class="fw-500 fst-italic">{{item.tipo}}</small></td>
+                <td width="25%"><input class="form-control form-control-sm text-end" data-validate="numeros"
+                    name="cantidad" value="{{item.cantidad}}" (focusout)="handleTotalesCierre(item.idDenominacion,$index)"
+                    (keyup.enter)="handleTotalesCierre(item.idDenominacion,$index)" /></td>
+                <td width="25%"><input tabindex="-1" class="form-control form-control-sm text-end readonly" name="total"
+                    value="{{item.total.toFixed(2)}}" /></td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+        <table class="mt-2">
+          <tr class="text-end fs-md">
+            <td width="308px">
+            </td>
+            <td class="textn-end fw-bold pe-2">TOTAL</td>
+            <td class="pe-2 fs-5">
+              <div class="col-auto">
+                <input class="form-control form-control-sm text-end" [class]="!denominaciones?'':'readonly'" id="totalCierre"
+                  name="totalCierre" data-validate="decimal" value="{{totalCierre}}" />
+                <div class="invalid-feedback">
+                  * Campo requerido
+                </div>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        <button type="button" class="btn btn-success btn-sm" (click)="guardarCierre()">Guardar</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modalCierre.hide()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
