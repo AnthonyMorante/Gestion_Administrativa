@@ -10,7 +10,6 @@ import { userGuard } from './Guards/user.guard';
 import { LotesComponent } from './Components/lotes/lotes.component';
 import { ConfiguracionesComponent } from './Components/configuraciones/configuraciones.component';
 import { FacturasProveedoresComponent } from './Components/facturas-proveedores/facturas-proveedores.component';
-import { RetencionesComponent } from './Components/retenciones/retenciones.component';
 
 export const routes: Routes = [
   {
@@ -56,12 +55,6 @@ export const routes: Routes = [
         component: FacturasComponent,
         canActivate: [userGuard]
       },
-      {
-        path: 'retenciones',
-        component: RetencionesComponent,
-        canActivate: [userGuard]
-      },
-
       {
 
         path: 'facturas-proveedores',
