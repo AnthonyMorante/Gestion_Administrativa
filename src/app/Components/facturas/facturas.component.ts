@@ -29,6 +29,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('frmProducto', { static: true }) frmProducto: ElementRef = {} as ElementRef;
   @ViewChild('frmEmisor', { static: true }) frmEmisor: ElementRef = {} as ElementRef;
   @ViewChild('frmDetalleFormaPagos', { static: true }) frmDetalleFormaPagos: ElementRef = {} as ElementRef;
+  
   @ViewChild('frmInformacionAdicional', { static: true }) frmInformacionAdicional: ElementRef = {} as ElementRef;
   @ViewChild('modalCambios', { static: true }) modalCambios: ElementRef = {} as ElementRef;
   modal: any;

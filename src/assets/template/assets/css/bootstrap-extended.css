@@ -36,6 +36,18 @@ a {
   border-color: var(--empresa-primary);
 }
 
+
+.form-check-input.success:checked {
+  background-color: #15ca20;
+  border-color: #15ca20;
+}
+
+.form-check-input[type=checkbox].success:indeterminate {
+  background-color: #15ca20;
+  border-color: #15ca20;
+}
+
+
 .valid-feedback {
   color: #15ca20
 }

@@ -1,263 +1,271 @@
 <div class="row page-title"><i class='bi-receipt'></i>Facturas proveedores</div>
 <div class="component-content">
-    <div class=" my-2">
-        <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
-            Registrar Factura <i class="bi-plus"></i>
-        </button>
-    </div>
-    <div class="table-responsive p-1">
-        <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
-            <thead>
-                <tr>
-                    <th class="text-center w-gear"><i class="bi-gear"></i></th>
-                    <th width="19%">FECHA REGISTRO</th>
-                    <th width="19%">FECHA EMISIÓN</th>
-                    <th>PROVEEDOR</th>
-                    <th>REPRESENTANTE</th>
-                    <th class="text-end">VALOR TOTAL</th>
-                </tr>
-            </thead>
-            @if(lista.length>0){
+  <div class=" my-2">
+    <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
+      Registrar Factura <i class="bi-plus"></i>
+    </button>
+  </div>
+  <div class="table-responsive p-1">
+    <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
+      <thead>
+        <tr>
+          <th class="text-center w-gear"><i class="bi-gear"></i></th>
+          <th width="7%">FECHA REGISTRO</th>
+          <th width="7%">FECHA EMISIÓN</th>
+          <th>CLAVE ACCESO</th>
+          <th>PROVEEDOR</th>
+          <th>REPRESENTANTE</th>
+          <th class="text-end">VALOR TOTAL</th>
+        </tr>
+      </thead>
+      @if(lista.length>0){
 
-            <tbody>
-                @for(item of lista;track item.claveAcceso){
-                <tr>
-                    <td>
-                        <button class="btn text-primary btn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i class="bi-eye-fill"
-                                style="font-size: 16px !important;"></i>
-                        </button>
-                    @if(item.totalRetenciones==0){
-                        <button (click)="modalRetencion.show();cargaRetencion(item.claveAcceso)" class="btn text-dark btn-sm btn-file-td" title="Generar retención"><i class="bi-receipt"
-                            style="font-size: 16px !important;"></i>
-                        </button>
-                    }
-                    </td>
-                    <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
-                    <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
-                    <td>{{item.nombreComercial}}</td>
-                    <td>{{item.razonSocial}}</td>
-                    <td class="text-end">{{item.importeTotal}}</td>
-                </tr>
-                }
-            </tbody>
-            }@else {
-            <tbody>
-                <tr>
-                    <td colspan="6" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
-                </tr>
-            </tbody>
+      <tbody>
+        @for(item of lista;track item.claveAcceso){
+        <tr>
+          <td>
+            <button class="btn text-primary btn-sm btn-file-td" title="Ver" (click)="ver(item.idFactura)"><i
+                class="bi-eye-fill" style="font-size: 16px !important;"></i>
+            </button>
+            @if(item.totalRetenciones==0){
+            <button (click)="modalRetencion.show();cargaRetencion(item.claveAcceso,item.idFactura)"
+              class="btn text-dark btn-sm btn-file-td" title="Generar retención"><i class="bi-receipt"
+                style="font-size: 16px !important;"></i>
+            </button>
             }
-        </table>
-    </div>
+          </td>
+          <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
+          <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
+          <td>{{item.claveAcceso}}</td>
+          <td>{{item.nombreComercial}}</td>
+          <td>{{item.razonSocial}}</td>
+          <td class="text-end">{{item.importeTotal}}</td>
+        </tr>
+        }
+      </tbody>
+      }@else {
+      <tbody>
+        <tr>
+          <td colspan="7" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+        </tr>
+      </tbody>
+      }
+    </table>
+  </div>
 </div>
 
 <div class="modal fade glass" id="modalDatos" tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
-        <div class="modal-content bg-modal-factura">
-            <div class="modal-header bg-primary pt-1 pb-1 text-end">
-                <label class="modal-title" id="modalDatosLabel"></label>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide()">
-                </button>
-            </div>
-            <div class="modal-body bg-white">
-                <div class="row gx-2 mt-1">
-                    @if(idFactura==0){
-                    <form class="row mb-1" id="frmXml" (submit)="$event.preventDefault()">
-                        <div class="col-sm-6">
-                            <label class="form-label">Archivo XML</label>
-                            <input type="file" accept=".xml" class="form-control form-control-sm" id="fileXml"
-                                name="fileXml" (change)="handleXml()" />
-                            <div class="invalid-feedback">
-                                * Campo requerido
-                            </div>
-                        </div>
-                    </form>
-                    }
-                    <div class="row">
-                        @if(!factura){
-                        <div class="col-sm-12 mt-2">
-                            <div class="alert alert-primary text-center border-warning-dark p-2">Seleccione un archivo
-                                XML</div>
-                        </div>
-                        }@else {
-                        <div class="col-sm-12">
-                            <div class="card card-custom px-1">
-                                <h5 class="card-title" style="font-size: 17px;"><b class="text-danger">FACTURA
-                                        N°</b>{{factura.estab}}-{{factura.ptoEmi}}-{{factura.secuencial}}</h5>
-                                <div class="card-body pt-0 pb-0 px-2 fs-md text-uppercase">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="col-sm-12 mb-1 border-bottom">
-                                                <b class="text-muted">DATOS DE PROVEEDOR</b>
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>FECHA EMSIÓN:</b> {{factura.fechaEmision}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>CLAVE ACCESO:</b> {{factura.claveAcceso}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>RUC:</b> {{factura.ruc}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>NOMBRE COMERCIAL:</b> {{factura.nombreComercial}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>RAZÓN SOCIAL:</b> {{factura.razonSocial}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>DIRECCIÓN:</b> {{factura.dirMatriz}}
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <div class="col-sm-12 mb-1 border-bottom">
-                                                <b class="text-muted">DATOS DE CLIENTE</b>
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>IDENTIFICACIÓN:</b> {{factura.identificacionComprador}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>RAZÓN SOCIAL:</b> {{factura.razonSocialComprador}}
-                                            </div>
-                                            <div class="col-sm-12">
-                                                <b>DIRECCIÓN:</b> {{factura.dirEstablecimiento}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="card card-custom py-0 px-0">
-                                    <div class="card-body py-0 px-1">
-                                        <div class="row">
-                                            <div class="col-sm-12 mt-2">
-                                                <div class="table-responsive">
-                                                    <table class="table-custom">
-                                                    <thead class="bg-primary text-dark">
-                                                        <tr>
-                                                            <th>Código</th>
-                                                            <th>Producto</th>
-                                                            <th>Referencia Interna</th>
-                                                            <th>Cantidad</th>
-                                                            <th>Precio Unitario</th>
-                                                            <th>Descuento</th>
-                                                            <th>Total</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody id="tbodyDetalle">
-                                                        @for(item of factura.sriDetallesFacturas;track item.idDetalleFactura){
-                                                            <tr>
-                                                                <td>{{item.codigoPrincipal}}</td>
-                                                                <td width="37%">{{item.descripcion}}</td>
-                                                                <td width="37%">
-                                                                    <select class="form-select form-select-sm" [class]="idFactura>0?'readonly':''" id="s2_{{$index}}_select" (change)="handleReferenciaInterna(item.codigoPrincipal,$index)" onchange="handleSelect2(this,event)">
-                                                                        <option value="">Seleccione</option>
-                                                                        @for(producto of productos;track producto.idProducto){
-                                                                            <option value="{{producto.idProducto}}" [selected]="selectedItem(item.codigoPrincipal,producto.idProducto)">{{producto.producto}}</option>    
-                                                                        }
-                                                                    </select>
-                                                                </td>
-                                                                <td class="text-end">{{item.cantidad}}</td>
-                                                                <td class="text-end">{{item.precioUnitario.toFixed(2)}}</td>
-                                                                <td class="text-end text-danger">-{{item.descuento.toFixed(2)}}</td>
-                                                                <td class="text-end">{{item.precioTotalSinImpuesto.toFixed(2)}}</td>
-                                                            </tr>
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-        
-                            </div>
-                        </div>
-                        <div class="col-sm-7">
-                            @if(factura.sriCamposAdicionales.length>0){
-                                <div class="col-sm-12">
-                                    <div class="card card-custom">
-                                        <h5 class="card-title">
-                                           Información Adicional
-                                        </h5>
-                                        <div class="card-body py-1">
-                                            <table class="table table-custom bg-white w-100 fs-md">
-                                            @for(item of factura.sriCamposAdicionales;track item.nombre){
-                                                <tr>
-                                                    <td class="text-uppercase" [innerHTML]="item.text"></td>
-                                                </tr>
-                                            }
-                                        </table>
-                          
-                                        </div>
-                                    </div>
-                                </div>
-                            }
-                            <div class="col-sm-12">
-                                <div class="card card-custom">
-                                    <h5 class="card-title">
-                                       Formas de pago
-                                    </h5>
-                                    <div class="card-body py-1">
-                                        <table class="table table-custom w-100 fs-md">
-                                        @for(item of factura.sriPagos;track item.formaPago){
-                                            <tr>
-                                                <td>{{item.formaPago}}-{{item.formaPagoTexto}}</td>
-                                                <td class="text-end">{{item.total}}</td>
-                                            </tr>
-                                        }
-                                    </table>
-                      
-                                    </div>
-                                </div>
-                            </div>
-  
-                        </div>
-                        <div class="col-sm-5">
-                            <div class="card card-custom no-border">
-                              <div class="card-body pt-0 px-0">
-                                <table class="table-totales">
-                                  <tr>
-                                    <td>Subtotal</td>
-                                    <td>{{factura.totalSinImpuesto.toFixed(2)}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Subtotal 12%</td>
-                                    <td>{{subTotal12()}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Subtotal 0%</td>
-                                    <td>{{subTotal0()}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>IVA 12%</td>
-                                    <td>{{iva12()}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>Descuento</td>
-                                    <td class="text-danger">-{{factura.totalDescuento?.toFixed(2)}}</td>
-                                  </tr>
-                                  <tr>
-                                    <td><b>Total</b></td>
-                                    <td><b>{{factura.importeTotal.toFixed(2)}}</b></td>
-                                  </tr>
-                                </table>
-                              </div>
-                            </div>
-                          </div>
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer bg-light py-2">
-                @if(this.idFactura==0 && !!this.factura){
-                    <button type="button" class="btn btn-success btn-sm" (click)="guardar()">Guardar</button>
-                }
-                <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
+    <div class="modal-content bg-modal-factura">
+      <div class="modal-header bg-primary pt-1 pb-1 text-end">
+        <label class="modal-title" id="modalDatosLabel"></label>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modal.hide();">
+        </button>
+      </div>
+      <div class="modal-body bg-white">
+        <div class="row gx-2 mt-1">
+          @if(idFactura==0){
+          <form class="row mb-1" id="frmXml" (submit)="$event.preventDefault()">
+            <div class="col-sm-6">
+              <label class="form-label">Archivo XML</label>
+              <input type="file" accept=".xml" class="form-control form-control-sm" id="fileXml" name="fileXml"
+                (change)="handleXml()" />
+              <div class="invalid-feedback">
+                * Campo requerido
               </div>
+            </div>
+          </form>
+          }
+          <div class="row">
+            @if(!factura){
+            <div class="col-sm-12 mt-2">
+              <div class="alert alert-primary text-center border-warning-dark p-2">Seleccione un archivo
+                XML</div>
+            </div>
+            }@else {
+            <div class="col-sm-12">
+              <div class="card card-custom px-1">
+                <h5 class="card-title" style="font-size: 17px;"><b class="text-danger">FACTURA
+                    N°</b>{{factura.estab}}-{{factura.ptoEmi}}-{{factura.secuencial}}</h5>
+                <div class="card-body pt-0 pb-0 px-2 fs-md text-uppercase">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="col-sm-12 mb-1 border-bottom">
+                        <b class="text-muted">DATOS DE PROVEEDOR</b>
+                      </div>
+                      <div class="col-sm-12">
+                        <b>FECHA EMSIÓN:</b> {{factura.fechaEmision}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>CLAVE ACCESO:</b> {{factura.claveAcceso}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>RUC:</b> {{factura.ruc}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>NOMBRE COMERCIAL:</b> {{factura.nombreComercial}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>RAZÓN SOCIAL:</b> {{factura.razonSocial}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>DIRECCIÓN:</b> {{factura.dirMatriz}}
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="col-sm-12 mb-1 border-bottom">
+                        <b class="text-muted">DATOS DE CLIENTE</b>
+                      </div>
+                      <div class="col-sm-12">
+                        <b>IDENTIFICACIÓN:</b> {{factura.identificacionComprador}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>RAZÓN SOCIAL:</b> {{factura.razonSocialComprador}}
+                      </div>
+                      <div class="col-sm-12">
+                        <b>DIRECCIÓN:</b> {{factura.dirEstablecimiento}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-12">
+                <div class="card card-custom py-0 px-0">
+                  <div class="card-body py-0 px-1">
+                    <div class="row">
+                      <div class="col-sm-12 mt-2">
+                        <div class="table-responsive">
+                          <table class="table-custom">
+                            <thead class="bg-primary text-dark">
+                              <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Referencia Interna</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unitario</th>
+                                <th>Descuento</th>
+                                <th>Total</th>
+                              </tr>
+                            </thead>
+                            <tbody id="tbodyDetalle">
+                              @for(item of factura.sriDetallesFacturas;track item.idDetalleFactura){
+                              <tr>
+                                <td>{{item.codigoPrincipal}}</td>
+                                <td width="37%">{{item.descripcion}}</td>
+                                <td width="37%">
+                                  <select class="form-select form-select-sm" [class]="idFactura>0?'readonly':''"
+                                    id="s2_{{$index}}_select"
+                                    (change)="handleReferenciaInterna(item.codigoPrincipal,$index)"
+                                    onchange="handleSelect2(this,event)">
+                                    <option value="">Seleccione</option>
+                                    @for(producto of productos;track producto.idProducto){
+                                    <option value="{{producto.idProducto}}"
+                                      [selected]="selectedItem(item.codigoPrincipal,producto.idProducto)">
+                                      {{producto.producto}}</option>
+                                    }
+                                  </select>
+                                </td>
+                                <td class="text-end">{{item.cantidad}}</td>
+                                <td class="text-end">{{item.precioUnitario.toFixed(2)}}</td>
+                                <td class="text-end text-danger">-{{item.descuento.toFixed(2)}}</td>
+                                <td class="text-end">{{item.precioTotalSinImpuesto.toFixed(2)}}</td>
+                              </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="col-sm-7">
+              @if(factura.sriCamposAdicionales.length>0){
+              <div class="col-sm-12">
+                <div class="card card-custom">
+                  <h5 class="card-title">
+                    Información Adicional
+                  </h5>
+                  <div class="card-body py-1">
+                    <table class="table table-custom bg-white w-100 fs-md">
+                      @for(item of factura.sriCamposAdicionales;track item.nombre){
+                      <tr>
+                        <td class="text-uppercase" [innerHTML]="item.text"></td>
+                      </tr>
+                      }
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+              }
+              <div class="col-sm-12">
+                <div class="card card-custom">
+                  <h5 class="card-title">
+                    Formas de pago
+                  </h5>
+                  <div class="card-body py-1">
+                    <table class="table table-custom w-100 fs-md">
+                      @for(item of factura.sriPagos;track item.formaPago){
+                      <tr>
+                        <td>{{item.formaPago}}-{{item.formaPagoTexto}}</td>
+                        <td class="text-end">{{item.total}}</td>
+                      </tr>
+                      }
+                    </table>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-sm-5">
+              <div class="card card-custom no-border">
+                <div class="card-body pt-0 px-0">
+                  <table class="table-totales">
+                    <tr>
+                      <td>Subtotal</td>
+                      <td>{{factura.totalSinImpuesto.toFixed(2)}}</td>
+                    </tr>
+                    <tr>
+                      <td>Subtotal 12%</td>
+                      <td>{{subTotal12()}}</td>
+                    </tr>
+                    <tr>
+                      <td>Subtotal 0%</td>
+                      <td>{{subTotal0()}}</td>
+                    </tr>
+                    <tr>
+                      <td>IVA 12%</td>
+                      <td>{{iva12()}}</td>
+                    </tr>
+                    <tr>
+                      <td>Descuento</td>
+                      <td class="text-danger">-{{factura.totalDescuento?.toFixed(2)}}</td>
+                    </tr>
+                    <tr>
+                      <td><b>Total</b></td>
+                      <td><b>{{factura.importeTotal.toFixed(2)}}</b></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
         </div>
+      </div>
+      <div class="modal-footer bg-light py-2">
+        @if(this.idFactura==0 && !!this.factura){
+        <button type="button" class="btn btn-success btn-sm" (click)="guardar()">Guardar</button>
+        }
+        <button type="button" class="btn btn-secondary btn-sm" (click)="modal.hide()">Cancelar</button>
+      </div>
     </div>
+  </div>
 </div>
 
 
@@ -273,7 +281,8 @@
             </b>
           </h6>
         </label>
-        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close" (click)="modalRetencion.hide()">
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
+          (click)="modalRetencion.hide();limpiarRetencion()">
         </button>
       </div>
       <div class="modal-body bg-white">
@@ -284,11 +293,61 @@
               <h5 class="card-title">Comprobante
               </h5>
               <div class="card-body pt-0">
+
+
+
+
                 <form class="row" #frmCliente>
+
+
+                  <div class="row">
+
+                    <div class="col-sm-4">
+                      <label class="form-label">Fecha Emisión</label>
+                      <input readonly type="date" class="form-control form-control-sm" id="fechaEmisionC"
+                        name="fechaEmision" />
+                      <div class="invalid-feedback">
+                        *Campo Requerido
+                      </div>
+                    </div>
+
+
+
+
+                    <div class="col-sm-4">
+                      <label class="form-label">Tipo Documento</label>
+                      <select readonly readonly class="form-select form-select-sm text-end" id="tipoDocumentoC"
+                        name="tipoDocumentoC">
+                        @for(item of listaTipoIdentificaciones;track $index){
+                        <option value="{{item.codigo}}">
+                          {{item.nombre}}</option>
+                        }
+                      </select>
+                    </div>
+
+
+
+                    <div class="col-sm-4">
+                      <label class="form-label">Identificacion</label>
+                      <input readonly type="text" class="form-control form-control-sm" id="identificacionC"
+                        name="identificacionC" />
+                      <div class="invalid-feedback">
+                        *Campo Requerido
+                      </div>
+                    </div>
+
+
+
+
+
+
+                  </div>
+
+
 
                   <div class="col-sm-3">
                     <label class="form-label">Doc. Sutento</label>
-                    <input type="text" class="form-control form-control-sm" id="docSustento" name="docSustento"
+                    <input readonly type="text" class="form-control form-control-sm" id="docSustento" name="docSustento"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
@@ -297,14 +356,14 @@
 
                   <div class="col-sm-3">
                     <label class="form-label">N.- Comprobante</label>
-                    <input type="text" class="form-control form-control-sm" id="nComprobante" name="nComprobante"
-                      maxlength="30" data-clean="false" />
+                    <input type="text" readonly class="form-control form-control-sm" id="nComprobante"
+                      name="nComprobante" maxlength="30" data-clean="false" />
                   </div>
 
 
                   <div class="col-sm-6">
                     <label class="form-label">Clave Acceso</label>
-                    <input type="text" class="form-control form-control-sm" id="claveAcceso" name="claveAcceso"
+                    <input readonly type="text" class="form-control form-control-sm" id="claveAcceso" name="claveAcceso"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
@@ -365,7 +424,7 @@
 
                   <div class="col-sm-2">
                     <label class="form-label">Base</label>
-                    <input type="text" class="form-control form-control-sm" id="base" name="base"
+                    <input readonly type="text" class="form-control form-control-sm" id="base" name="base"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
@@ -375,17 +434,27 @@
                   <div class="col-sm-8">
                     <label class="form-label">N.- Comprobante</label>
 
-                    <select class="form-control form-control-sm">
+
+                    <select id="porcentajeImpuestoRetencion" name="porcentajeImpuestoRetencion"
+                      class="form-select form-select-sm" onchange="handleSelect2(this,event)">
+                      @for(porcentaje of listaPorcentajeImpuestos;track porcentaje.idPorcentajeImpuestoRetencion){
+                      <option value="{{porcentaje.idPorcentajeImpuestoRetencion}}">{{porcentaje.codigo}} -
+                        {{porcentaje.nombre}} {{porcentaje.valor | number:'1.2-2'}} %</option>
+                      }
+                    </select>
+
+                    <!-- <select class="form-control form-control-sm">
 
                       <option value="">Valor Comprobante 1.5 %</option>
                       <option value="">Valor Retencion 2.5 %</option>
-                    </select>
+                    </select> -->
                   </div>
 
 
                   <div class="col-sm-auto mt-agregar">
                     <br>
-                    <button class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
+                    <button id="agregarImpuestoBtn" name="agregarImpuestoBtn" (click)="agregarImpuestoRenta()"
+                      type="button" class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
                   </div>
 
 
@@ -397,18 +466,72 @@
                           <!-- <th width="2%" class="text-end">#</th> -->
                           <th width="15%" class="text-end">Base Imp</th>
                           <th width="10%" class="text-end">Cod</th>
-                          <th width="5%" class="text-end">%</th>
+                          <th width="10%" class="text-end">%</th>
                           <th width="15%" class="text-end">Valor</th>
-                          <th width="75%">Descripcion</th>
+                          <th width="75%" class="text-end">Descripcion</th>
                           <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
                         </tr>
                       </thead>
                       <tbody>
+
+                        @for (item of listaRetencionesRenta; track $index) {
+
+                        <tr>
+
+                          <td class="text-end">
+
+                            {{item.baseImponible |number:'1.2-2' }}
+
+                          </td>
+
+                          <td class="text-end">
+
+                            {{item.codigo}}
+
+                          </td>
+
+
+                          <td class="text-end">
+
+                            {{item.valor |number:'1.2-2' }}
+
+                          </td>
+
+                          <td class="text-end">
+
+                            {{item.valorRetenido |number:'1.2-2' }} 
+
+                          </td>
+
+
+                          <td class="text-end">
+
+                            {{item.nombre}}
+
+                          </td>
+
+                          <td class="text-center">
+                            <button type="button" class="btn btn-danger btn-sm btn-quitar"
+                              (click)="eliminarImpuestoRenta(item.id)">
+                              <i class="bi-trash-fill"></i>
+                            </button>
+                          </td>
+
+                        </tr>
+
+                        }
+
+
+                        @if (listaRetencionesRenta.length==0)
+                        {
+
                         <tr>
                           <td colspan="6" class="text-center"><i
                               class="bi-exclamation-triangle-fill text-danger me-1"></i>Ningun impuesto Agregado
                           </td>
                         </tr>
+
+                        }
 
                       </tbody>
                     </table>
@@ -513,92 +636,13 @@
                 <nav>
                   <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <button class="nav-link active" id="nav-pago-tab" data-bs-toggle="tab" data-bs-target="#nav-pago"
-                      type="button" role="tab" aria-controls="nav-home" aria-selected="true">FORMA DE PAGO</button>
-                    <button class="nav-link" id="nav-adicional-tab" data-bs-toggle="tab" data-bs-target="#nav-adicional"
-                      type="button" role="tab" aria-controls="nav-profile" aria-selected="false">INFORMACIÓN
+                      type="button" role="tab" aria-controls="nav-home" aria-selected="true">INFORMACIÓN
                       ADICIONAL</button>
+
                   </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
                   <div class="tab-pane fade show active" id="nav-pago" role="tabpanel" aria-labelledby="nav-pago-tab">
-                    <form #frmDetalleFormaPagos class="row mt-2">
-                      <div class="col-sm-12">
-                        <div class="form-check">
-                          <input class="form-check-input" type="checkbox" data-clean="false" id="defaultFormaPago"
-                            name="defaultFormaPago" (change)="handleDefaultFormaPago($event.target)"
-                            [checked]="formaPagoDefault" />
-                          <label class="form-check-label fs-sm text-uppercase" for="defaultFormaPago">
-                            Utilizar forma de pago por defecto <b>(SIN UTILIZACIÓN DEL SISTEMA FINANCIERO)</b>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="row" [class]="formaPagoDefault?'no-display':''">
-                        <div class="col-sm-12">
-                          <label class="form-label">Forma de pago</label>
-                          <select class="form-select form-select-sm" id="idFormaPago" name="idFormaPago">
-                            @for(item of listaFormaPagos;track item.idFormaPago){
-                            <option value="{{item.idFormaPago}}">{{item.nombre}}
-                            </option>
-                            }
-
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label">Tiempo</label>
-                          <select class="form-select form-select-sm" id="idTiempoFormaPago" name="idTiempoFormaPago">
-                            @for(item of listaTiempoFormaPagos;track item.idTiempoFormaPago){
-                            <option value="{{item.idTiempoFormaPago}}">
-                              {{item.nombre}}</option>
-                            }
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label">Plazo</label>
-                          <input class="form-control form-control-sm text-end" id="plazo" name="plazo"
-                            data-validate="numeros-no-validate" maxlength="10" />
-                        </div>
-                        <div class="col-sm-3">
-                          <label class="form-label">Valor</label>
-                          <input class="form-control form-control-sm text-end" id="valor" name="valor"
-                            data-validate="decimal" maxlength="10" />
-                          <div class="invalid-feedback">
-                            * Campo requerido
-                          </div>
-                        </div>
-                        <div class="col-sm-auto mt-agregar">
-                          <br>
-                          <button class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
-                        </div>
-                        <div class="col-sm-12">
-                          <div class="table-responsive pt-0">
-                            <table class="table-detalle-factura">
-                              <thead>
-                                <tr>
-                                  <!-- <th width="2%" class="text-end">#</th> -->
-                                  <th width="75%">Forma de pago</th>
-                                  <th width="15%" class="text-end">Tiempo</th>
-                                  <th width="5%" class="text-end">Plazo</th>
-                                  <th width="15%" class="text-end">Valor</th>
-                                  <th width="1%" class="text-center"><i class="bi-gear-fill"></i></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-
-                                <tr>
-                                  <td colspan="5" class="text-center"><i
-                                      class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna forma de pago
-                                    agregada</td>
-                                </tr>
-
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                      </div>
-
-                    </form>
-                  </div>
-                  <div class="tab-pane fade" id="nav-adicional" role="tabpanel" aria-labelledby="nav-adicional-tab">
                     <form #frmInformacionAdicional class="row mt-2">
                       <div class="row">
                         <div class="col-sm-5">
@@ -619,7 +663,7 @@
                         </div>
                         <div class="col-sm-auto mt-agregar">
                           <br>
-                          <button class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
+                          <button (click)="agregarAdicional()" class="btn btn-sm btn-success d-sm-block">Agregar<i class="bi-plus"></i></button>
                         </div>
                         <div class="col-sm-12">
                           <div class="table-responsive pt-0">
@@ -632,16 +676,29 @@
                                   <th width="2%" class="text-center"><i class="bi-gear-fill"></i></th>
                                 </tr>
                               </thead>
-                              <tbody>
 
+
+                              <tbody>
+                                @if(listaAdicionales.length==0){
                                 <tr>
                                   <td colspan="3" class="text-center"><i
                                       class="bi-exclamation-triangle-fill text-danger me-1"></i>Ninguna información
                                     adicional agregada</td>
                                 </tr>
-
+                                }@else {
+                                @for(item of listaAdicionales;track $index){
+                                <tr>
+                                  <td>{{item.nombre}}</td>
+                                  <td>{{item.valor}}</td>
+                                  <td class="text-center"><button class="btn btn-danger btn-sm btn-quitar"
+                                      (click)="listaAdicionales.splice($index,1)"><i class="bi-trash-fill"></i></button>
+                                  </td>
+                                </tr>
+                                }
+                                }
 
                               </tbody>
+
                             </table>
                           </div>
                         </div>
@@ -649,6 +706,7 @@
 
                     </form>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -672,7 +730,7 @@
 
                   <tr>
                     <td>Total Retenido</td>
-                    <td>{{retenciones.totDescuento.toFixed(2).replaceAll(".",",")}}</td>
+                    <td>{{retenciones.totRetenido.toFixed(2).replaceAll(".",",")}}</td>
                   </tr>
                   <tr>
                     <td><b>Total</b></td>
@@ -690,8 +748,9 @@
 
 
       <div class="modal-footer bg-light py-2">
-        <button type="button" class="btn btn-success btn-sm">Firmar y enviar</button>
-        <button type="button" class="btn btn-secondary btn-sm" (click)="modalRetencion.hide()">Cancelar</button>
+        <button type="button" class="btn btn-success btn-sm" (click)="guardarRetencion()">Firmar y enviar</button>
+        <button type="button" class="btn btn-secondary btn-sm"
+          (click)="modalRetencion.hide();limpiarRetencion()">Cancelar</button>
       </div>
     </div>
   </div>
