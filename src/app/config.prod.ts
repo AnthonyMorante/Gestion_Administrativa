@@ -1,5 +1,5 @@
 export const jsonConfig = {
-  BASE_API_URL: 'https://gestion-administrativa-api-y9c8y.ondigitalocean.app/',
+  BASE_API_URL: 'http://jacgeafe-001-site1.anytempurl.com/_SERVICES/',
   token: {
     user: "GS_ADMIN"
   },

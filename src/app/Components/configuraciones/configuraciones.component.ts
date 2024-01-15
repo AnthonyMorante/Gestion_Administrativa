@@ -78,6 +78,7 @@ export class ConfiguracionesComponent implements OnInit {
     try {
       this.download = false;
       this.urlFirma = `${global.BASE_API_URL}${this.datos.ruta}`.replaceAll("//", "/");
+      console.log(this.urlFirma);
       var archivoExistente = await new Promise(async resolve => {
         try {
           const url = this.urlFirma;

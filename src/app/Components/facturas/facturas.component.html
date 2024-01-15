@@ -38,13 +38,13 @@
             @else if(item.estadoSri=="EN PROCESAMIENTO"){
             <span class="fs-xs">EN PROCESAMIENTO</span>
             }
-            @else if(item.estadoSri=="NO AUTORIZADO"){
+            @else if(item.estadoSri=="NO AUTORIZADO" || item.estadoSri=="DEVUELTA"){
             <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
               class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
                 style="font-size:12px"></i></button>
-            <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
+            <!-- <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
               class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
-                style="font-size:12px"></i></button>
+                style="font-size:12px"></i></button> -->
             }@else if(item.estadoSri=="RECIBIDA"){
             <span class="fs-xs">ESPERANDO AUTORIZACIÓN</span>
             }
@@ -221,7 +221,7 @@
                 <form #frmProducto class="row">
                   <div class="col-sm-4">
                     <label class="form-label">Productos/Servicios</label>
-                    <ng-select #idProducto id="idProducto" [clearable]="true" [virtualScroll]="true"
+                    <ng-select #idProducto id="idProducto" [clearable]="true" 
                       (change)="handleProducto($event)" placeholder="Busque y seleccione un producto o servicio"
                       notFoundText="Sin resultados">
                       @for(item of listaProductos;track item.idProducto){
