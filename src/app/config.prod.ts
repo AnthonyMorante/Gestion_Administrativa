@@ -1,5 +1,6 @@
+
 export const jsonConfig = {
-  BASE_API_URL: 'http://jacgeafe-001-site1.anytempurl.com/_SERVICES/',
+  BASE_API_URL: `${window.location.protocol}//${window.location.host}/_SERVICES/`,
   token: {
     user: "GS_ADMIN"
   },
