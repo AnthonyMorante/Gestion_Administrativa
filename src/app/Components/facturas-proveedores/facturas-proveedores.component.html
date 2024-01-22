@@ -13,13 +13,13 @@
           <th width="7%">FECHA REGISTRO</th>
           <th width="7%">FECHA EMISIÓN</th>
           <th>CLAVE ACCESO</th>
+          <th>ESTADO</th>
           <th>PROVEEDOR</th>
           <th>REPRESENTANTE</th>
           <th class="text-end">VALOR TOTAL</th>
         </tr>
       </thead>
       @if(lista.length>0){
-
       <tbody>
         @for(item of lista;track item.claveAcceso){
         <tr>
@@ -37,6 +37,18 @@
           <td>{{item.fechaRegistro.substring(0,10).split("-").reverse().join("-")}}</td>
           <td>{{item.fechaEmision.substring(0,10).split("-").reverse().join("-")}}</td>
           <td>{{item.claveAcceso}}</td>
+
+          @if (item.retencionGenerada) {
+
+            <td><span class="badge fw-500 primary" [style]="getColor(2)">RETENIDO</span></td>
+
+          }@else {
+
+            <td><span class="badge fw-500 primary" [style]="getColor(6)">NO RETENIDO</span></td>
+
+          }
+
+
           <td>{{item.nombreComercial}}</td>
           <td>{{item.razonSocial}}</td>
           <td class="text-end">{{item.importeTotal}}</td>
@@ -46,7 +58,7 @@
       }@else {
       <tbody>
         <tr>
-          <td colspan="7" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
+          <td colspan="8" class="no-data-available text-center" [innerHTML]="mensajeDataTable"></td>
         </tr>
       </tbody>
       }
@@ -269,7 +281,7 @@
 </div>
 
 
-<div class="row page-title"><i class='bi-receipt-cutoff'></i>Retención</div>
+<div class="row page-title"><i class='bi-receipt-cutoff'></i>Facturas Proveedores</div>
 <div class="modal fade glass" #modalRetenciones tabindex="-1" role="dialog" aria-labelledby="modalDatosLabel"
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-fullscreen" role="document">
