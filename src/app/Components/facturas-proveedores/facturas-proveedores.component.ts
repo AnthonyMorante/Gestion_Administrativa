@@ -537,8 +537,10 @@ export class FacturasProveedoresComponent
   async guardarRetencion() {
     try {
 
-
-      console.log(this.listaUnaRetencion);
+      if(!this.listaRetencionesRenta.length){
+        js.toastWarning("Agregue un impuesto al detalle");
+          return;
+        }
 
       let fechaEmision = this.el.nativeElement.querySelector("#fechaEmision").value;
       let nComprobante = this.el.nativeElement.querySelector("#nComprobante").value;
@@ -581,6 +583,8 @@ export class FacturasProveedoresComponent
 
     } catch (e) {
       js.handleError(e);
+    }finally{
+      // js.loaderHide();
     }
   }
 
