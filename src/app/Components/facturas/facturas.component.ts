@@ -110,7 +110,8 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async verificarEstados(): Promise<void> {
     try {
-      if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2).length == 0) return;
+      console.log(this.lista);
+      if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2 || x.correoEnviado==false).length == 0) return;
       const url = `${this.baseUrl}Facturas/verificarEstados`
       this.working = true;
       const res = (await this.axios.get(url)).data;
@@ -645,6 +646,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async abrirModalCambios(): Promise<void> {
     try {
+      if(this.listaTiposDocumentos.find((x:any)=>x.idTipoDocumento==js.idTipoDocumento.value)?.codigo==0) return this.guardar();
       js.activarValidadores(js.frmCambios);
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
@@ -667,7 +669,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     try {
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
-      if(!await js.validarTodo(js.frmCambios)) throw new Error("Verifique los campos requeridos");
+      if(this.listaTiposDocumentos.find((x:any)=>x.idTipoDocumento==js.idTipoDocumento.value)?.codigo!=0)if(!await js.validarTodo(js.frmCambios)) throw new Error("Verifique los campos requeridos");
       if (this.listaDetalleFactura.length == 0) throw new Error("No se puede enviar una factura sin productos/servicios.")
       if (this.formaPagoDefault && this.listaDetallePagos.length == 0) {
         const pago: any = await this.axios.formToJsonTypes(this.frmDetalleFormaPagos.nativeElement);

@@ -27,7 +27,12 @@
         @for(item of lista;track item.claveAcceso){
         <tr>
           <td class="text-center">
-            @if(item.estadoSri=='AUTORIZADO'){
+            @if(item.codigo==0){
+              <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
+              class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
+                style="font-size:12px"></i></button>
+            }
+            @if(item.estadoSri=='AUTORIZADO' && item.codigo==1){
             <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
               class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
                 style="font-size:12px"></i></button>
@@ -38,7 +43,7 @@
             @else if(item.estadoSri=="EN PROCESAMIENTO"){
             <span class="fs-xs">EN PROCESAMIENTO</span>
             }
-            @else if(item.estadoSri=="NO AUTORIZADO"){
+            @else if(item.estadoSri=="NO AUTORIZADO" && item.codigo==1){
             <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
               class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
                 style="font-size:12px"></i></button>
@@ -48,7 +53,7 @@
             }@else if(item.estadoSri=="RECIBIDA"){
             <span class="fs-xs">ESPERANDO AUTORIZACIÓN</span>
             }
-            @else{
+            @else if(item.codigo!=0){
             <button (click)="reenviar(item.claveAcceso)" title="Reenviar a SRI" type="button"
               class="btn text-info btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-arrow-clockwise"
                 style="font-size:12px"></i></button>
