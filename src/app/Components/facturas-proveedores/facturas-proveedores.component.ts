@@ -537,11 +537,13 @@ export class FacturasProveedoresComponent
   async guardarRetencion() {
     try {
 
+      
+
       if(!this.listaRetencionesRenta.length){
         js.toastWarning("Agregue un impuesto al detalle");
           return;
         }
-
+     
       let fechaEmision = this.el.nativeElement.querySelector("#fechaEmision").value;
       let nComprobante = this.el.nativeElement.querySelector("#nComprobante").value;
       const fechaEmisionC = this.el.nativeElement.querySelector('#fechaEmisionC').value;
@@ -557,7 +559,7 @@ export class FacturasProveedoresComponent
       <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`))
       )
         return;
-
+      js.loaderShow();
       this.retenciones.fechaEmision = fechaEmision;
       this.retenciones.establecimiento = this.establecimiento;
       this.retenciones.puntoEmision = this.puntoEmision;
@@ -577,14 +579,13 @@ export class FacturasProveedoresComponent
       this.retenciones.razonSocialSujetoRetenido=this.listaUnaRetencion.res.razonSocialComprador;
       this.retenciones.idUsuario=this.listaUnaRetencion.res.idUsuario;
       this.retenciones.idFactura= this.idFactura;
-       console.log(this.retenciones);
       const url = `${this.baseUrlRetencion}Retenciones/insertar`;
       await this._axios.postJson(url, this.retenciones);
 
     } catch (e) {
       js.handleError(e);
     }finally{
-      // js.loaderHide();
+      js.loaderHide();
     }
   }
 

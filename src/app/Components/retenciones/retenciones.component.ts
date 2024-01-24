@@ -23,6 +23,8 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject<any>();
   mensajeDataTable: string = js.loaderDataTable();
+  interval = setInterval(() => { this.verificarEstados() }, 10000);
+  working: boolean = false;
 
   constructor(
     private axios: AxiosService,
@@ -31,7 +33,7 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   ) { }
   async ngOnInit() {
 
-    await this.listarFacturas();
+    await this.listarRetenciones();
 
   }
   ngAfterViewInit(): void {
@@ -45,10 +47,28 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   }
 
 
+
+
+  async verificarEstados(): Promise<void> {
+    try {
+      if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2).length == 0) return;
+      const url = `${this.baseUrl}Retenciones/verificarEstados`
+      this.working = true;
+      const res = (await this.axios.get(url)).data;
+      if (res == "empty") return;
+      this.reloadDataTable();
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      this.working = false;
+    }
+  }
+
+
   async xml(claveAcceso: string): Promise<void> {
     try {
       js.loaderShow();
-      const url = `${this.baseUrl}facturas/descargarXml/${claveAcceso}`;
+      const url = `${this.baseUrl}Retenciones/descargarXml/${claveAcceso}`;
       const res = (await this.axios.getFile(url)).data;
       const blob = new Blob([res], { type: 'application/xml' });
       const urlFile = URL.createObjectURL(blob);
@@ -94,9 +114,9 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   async reenviar(claveAcceso: string): Promise<void> {
     try {
       js.loaderShow();
-      const url = `${this.baseUrl}Facturas/reenviar/${claveAcceso}`;
+      const url = `${this.baseUrl}Retenciones/reenviar/${claveAcceso}`;
       await this.axios.get(url);
-      this.listarFacturas();
+      await this.reloadDataTable();
     } catch (e) {
       js.handleError(e);
     } finally {
@@ -109,11 +129,16 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
     return `background-color:${global.estados[estado]}`
   }
 
-  async listarFacturas() {
-    try {
 
-      const url = `${this.baseUrl}Facturas/listar`;
-      const columns = "idFactura,fechaRegistro,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
+reloadDataTable(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => dtInstance.ajax.reload());
+  }
+
+  async listarRetenciones() {
+    try {
+    
+      const url = `${this.baseUrl}Retenciones/listar`;
+      const columns = "fechaEmisionRetencion,fechaRegistro,documento,razonSocialComprador,claveAcceso,idTipoEstadoSri,fechaAutorizacion,telefono,email";
       this.dtOptions = {
         destroy: true,
         serverSide: true,
@@ -122,10 +147,8 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
         language: js.dataTableEs(),
         ajax: async (_data: any, resolve) => {
           try {
-            console.log(_data);
             this.lista = [];
             const res = (await this.axios.postJson(url, _data)).data;
-            console.log(res);
             this.lista = res.data;
             (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
             resolve({
