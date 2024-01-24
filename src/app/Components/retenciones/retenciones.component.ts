@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { js, global } from '../../app.config';
 import { AxiosService } from '../../Services/axios.service';
 import { Subject } from 'rxjs';
@@ -13,28 +13,33 @@ import { NgSelectModule } from '@ng-select/ng-select';
   templateUrl: './retenciones.component.html',
   styleUrl: './retenciones.component.css',
 })
-export class RetencionesComponent {
+export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   _js: any = js;
   baseUrl = `${global.BASE_API_URL}api/`;
   componentTitle: string = '';
- //Datatable
- lista: any = [];
- @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
- dtOptions: DataTables.Settings = {};
- dtTrigger: Subject<any> = new Subject<any>();
- mensajeDataTable: string = js.loaderDataTable();
-
-  async ngOnInit () {
-
-    await this.listarFacturas();
-
-  }
+  //Datatable
+  lista: any = [];
+  @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
+  mensajeDataTable: string = js.loaderDataTable();
 
   constructor(
     private axios: AxiosService,
     private el: ElementRef,
     private renderer: Renderer2
-  ) {}
+  ) { }
+  async ngOnInit() {
+
+    await this.listarFacturas();
+
+  }
+  ngAfterViewInit(): void {
+    this.dtTrigger.next(this.dtOptions);
+  }
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
 
   nuevo() {
   }
@@ -106,7 +111,7 @@ export class RetencionesComponent {
 
   async listarFacturas() {
     try {
-     
+
       const url = `${this.baseUrl}Facturas/listar`;
       const columns = "idFactura,fechaRegistro,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
       this.dtOptions = {
