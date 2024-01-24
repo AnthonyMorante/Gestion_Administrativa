@@ -1,5 +1,8 @@
 export const jsonConfig = {
   BASE_API_URL: 'https://gestion-administrativa-api-y9c8y.ondigitalocean.app/',
+  SRI:{
+    personas:"https://srienlinea.sri.gob.ec/movil-servicios/api/v1.0/deudas/porIdentificacion/"
+  },
   token: {
     user: "GS_ADMIN"
   },

@@ -110,7 +110,6 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async verificarEstados(): Promise<void> {
     try {
-      console.log(this.lista);
       if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2 || x.correoEnviado==false).length == 0) return;
       const url = `${this.baseUrl}Facturas/verificarEstados`
       this.working = true;
@@ -389,6 +388,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       const res = (await this.axios.get(url)).data;
       if (!res) {
         this.nuevoCliente = true;
+        await this.buscarEnSri(identificacion.value);
         return;
       }
       js.idTipoIdenticacion.classList.add("readonly");
@@ -401,7 +401,19 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       js.handleError(e);
     }
   }
-
+  async buscarEnSri(identificacion:string):Promise<void>{
+    try {
+      const url=`${global.SRI.personas}${identificacion}`;
+      let res=await fetch(url);
+      let json=await res.json();
+      if(!!json.contribuyente){
+        js.razonSocial.value=json.contribuyente.nombreComercial || "";
+        js.direccion.value=json.contribuyente.direccionMatriz || "";
+      }
+    } catch (e) {
+      return;
+    }   
+  }
   handleTotalAgregar(): void {
     try {
       let cantidad = this.el.nativeElement.querySelector("#cantidad");
