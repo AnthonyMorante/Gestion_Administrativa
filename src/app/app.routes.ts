@@ -12,6 +12,7 @@ import { ConfiguracionesComponent } from './Components/configuraciones/configura
 import { FacturasProveedoresComponent } from './Components/facturas-proveedores/facturas-proveedores.component';
 import { RetencionesComponent } from './Components/retenciones/retenciones.component';
 import { CajaComponent } from './Components/caja/caja.component';
+import { ProformasComponent } from './Components/proformas/proformas.component';
 
 export const routes: Routes = [
   {
@@ -72,6 +73,12 @@ export const routes: Routes = [
 
         path: 'facturas-proveedores',
         component: FacturasProveedoresComponent,
+        canActivate: [userGuard]
+      },
+      {
+
+        path: 'proformas',
+        component: ProformasComponent,
         canActivate: [userGuard]
       },
     ],
