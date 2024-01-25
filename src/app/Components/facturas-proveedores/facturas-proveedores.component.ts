@@ -518,6 +518,7 @@ export class FacturasProveedoresComponent
       <p class='fs-sm text-danger'><i class='bi-exclamation-triangle-fill me-1'></i>Está acción no se puede deshacer.</p>`))
       )
         return;
+        js.loaderShow();
       const url = `${this.baseUrl}guardar`;
       const json = {
         factura: this.factura,
@@ -528,6 +529,8 @@ export class FacturasProveedoresComponent
       this.reloadDataTable();
     } catch (e) {
       js.handleError(e);
+    }finally{
+      js.loaderHide();
     }
   }
 
