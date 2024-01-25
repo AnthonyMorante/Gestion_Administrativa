@@ -91,7 +91,7 @@ export class RetencionesComponent implements OnInit, OnDestroy,AfterViewInit {
   async pdf(claveAcceso: string): Promise<void> {
     try {
       js.loaderShow();
-      const url = `${this.baseUrl}facturas/descargarPdf/${claveAcceso}`;
+      const url = `${this.baseUrl}Retenciones/descargarPdf/${claveAcceso}`;
       const res = (await this.axios.getFile(url)).data;
       const blob = new Blob([res], { type: 'application/pdf' });
       const urlFile = URL.createObjectURL(blob);
@@ -150,6 +150,7 @@ reloadDataTable(): void {
             this.lista = [];
             const res = (await this.axios.postJson(url, _data)).data;
             this.lista = res.data;
+            console.log(this.lista);
             (res.data.length == 0 && !!_data.search.value) ? this.mensajeDataTable = js.notFoundDataTable() : (res.data.length == 0 && !_data.search.value) ? this.mensajeDataTable = js.notDataDataTable() : this.mensajeDataTable = js.loaderDataTable();
             resolve({
               recordsTotal: res.recordsTotal,
