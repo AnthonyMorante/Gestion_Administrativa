@@ -705,7 +705,8 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       factura.detalleFactura = this.listaDetalleFactura;
       js.loaderShow();
       const url = `${this.baseUrl}Facturas/insertar`;
-      await this.axios.postJson(url, factura);
+      var res = await this.axios.postJson(url, factura);
+      this.imprimirComprobante(res.data.value);
       js.toastSuccess(`Registro de ${this.tipoDocumento} exitoso`);
       this.modal.hide();
       this.modalC.hide();
@@ -739,7 +740,6 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
           pdfIframe.contentWindow.print();
         };
-      console.log(res);
     } catch (error) {
       
       js.handleError(error);
