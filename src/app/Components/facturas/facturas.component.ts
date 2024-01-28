@@ -188,7 +188,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   async listarFacturas() {
     try {
       const url = `${this.baseUrl}Facturas/listar`;
-      const columns = "idFactura,fechaRegistro,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
+      const columns = "idFactura,secuencial,cliente,telefonoCliente,emailCliente,claveAcceso,fechaEmision,fechaAutorizacion,estadoSri";
       //DataTables
       this.dtOptions = {
         destroy: true,
@@ -681,6 +681,11 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async guardar(): Promise<void> {
     try {
+      console.log(!!js.idTipoIdenticacion.value);
+      // return await new Promise(res=>{
+      //   console.log(js.idTipoDocumento.value);
+      //   return res();
+      // })
       if (!await js.validarTodo(this.frmCliente.nativeElement)) throw new Error("Verifique los campos requeridos");
       if (!await js.validarTodo(this.frmEmisor.nativeElement)) throw new Error("Verifique los campos requeridos");
       if(this.listaTiposDocumentos.find((x:any)=>x.idTipoDocumento==js.idTipoDocumento.value)?.codigo!=0)if(!await js.validarTodo(js.frmCambios)) throw new Error("Verifique los campos requeridos");

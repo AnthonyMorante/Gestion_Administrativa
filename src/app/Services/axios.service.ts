@@ -194,7 +194,7 @@ export class AxiosService {
         'Content-Type': `application/json`,
       },
     }).then(() => true).catch((error) => {
-      console.clear();
+      // console.clear();
       this.logout();
       return false;
     });
