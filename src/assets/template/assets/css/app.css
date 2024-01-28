@@ -1630,6 +1630,7 @@ form.readonly select,
 form.readonly ng-select {
   pointer-events: none !important;
   background-color: #EEEE;
+
 }
 
 form.readonly ng-select {

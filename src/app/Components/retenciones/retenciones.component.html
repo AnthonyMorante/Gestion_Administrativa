@@ -1,4 +1,4 @@
-<div class="row page-title"><i class='bi-receipt-cutoff'></i>Retención</div>
+<div class="row page-title"><i class='bi-percent'></i>Retenciones</div>
 <div class="component-content">
   <div class=" my-2">
 
@@ -33,7 +33,7 @@
       <tr>
         <td class="text-center">
 
-          
+
 
 
           @if(item.estadoSri=='AUTORIZADO'){
@@ -43,7 +43,7 @@
           <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
             class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
               style="font-size:12px"></i></button>
-              
+
           }
           @else if(item.estadoSri=="EN PROCESAMIENTO"){
           <span class="fs-xs">EN PROCESAMIENTO</span>
@@ -64,7 +64,8 @@
               style="font-size:12px"></i></button>
           }
         </td>
-        <td width="5%" class="text-center">{{item.fechaEmisionRetencion.substring(0,10).split('-').reverse().join('-')}}</td>
+        <td width="5%" class="text-center">{{item.fechaEmisionRetencion.substring(0,10).split('-').reverse().join('-')}}
+        </td>
         <td>
           {{item.documento}}
         </td>
@@ -74,7 +75,7 @@
         </td>
         <td width="10%" class="text-center">
           @if(item.estadoSri=='AUTORIZADO'){
-            <!-- fecha autorizacion receptor -->
+          <!-- fecha autorizacion receptor -->
           {{item.fechaAutorizacion.substring(0,10).split('-').reverse().join('-')}}
           <b>{{ item.fechaAutorizacion.substring(11,16)}}{{(item.fechaAutorizacion.substring(11,13))>=12?"PM":"AM"}}</b>
           }@else {
@@ -95,4 +96,3 @@
     }
   </table>
 </div>
-

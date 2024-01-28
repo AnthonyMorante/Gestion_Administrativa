@@ -78,7 +78,7 @@
                 style="font-size:12px"></i></button>
             }
             <button (click)="imprimirComprobante(item.claveAcceso)" title="Imprimir" type="button"
-            class="btn text-printer btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi bi-printer"
+            class="btn text-info btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi bi-printer"
               style="font-size:12px"></i></button>
           </td>
           <td width="5%" class="text-center">{{item.fechaEmision.substring(0,10).split('-').reverse().join('-')}}</td>
@@ -139,7 +139,7 @@
                 <form class="row" #frmCliente>
                   <div class="col-sm-3">
                     <label class="form-label">Tipo Documento</label>
-                    <select class="form-select form-select-sm" [class]="(!idCliente && nuevoCliente)?'':'readonly'"
+                    <select class="form-select form-select-sm" [attr.tabindex]="(!idCliente && nuevoCliente)?'':'-1'" [class]="(!idCliente && nuevoCliente)?'':'readonly'"
                       id="idTipoIdenticacion" name="idTipoIdenticacion" (change)="handleDocumento($event.target)">
                       @for(item of listaTipoIdentificaciones;track item.idTipoIdenticacion){
                       <option value="{{item.idTipoIdentificacion}}">
@@ -261,6 +261,7 @@
                   <div class="col-sm-auto">
                     <label class="form-label">Precio</label>
                     <input type="text" class="form-control form-control-sm text-end form-number"
+                    [attr.tabindex]="productoSeleccionado?'':'-1'"
                       [class]="productoSeleccionado?'':'readonly'" data-validate="decimal" maxlength="9" id="precio"
                       name="precio" (keyup)="handleTotalAgregar()">
                     <div class="invalid-feedback">
@@ -270,6 +271,7 @@
                   <div class="col-sm-auto">
                     <label class="form-label">Cantidad</label>
                     <input type="text" class="form-control form-control-sm text-end form-number"
+                      [attr.tabindex]="productoSeleccionado?'':'-1'"
                       [class]="productoSeleccionado?'':'readonly'" data-validate="numeros-no-cero" maxlength="9"
                       id="cantidad" name="cantidad" (keyup)="handleTotalAgregar()">
                     <div class="invalid-feedback">
@@ -278,7 +280,7 @@
                   </div>
                   <div class="col-sm-auto">
                     <label class="form-label">Iva {{valorIva}}</label>
-                    <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                    <input type="text" tabindex="-1" class="form-control form-control-sm text-end form-number readonly"
                       data-validate="decimal" maxlength="9" id="iva" name="iva" (keyup)="handleTotalAgregar()">
                     <div class="invalid-feedback">
                       *Campo requerido
@@ -286,7 +288,7 @@
                   </div>
                   <div class="col-sm-auto">
                     <label class="form-label">Total</label>
-                    <input type="text" class="form-control form-control-sm text-end form-number readonly"
+                    <input type="text" tabindex="-1" class="form-control form-control-sm text-end form-number readonly"
                       data-validate="decimal" maxlength="9" id="totalProducto" name="totalProducto">
                     <div class="invalid-feedback">
                       *Campo requerido

@@ -113,7 +113,10 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   async verificarEstados(): Promise<void> {
     try {
       if (this.working == true || this.lista.filter((x: any) => x.idTipoEstadoSri != 2 || x.correoEnviado==false).length == 0) return;
-      const url = `${this.baseUrl}Facturas/verificarEstados`
+      let url=`${this.baseUrl}Facturas/estadosPendientes`;
+      const estados=(await this.axios.get(url)).data;
+      if(estados==0) return;
+      url = `${this.baseUrl}Facturas/verificarEstados`
       this.working = true;
       const res = (await this.axios.get(url)).data;
       if (res == "empty") return;
@@ -286,6 +289,12 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       this.identificacion.setAttribute("data-validate", "ruc");
       js.activarValidadores(this.identificacion.closest("div"));
       js.validarRuc(this.identificacion);
+    }else if (tipo == 7) {
+      this.identificacion.removeAttribute("data-validate");
+      js.activarValidadores(this.identificacion.closest("div"));
+      js.identificacion.value='9999999999999';
+      js.identificacion.focus();
+      js.validarVacio(this.identificacion);
     } else {
       this.identificacion.removeAttribute("data-validate");
       js.activarValidadores(this.identificacion.closest("div"));

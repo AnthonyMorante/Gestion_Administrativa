@@ -1,4 +1,4 @@
-<div class="row page-title"><i class='bi-receipt'></i>Facturas proveedores</div>
+<div class="row page-title"><i class='bi-file-earmark-spreadsheet'></i>Facturas proveedores</div>
 <div class="component-content">
   <div class=" my-2">
     <button (click)="modal.show();nuevo()" type="button" class="btn btn-primary">
@@ -166,7 +166,7 @@
                                 <td>{{item.codigoPrincipal}}</td>
                                 <td width="37%">{{item.descripcion}}</td>
                                 <td width="37%">
-                                  <select class="form-select form-select-sm" [class]="idFactura>0?'readonly':''"
+                                  <select class="form-select form-select-sm" [attr.tabindex]="idFactura>0?'':'-1'" [class]="idFactura>0?'readonly':''"
                                     id="s2_{{$index}}_select"
                                     (change)="handleReferenciaInterna(item.codigoPrincipal,$index)"
                                     onchange="handleSelect2(this,event)">
@@ -316,7 +316,7 @@
 
                     <div class="col-sm-4">
                       <label class="form-label">Fecha Emisión</label>
-                      <input readonly type="date" class="form-control form-control-sm" id="fechaEmisionC"
+                      <input readonly tabindex="-1" type="date" class="form-control form-control-sm" id="fechaEmisionC"
                         name="fechaEmision" />
                       <div class="invalid-feedback">
                         *Campo Requerido
@@ -328,7 +328,7 @@
 
                     <div class="col-sm-4">
                       <label class="form-label">Tipo Documento</label>
-                      <select readonly readonly class="form-select form-select-sm text-end" id="tipoDocumentoC"
+                      <select readonly tabindex="-1" class="form-select form-select-sm text-end" id="tipoDocumentoC"
                         name="tipoDocumentoC">
                         @for(item of listaTipoIdentificaciones;track $index){
                         <option value="{{item.codigo}}">
@@ -341,7 +341,7 @@
 
                     <div class="col-sm-4">
                       <label class="form-label">Identificacion</label>
-                      <input readonly type="text" class="form-control form-control-sm" id="identificacionC"
+                      <input readonly tabindex="-1" type="text" class="form-control form-control-sm" id="identificacionC"
                         name="identificacionC" />
                       <div class="invalid-feedback">
                         *Campo Requerido
@@ -359,7 +359,7 @@
 
                   <div class="col-sm-3">
                     <label class="form-label">Doc. Sutento</label>
-                    <input readonly type="text" class="form-control form-control-sm" id="docSustento" name="docSustento"
+                    <input readonly tabindex="-1" type="text" class="form-control form-control-sm" id="docSustento" name="docSustento"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
@@ -368,14 +368,14 @@
 
                   <div class="col-sm-3">
                     <label class="form-label">N.- Comprobante</label>
-                    <input type="text" readonly class="form-control form-control-sm" id="nComprobante"
+                    <input type="text" readonly tabindex="-1" class="form-control form-control-sm" id="nComprobante"
                       name="nComprobante" maxlength="30" data-clean="false" />
                   </div>
 
 
                   <div class="col-sm-6">
                     <label class="form-label">Clave Acceso</label>
-                    <input readonly type="text" class="form-control form-control-sm" id="claveAcceso" name="claveAcceso"
+                    <input readonly tabindex="-1" type="text" class="form-control form-control-sm" id="claveAcceso" name="claveAcceso"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
@@ -436,7 +436,7 @@
 
                   <div class="col-sm-2">
                     <label class="form-label">Base</label>
-                    <input readonly type="text" class="form-control form-control-sm" id="base" name="base"
+                    <input readonly tabindex="-1" tabindex="-1" type="text" class="form-control form-control-sm" id="base" name="base"
                       maxlength="500" />
                     <div class="invalid-feedback">
                       *Campo Requerido
