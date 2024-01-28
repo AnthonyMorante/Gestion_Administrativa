@@ -32,6 +32,10 @@
       @for(item of lista;track item.idRetencion){
       <tr>
         <td class="text-center">
+
+          
+
+
           @if(item.estadoSri=='AUTORIZADO'){
           <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
             class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
@@ -39,6 +43,7 @@
           <button (click)="pdf(item.claveAcceso)" title="Descargar PDF" type="button"
             class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
               style="font-size:12px"></i></button>
+              
           }
           @else if(item.estadoSri=="EN PROCESAMIENTO"){
           <span class="fs-xs">EN PROCESAMIENTO</span>

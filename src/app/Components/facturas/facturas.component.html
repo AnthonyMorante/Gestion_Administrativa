@@ -1,3 +1,21 @@
+<div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfModalLabel">PDF Viewer</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="pdfIframe" width="100%" 			height="500"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <div class="row page-title"><i class='bi-receipt-cutoff'></i>Facturación</div>
 <div class="component-content">
   <div class=" my-2">
@@ -32,6 +50,7 @@
               class="btn text-danger btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-pdf"
                 style="font-size:12px"></i></button>
             }
+            
             @if(item.estadoSri=='AUTORIZADO' && item.codigo==1){
             <button (click)="xml(item.claveAcceso)" title="Descargar XML" type="button"
               class="btn text-primary btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-filetype-xml"
@@ -58,6 +77,9 @@
               class="btn text-info btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi-arrow-clockwise"
                 style="font-size:12px"></i></button>
             }
+            <button (click)="imprimirComprobante(item.claveAcceso)" title="Imprimir" type="button"
+            class="btn text-printer btn-sm btn-file-td" style="padding:2px 0 2px 6px"><i class="bi bi-printer"
+              style="font-size:12px"></i></button>
           </td>
           <td width="5%" class="text-center">{{item.fechaEmision.substring(0,10).split('-').reverse().join('-')}}</td>
           <td>

@@ -5,6 +5,7 @@ import { DataTableDirective, DataTablesModule } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { AxiosService } from '../../Services/axios.service';
 import { js, global } from '../../app.config';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-facturas',
@@ -66,13 +67,14 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     totalFactura: 0,
     totDescuento: 0
   }
+  pdfUrl: any;
   valorRecibido:number=0;
   saldo:number=0;
   cambio:number=0;
   formaPagoDefault: boolean = true;
   working: boolean = false;
   interval = setInterval(() => { this.verificarEstados() }, 10000);
-  constructor(private axios: AxiosService, private el: ElementRef, private renderer: Renderer2) { }
+  constructor(  private sanitizer: DomSanitizer,private axios: AxiosService, private el: ElementRef, private renderer: Renderer2) { }
 
   ngOnInit() {
     this.identificacion = document.querySelector("#identificacion");
@@ -710,4 +712,37 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
       js.loaderHide();
     }
   }
+
+  async imprimirComprobante(claveAcceso:string){
+
+    try {
+      js.loaderShow();
+      const url = `${this.baseUrl}Facturas/imprimirComprobante/${claveAcceso}`
+      const res = (await this.axios.get(url)).data;
+      const decodedValue = atob(res.toString());
+        const pdfData = new Uint8Array(decodedValue.length);
+        for (let i = 0; i < decodedValue.length; i++) {
+          pdfData[i] = decodedValue.charCodeAt(i);
+        }
+        const blob = new Blob([pdfData], { type: 'application/pdf' });
+        this.pdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+          URL.createObjectURL(blob)
+        );
+        const pdfIframe = this.el.nativeElement.querySelector('#pdfIframe');
+        pdfIframe.src = this.pdfUrl.changingThisBreaksApplicationSecurity;
+        pdfIframe.onload = () => {
+
+          pdfIframe.contentWindow.print();
+        };
+      console.log(res);
+    } catch (error) {
+      
+      js.handleError(error);
+      
+    } finally {
+      js.loaderHide();
+    } 
+
+  }
+
 }
