@@ -51,7 +51,8 @@ export class FacturasProveedoresComponent
   listaPuntosEmisiones: any = [];
   listaTiempoFormaPagos: any = [];
   listaUnaRetencion: any = [];
-  listaPorcentajeImpuestos: any = [];
+  listaPorcentajeImpuestosRenta: any = [];
+  listaPorcentajeImpuestosIva: any = [];
   listaTipoIdentificaciones: any = [];
   listaAdicionales: any = [];
   formaPagoDefault: boolean = true;
@@ -65,6 +66,7 @@ export class FacturasProveedoresComponent
     totRetenido: 0,
   };
   listaRetencionesRenta: any = [];
+  listaRetencionesIva: any = [];
   valorRetenido: number = 0;
   acumValorRetenido: number = 0;
 
@@ -95,7 +97,8 @@ export class FacturasProveedoresComponent
     this.comboPuntosEmisiones();
     this.comboFormaPagos();
     this.comboTiempoFormaPagos();
-    this.comboPorcentajeImpuestos();
+    this.comboPorcentajeImpuestosRenta();
+    this.comboPorcentajeImpuestosIva();
     this.comboTipoIdentificaciones();
 
     setTimeout(() => {
@@ -180,10 +183,20 @@ export class FacturasProveedoresComponent
     }
   }
 
-  async comboPorcentajeImpuestos() {
+  async comboPorcentajeImpuestosRenta() {
     try {
-      const url = `${this.baseUrlRetencion}Retenciones/porcentajeImpuestosRetenciones`;
-      this.listaPorcentajeImpuestos = (await this._axios.get(url)).data;
+      const url = `${this.baseUrlRetencion}Retenciones/porcentajeImpuestosRetencionesRenta`;
+      this.listaPorcentajeImpuestosRenta = (await this._axios.get(url)).data;
+    } catch (e) {
+      js.handleError(e);
+    }
+  }
+
+
+  async comboPorcentajeImpuestosIva() {
+    try {
+      const url = `${this.baseUrlRetencion}Retenciones/porcentajeImpuestosRetencionesIva`;
+      this.listaPorcentajeImpuestosIva = (await this._axios.get(url)).data;
     } catch (e) {
       js.handleError(e);
     }
@@ -245,7 +258,7 @@ export class FacturasProveedoresComponent
       const base = this.el.nativeElement.querySelector('#base');
       const nComprobante = this.el.nativeElement.querySelector('#nComprobante');
       if (base.value == "") return;
-      let objImpuestoRetencion = this.listaPorcentajeImpuestos.find((x: any) => x.idPorcentajeImpuestoRetencion == idPorcentajeImpuestoRetencion);
+      let objImpuestoRetencion = this.listaPorcentajeImpuestosRenta.find((x: any) => x.idPorcentajeImpuestoRetencion == idPorcentajeImpuestoRetencion);
       objImpuestoRetencion.porcentajeRetener = objImpuestoRetencion.valor;
       objImpuestoRetencion.codigoRetencion = objImpuestoRetencion.codigo;
       objImpuestoRetencion.numDocSustento = nComprobante.value;
@@ -259,12 +272,48 @@ export class FacturasProveedoresComponent
       objImpuestoRetencion.tipoRetencion="renta";
       this.retenciones.totRetenido = this.acumValorRetenido
       this.listaRetencionesRenta.push(objImpuestoRetencion);
+
       base.value = "";
     } catch (e) {
       js.handleError(e);
     }
 
   }
+
+
+  async agregarImpuestoIva() {
+    try {
+
+      const currentTimestamp = new Date().getTime();
+      const idPorcentajeImpuestoRetencion = this.el.nativeElement.querySelector('#bporcentajeImpuestoIva').value;
+      const fechaEmisionC = this.el.nativeElement.querySelector('#fechaEmisionC').value;
+      const tipoIva = this.el.nativeElement.querySelector('#tipoIva').value;
+      const base = this.el.nativeElement.querySelector('#bBaseImponible');
+      const nComprobante = this.el.nativeElement.querySelector('#nComprobante');
+      if (base.value == "") return;
+      let objImpuestoRetencion = this.listaPorcentajeImpuestosIva.find((x: any) => x.idPorcentajeImpuestoRetencion == idPorcentajeImpuestoRetencion);
+      objImpuestoRetencion.porcentajeRetener = objImpuestoRetencion.valor;
+      objImpuestoRetencion.codigoRetencion = objImpuestoRetencion.codigo;
+      objImpuestoRetencion.numDocSustento = nComprobante.value;
+      this.valorRetenido = parseFloat(((parseFloat(base.value) * objImpuestoRetencion.valor) / 100).toFixed(2));
+      objImpuestoRetencion.valorRetenido = this.valorRetenido;
+      this.acumValorRetenido = this.acumValorRetenido + this.valorRetenido;
+      objImpuestoRetencion.baseImponible = parseFloat(parseFloat(base.value).toFixed(2));
+      objImpuestoRetencion.id = currentTimestamp;
+      objImpuestoRetencion.fechaEmisionDocSustento= fechaEmisionC;
+      objImpuestoRetencion.idPorcentajeImpuestoRetencion=idPorcentajeImpuestoRetencion;
+      objImpuestoRetencion.tipoRetencion=`iva_${tipoIva}`;
+      this.retenciones.totRetenido = this.acumValorRetenido
+      this.listaRetencionesIva.push(objImpuestoRetencion);
+      console.log(this.listaRetencionesIva);
+      base.value = "";
+    } catch (e) {
+      js.handleError(e);
+    }
+
+  }
+
+
 
   async eliminarImpuestoRenta(id: any) {
     try {
@@ -283,6 +332,8 @@ export class FacturasProveedoresComponent
 
   }
 
+
+ 
 
   async cargaRetencion(autorizacion: number, idFactura: number) {
     try {
@@ -541,7 +592,7 @@ export class FacturasProveedoresComponent
     try {
 
       
-
+   
       if(!this.listaRetencionesRenta.length){
         js.toastWarning("Agregue un impuesto al detalle");
           return;
@@ -567,7 +618,7 @@ export class FacturasProveedoresComponent
       this.retenciones.establecimiento = this.establecimiento;
       this.retenciones.puntoEmision = this.puntoEmision;
       this.retenciones.secuencial = this.secuencial.toString();
-      this.retenciones.impuestos = this.listaRetencionesRenta;
+      this.retenciones.impuestos = [...this.listaRetencionesRenta, ...this.listaRetencionesIva];
       this.retenciones.fechaEmisionDocSustento = fechaEmisionC;
       this.retenciones.fechaEmision = fechaEmision;
       this.retenciones.numAutDocSustento = claveAcceso;
