@@ -1,7 +1,7 @@
 :root{
-  --empresa-primary:#FACE19;
-	--empresa-primary-hover:#CFAB10;
-	--empresa-primary-rgb: 224, 185, 16;
+  --empresa-primary:#1C86EA;
+  --empresa-primary-hover:#1370C0;
+  --empresa-primary-rgb: 28, 134, 234;
 }
 .h1,
 .h2,
@@ -131,13 +131,13 @@ a {
 }
 
 .btn-primary {
-  color: black;
+  color: white;
   background-color: var(--empresa-primary);
   border-color: var(--empresa-primary);
 }
 
 .btn-primary:hover {
-  color: black !important;
+  color: white !important;
   background-color: var(--empresa-primary-hover);
   border-color: var(--empresa-primary-hover);
 }

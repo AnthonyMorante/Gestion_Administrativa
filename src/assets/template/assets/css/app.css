@@ -1,7 +1,7 @@
 :root{
-  --empresa-primary:#FACE19;
-	--empresa-primary-hover:#CFAB10;
-	--empresa-primary-rgb: 224, 185, 16;
+  --empresa-primary:#1C86EA;
+	--empresa-primary-hover:#1370C0;
+	--empresa-primary-rgb: 28, 134, 234;
 }
 body {
   font-size: 14px;
@@ -1557,7 +1557,7 @@ label.line:after {
 }
 
 .simplebar-content ul.metismenu:has(a.active) * {
-  color: black !important;
+  color: white !important;
 }
 
 .simplebar-content * {
@@ -1615,7 +1615,7 @@ form label.form-label {
 }
 
 .table-custom.dataTable thead tr th {
-  color: black !important;
+  color: white !important;
   font-weight: 500 !important;
   font-size: 11px !important;
   background-color: var(--empresa-primary) !important;
@@ -1649,7 +1649,7 @@ ng-select.ng-select-focused .ng-select-container {
 
 
 .modal .ng-dropdown-panel-items {
-  max-height: 118px !important;
+  max-height: 46vh !important;
 }
 
 .page-title {
@@ -1666,7 +1666,7 @@ ng-select.ng-select-focused .ng-select-container {
   top: 0;
   box-shadow: 0 2px 6px 0 rgb(218 218 253 / 65%), 0 2px 6px 0 rgb(206 206 238 / 54%) !important;
   padding-left: 73px;
-  color: black;
+  color: white;
   font-weight: 600;
 }
 
@@ -2024,7 +2024,8 @@ tr td[colspan] i{
 }
 
 .modal-header label{
-  color:black !important;
+  color:white !important;
+  font-weight: 500 !important;
 }
 
 .bienvenida-sistema{

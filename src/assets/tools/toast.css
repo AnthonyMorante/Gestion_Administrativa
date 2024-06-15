@@ -1,8 +1,8 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css");
 :root{
-  --empresa-primary:#FACE19;
-    --empresa-primary-hover:#CFAB10;
-    --empresa-primary-rgb: 224, 185, 16;
+  --empresa-primary:#1C86EA;
+	--empresa-primary-hover:#1370C0;
+	--empresa-primary-rgb: 28, 134, 234;
 }
 /*ESTILO DEL SCROLLBAR*/
 
@@ -415,7 +415,8 @@ html {
   z-index: 99999;
   width: 100%;
   pointer-events: none;
-  flex-direction: column
+  flex-direction: column;
+  word-break: break-all;
 }
 
 .iziToast-wrapper .iziToast.iziToast-balloon:before {
