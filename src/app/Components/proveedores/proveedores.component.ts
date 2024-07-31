@@ -91,6 +91,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
     this.tituloModal = "Nuevo registro";
     this.idProveedor = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
+    js.identificacion.classList.remove("readonly");
   }
   async editar(idProveedor: string): Promise<void> {
     try {
@@ -100,6 +101,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
       const res = (await this.axios.get(url)).data;
       this.idProveedor = res.identificacion;
       js.cargarFormulario(this.frmDatos.nativeElement,res);
+      js.identificacion.classList.add("readonly");
       this.modal.show();
     } catch (e) {
       js.handleError(e);
