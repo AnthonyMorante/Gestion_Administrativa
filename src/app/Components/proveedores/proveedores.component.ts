@@ -4,12 +4,12 @@ import { NgSelectComponent, NgSelectModule } from '@ng-select/ng-select';
 import { DataTableDirective, DataTablesModule } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { AxiosService } from '../../Services/axios.service';
-import { js,global } from '../../app.config';
+import { js, global } from '../../app.config';
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [CommonModule,DataTablesModule,NgSelectModule],
+  imports: [CommonModule, DataTablesModule, NgSelectModule],
   templateUrl: './proveedores.component.html',
   styleUrl: './proveedores.component.css'
 })
@@ -100,7 +100,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
       const url = `${this.baseUrl}Proveedores/cargar/${idProveedor}`;
       const res = (await this.axios.get(url)).data;
       this.idProveedor = res.identificacion;
-      js.cargarFormulario(this.frmDatos.nativeElement,res);
+      js.cargarFormulario(this.frmDatos.nativeElement, res);
       js.identificacion.classList.add("readonly");
       this.modal.show();
     } catch (e) {
