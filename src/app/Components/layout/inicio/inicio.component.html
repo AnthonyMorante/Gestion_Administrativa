@@ -23,14 +23,14 @@
           <div class="menu-title">Facturación</div>
         </a>
       </li>
-      <li class="home">
+      <!-- <li class="home">
         <a [routerLink]="['retenciones']" [routerLinkActive]="['active']">
           <div class="parent-icon">
             <i class='bi-percent'></i>
           </div>
           <div class="menu-title">Retenciones</div>
         </a>
-      </li>
+      </li> -->
       <li class="home">
         <a [routerLink]="['proformas']" [routerLinkActive]="['active']">
           <div class="parent-icon">
@@ -117,13 +117,13 @@
             </div>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li>
+            <!-- <li>
               <a class="dropdown-item" [routerLink]="['configuraciones-sri']"><i
                   class="bi-gear"></i><span>Configuraciones SRI</span></a>
-            </li>
+            </li> -->
             <li>
               <a class="dropdown-item logout" href="javascript:;" (click)="logout()"><i
-                  class='bi-power'></i><span>Logout</span></a>
+                  class='bi-power'></i><span>Salir</span></a>
             </li>
           </ul>
         </div>
@@ -151,6 +151,6 @@
   <!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bi-arrow-up-short'></i></a>
   <!--End Back To Top Button-->
   <footer class="page-footer show">
-    <p class="mb-0"><b class="text-primary"></b>©2023 GEAFE {{version}}</p>
+    <p class="mb-0"><b class="text-primary"></b>©2023 Jeans Pelileo {{version}}</p>
   </footer>
 </div>
