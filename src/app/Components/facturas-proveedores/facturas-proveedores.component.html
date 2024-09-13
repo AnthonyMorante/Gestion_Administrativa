@@ -289,7 +289,7 @@
       <div class="modal-header pt-1 pb-1 text-end">
         <label class="modal-title" id="modalDatosLabel">
           <h6>{{tipoDocumento}} N°
-            <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{secuencial.toString().padStart(9,'0')}}
+            <b class="text-danger">{{establecimiento}}-{{puntoEmision}}-{{!secuencial?"0": secuencial.toString().padStart(9,'0')}}
             </b>
           </h6>
         </label>

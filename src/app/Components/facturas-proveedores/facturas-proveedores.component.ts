@@ -448,6 +448,7 @@ export class FacturasProveedoresComponent
       let data = new FormData(js.frmXml);
       const res = (await this._axios.postForm(url, data)).data;
       this.factura = res.factura;
+      console.log(this.factura);
       this.productosProveedores = res.productosProveedores.filter((x: any) =>
         this.factura.sriDetallesFacturas
           .map((x: any) => x.codigoPrincipal)
