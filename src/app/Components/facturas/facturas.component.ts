@@ -379,6 +379,7 @@ export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
     this.productoSeleccionado = !!idProducto
     if (!idProducto) return;
     const producto = this.listaProductos.find((x: any) => x.idProducto == idProducto);
+    console.log(producto);
     this.valorIva = producto.nombreIva;
     this.el.nativeElement.querySelector("#precio").value = !!producto ? producto.precio.toString().replace(".", ",") : "";
 
