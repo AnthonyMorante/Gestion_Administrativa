@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CajaComponent implements OnInit, AfterViewInit, OnDestroy {
   baseUrl = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrl}Reportes/ExcelCajas`;
   componentTitle: string = "";
   //Datatable
   lista: any = [];

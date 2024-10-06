@@ -1,5 +1,10 @@
 <div class="row page-title"><i class='bi-calculator'></i>Proformas</div>
 <div class="component-content">
+  <div class="row mb-2">
+    <div class="col-12">
+      <a class="btn btn-success ms-2 " [href]="reporteUrl" target="_blank">Reporte <i class="bi-file-excel fs-sm"></i></a>
+    </div>
+  </div>
   <div class="table-responsive p-1">
     <table #tabla datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table-custom">
       <thead>

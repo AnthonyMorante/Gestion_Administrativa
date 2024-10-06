@@ -39,6 +39,7 @@ export class FacturasProveedoresComponent
   //retenciones
   _js: any = js;
   baseUrlRetencion = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrlRetencion}Reportes/ExcelFacturasProveedores`;
   componentTitle: string = '';
   @ViewChild('modalRetenciones', { static: true })
   modalRetenciones: ElementRef = {} as ElementRef;

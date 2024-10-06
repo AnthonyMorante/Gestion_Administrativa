@@ -16,6 +16,7 @@ import { js, global } from '../../app.config';
 export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
 
   baseUrl = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrl}Reportes/ExcelProveedores`;
   componentTitle: string = "";
   //Datatable
   lista: any = [];

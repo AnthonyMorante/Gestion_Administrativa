@@ -18,6 +18,7 @@ export class ProformasComponent implements OnInit, AfterViewInit, OnDestroy  {
 
   _js: any = js;
   baseUrl = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrl}Reportes/ExcelProformas`;
   componentTitle: string = "";
   //Datatable
   lista: any = [];

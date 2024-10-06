@@ -17,6 +17,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class FacturasComponent implements OnInit, AfterViewInit, OnDestroy {
   _js: any = js;
   baseUrl = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrl}Reportes/ExcelFacturas`;
   componentTitle: string = "";
   //Datatable
   lista: any = [];

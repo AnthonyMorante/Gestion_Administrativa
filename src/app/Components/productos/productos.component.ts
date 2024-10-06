@@ -14,6 +14,7 @@ import { js,global } from '../../app.config';
 })
 export class ProductosComponent implements OnInit, AfterViewInit, OnDestroy {
   baseUrl = `${global.BASE_API_URL}api/`;
+  reporteUrl=`${this.baseUrl}Reportes/ExcelProductos`;
   componentTitle: string = "";
   //Datatable
   lista: any = [];
