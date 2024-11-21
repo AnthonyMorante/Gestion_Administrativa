@@ -16,6 +16,7 @@ import { js, global } from '../../app.config';
 export class EmpleadosComponent implements OnInit, AfterViewInit, OnDestroy {
   baseUrl = `${global.BASE_API_URL}api/`;
   componentTitle: string = "";
+  reporteUrl=`${this.baseUrl}Reportes/ExcelEmpleados`;
   //Datatable
   lista: any = [];
   @ViewChild(DataTableDirective) dtElement: DataTableDirective = {} as DataTableDirective;

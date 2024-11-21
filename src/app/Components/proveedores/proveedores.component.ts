@@ -93,6 +93,8 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
     this.idProveedor = "";
     js.limpiarForm(this.frmDatos.nativeElement, 100);
     js.identificacion.classList.remove("readonly");
+    js.identificacion.setAttribute("data-validate", "ruc");
+    js.activarValidadores(this.frmDatos.nativeElement);
   }
   async editar(idProveedor: string): Promise<void> {
     try {
@@ -103,6 +105,7 @@ export class ProveedoresComponent implements OnInit, AfterViewInit, OnDestroy {
       this.idProveedor = res.identificacion;
       js.cargarFormulario(this.frmDatos.nativeElement, res);
       js.identificacion.classList.add("readonly");
+      js.identificacion.removeAttribute("data-validate");
       this.modal.show();
     } catch (e) {
       js.handleError(e);
