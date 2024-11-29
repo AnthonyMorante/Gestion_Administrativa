@@ -460,7 +460,7 @@ export class FacturasProveedoresComponent
       this.factura.sriPagos = this.factura.sriPagos.map((x: any) => {
         x.formaPagoTexto = this.formasPagos.find(
           (f: any) => x.formaPago == f.codigo
-        ).formaPago;
+        )?.formaPago??`No se ha parametrizado este código de forma de pago en la base de datos.`;
         return x;
       });
       setTimeout(() => {
@@ -496,7 +496,7 @@ export class FacturasProveedoresComponent
       this.factura.sriPagos = [...this.factura.sriPagos].map((x: any) => {
         x.formaPagoTexto = this.formasPagos.find(
           (f: any) => x.formaPago == f.codigo
-        )?.formaPago;
+        )?.formaPago??`No se ha parametrizado este código de forma de pago en la base de datos.`;
         return x;
       });
       setTimeout(() => {
